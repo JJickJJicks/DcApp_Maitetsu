@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal" android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingLeft="3dp"
+              android:paddingRight="3dp"
+              android:paddingTop="5dp"
+              android:paddingBottom="5dp">
+
+    <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:padding="1dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/simple_article_item_img"/>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:padding="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <RelativeLayout android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10:00"
+                    android:paddingEnd="3dp"
+                    android:maxLines="1"
+                    android:gravity="center_vertical|right"
+                    android:id="@+id/simple_article_item_date"
+                    android:textAppearance="@style/List.subText"
+                    android:textColor="@color/colorDarkGray" android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Title"
+                    android:id="@+id/simple_article_item_title"
+                    android:textAppearance="@style/List.TitleText"
+                    android:textColor="@color/colorBlack"
+                    android:maxLines="2"
+                    android:paddingRight="10dp"
+                    android:gravity="center_vertical" android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="true" android:layout_toStartOf="@+id/simple_article_item_date"/>
+
+        </RelativeLayout>
+
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:paddingTop="3dp">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="nickname"
+                    android:id="@+id/simple_article_item_nickname"
+                    android:textAppearance="@style/List.subText"
+                    android:textColor="@color/colorDarkGray"/>
+
+            <ImageView
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:tint="@color/colorAccentYellow"
+                    android:id="@+id/simple_article_item_user_type"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="view 0"
+                    android:layout_marginEnd="10dp"
+                    android:id="@+id/simple_article_item_viewCount"
+                    android:textAppearance="@style/List.subText"
+                    android:textColor="@color/colorDarkGray"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="recommend 0"
+                    android:layout_marginEnd="10dp"
+                    android:id="@+id/simple_article_item_recommendCount"
+                    android:textAppearance="@style/List.subText"
+                    android:textColor="@color/colorDarkGray"/>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>
+

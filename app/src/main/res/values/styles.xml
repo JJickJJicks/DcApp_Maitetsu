@@ -1,0 +1,116 @@
+<resources>
+
+    <style name="BasicTheme.NoTranslucent" parent="BasicTheme">
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
+
+    <style name="BasicTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/colorWhite</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/colorBlack</item>
+        <item name="android:textColorSecondary">@color/colorGray</item>
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="colorButtonNormal">@color/colorPrimaryLight</item>
+        <item name="actionBarSize">40dp</item>
+        <item name="preferenceTheme">@style/BasicPreferenceTheme</item>
+        <item name="android:buttonStyle">@style/BasicButton</item>
+    </style>
+
+
+    <style name="DarkTheme" parent="BasicTheme">
+        <item name="android:windowBackground">@color/darkThemeBackground</item>
+        <item name="colorButtonNormal">@color/darkThemeBackground</item>
+        <item name="colorPrimary">@color/darkThemeLightBackground</item>
+        <item name="colorPrimaryDark">@color/darkThemeLightBackground</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="actionBarSize">40dp</item>
+        <item name="android:textColorPrimary">@color/colorWhite</item>
+        <item name="android:textColorSecondary">@color/colorGray</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="preferenceTheme">@style/DarkThemePreference</item>
+        <item name="alertDialogTheme">@style/DarkTheme.DialogCustom</item>
+        <item name="dialogTheme">@style/DarkTheme.DialogCustom</item>
+        <item name="android:buttonStyle">@style/DarkButton</item>
+        <item name="android:textColorHint">@color/colorGray</item>
+    </style>
+
+    <style name="BasicButton" parent="android:Widget.Material.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_margin">0dip</item>
+        <item name="android:background">@color/colorPrimaryLight</item>
+        <item name="android:textColor">@color/colorBlack</item>
+    </style>
+
+    <style name="DarkButton" parent="android:Widget.Material.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_margin">0dip</item>
+        <item name="android:background">@color/colorBlack</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+
+    <style name="preferenceBackground" parent="android:Widget.TextView">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">15dp</item>
+    </style>
+
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="Toolbar.TitleText" parent="@style/Base.TextAppearance.AppCompat.Title">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="List.NotifyText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="List.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="List.SmallTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="List.subText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="BasicPreferenceTheme" parent="@style/PreferenceThemeOverlay">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TitleButton" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="DarkThemePreference" parent="@style/PreferenceThemeOverlay">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColorSecondary">@color/colorGray</item>
+        <item name="android:textColorPrimary">@color/colorWhite</item>
+    </style>
+
+
+    <style name="DarkTheme.DialogCustom" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColorPrimary">@color/colorWhite</item>
+        <item name="android:textColorSecondary">@color/colorGray</item>
+        <item name="android:windowBackground">@color/colorBlack</item>
+        <item name="android:windowMinWidthMajor">80%</item>
+        <item name="android:windowMinWidthMinor">80%</item>
+    </style>
+
+</resources>

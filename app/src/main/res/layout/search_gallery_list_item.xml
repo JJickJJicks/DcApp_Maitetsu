@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal" android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:padding="5dp">
+
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="galleryName"
+            android:id="@+id/search_gallery_list_title_item"
+            android:textAppearance="@style/List.TitleText"
+            android:maxLines="1"
+            android:maxWidth="240dp"
+            android:padding="5dp"
+            android:gravity="center_vertical"
+            android:layout_alignParentTop="true" android:layout_alignParentStart="true"/>
+
+</RelativeLayout>
+

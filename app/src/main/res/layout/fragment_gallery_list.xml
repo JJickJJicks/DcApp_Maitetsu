@@ -1,0 +1,85 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:id="@+id/gallery_list_root"
+              tools:context=".ui.MainActivity">
+
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="1dp"
+                    android:orientation="horizontal"
+                    android:background="@drawable/border_gray"
+                    android:id="@+id/search_tool_box">
+
+        <ImageButton
+                android:layout_height="40dp"
+                android:cropToPadding="false"
+                android:background="@android:color/transparent"
+                android:padding="5dp"
+                android:contentDescription="@string/search_button"
+                android:scaleType="fitXY"
+                android:id="@+id/gallery_search_button" android:layout_width="40dp"
+                app:srcCompat="@drawable/search_button_icon"
+                android:layout_centerVertical="true" android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"/>
+
+        <EditText
+                android:layout_height="40dp"
+                android:inputType="textPersonName"
+                android:paddingStart="10dp"
+                android:background="@android:color/transparent"
+                android:gravity="center_vertical"
+                android:ems="10"
+                android:id="@+id/search_gallery_name"
+                android:maxLines="1"
+                android:layout_width="match_parent" android:layout_alignTop="@+id/gallery_search_button"
+                android:layout_alignParentStart="true" android:layout_toStartOf="@+id/gallery_search_button"/>
+        <ImageButton
+                android:layout_height="40dp"
+                android:cropToPadding="false"
+                android:background="@android:color/transparent"
+                android:padding="5dp"
+                android:contentDescription="@string/search_close_button"
+                android:scaleType="fitXY"
+                android:id="@+id/gallery_search_result_close"
+                app:srcCompat="@drawable/close_button"
+                android:visibility="invisible"
+                android:layout_width="40dp" android:layout_alignParentTop="true"
+                android:layout_toStartOf="@+id/gallery_search_button"/>
+
+    </RelativeLayout>
+
+
+    <ListView
+            android:layout_width="match_parent"
+            android:id="@+id/search_gallery_name_list"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/search_tool_box"
+            android:divider="@color/colorAccentYellow"
+            android:dividerHeight="1px"
+            android:background="@drawable/border_gray"
+            android:layout_marginBottom="8dp"
+            android:layout_alignParentStart="true"/>
+
+
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:id="@+id/gallery_list_not_visited_gallery"
+              android:text="@string/not_visited_gallery"
+              android:textColor="?android:attr/textColorSecondary"
+              android:layout_margin="20dp"
+    />
+    <ListView
+            android:layout_width="match_parent"
+            android:id="@+id/visited_gallery_name_list"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/search_gallery_name_list"
+            android:divider="@color/colorPrimaryLight"
+            android:dividerHeight="1px"
+            android:layout_alignParentStart="true"/>
+
+</LinearLayout>
+

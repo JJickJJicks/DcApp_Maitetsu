@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+            android:title="@string/setting_user_info_category">
+
+        <EditTextPreference
+                android:key="user_id"
+                android:title="@string/setting_user_id"/>
+
+        <EditTextPreference
+                android:key="user_pw"
+                android:title="@string/setting_user_pw"
+                android:password="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:title="@string/setting_image_category">
+
+        <CheckBoxPreference
+                android:key="movie_ignore"
+                android:defaultValue="false"
+                android:title="@string/setting_movie_check"/>
+        <CheckBoxPreference
+                android:key="image_check"
+                android:title="@string/setting_image_check"/>
+
+        <CheckBoxPreference
+                android:key="dccon_check"
+                android:title="@string/setting_dccon_check"/>
+
+        <CheckBoxPreference android:title="@string/touch_image_open"
+                            android:defaultValue="true"
+                            android:key="touch_image_open"/>
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+            android:title="@string/setting_filter_category">
+
+        <CheckBoxPreference
+                android:key="telcom_filter"
+                android:summary="댓글에만 적용됩니다"
+                android:title="@string/setting_telcom_filter"/>
+
+        <CheckBoxPreference
+                android:key="flow_filter"
+                android:dependency="telcom_filter"
+                android:title="@string/setting_flow_filter"/>
+        <Preference android:title="@string/filter_user_list_setting"
+                    android:key="filter_user_list"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/fast_login">
+        <CheckBoxPreference android:title="@string/fast_login_msg"
+                            android:defaultValue="true"
+                            android:key="fast_login"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/vib_category">
+        <CheckBoxPreference android:title="@string/vib_category_simple_article_tab"
+                            android:defaultValue="true"
+                            android:key="article_tab_vib"/>
+        <CheckBoxPreference android:title="@string/vib_category_article_close"
+                            android:defaultValue="true"
+                            android:key="article_close_vib"/>
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/other"
+                        android:key="other">
+
+        <CheckBoxPreference android:title="@string/background_color_dark"
+                            android:key="dark_theme"/>
+
+        <CheckBoxPreference android:title="@string/use_maru_viewer"
+                            android:defaultValue="false"
+                            android:key="maru_viewer"/>
+
+        <Preference android:title="@string/use_opensource"
+                    android:key="@string/use_opensource"/>
+    </PreferenceCategory>
+
+
+    <PreferenceCategory>
+        <Preference android:title="@string/setting_login"
+                    android:key="@string/setting_login"/>
+    </PreferenceCategory>
+
+    <!--
+        <PreferenceCategory
+        android:title="@string/use_opensource">
+        <Preference android:summary="SwipeBackLayout 1.0"/>
+        <Preference android:summary="Glide 3.7.0"/>
+        <Preference android:summary="Apache common-io 2.5"/>
+        <Preference android:summary="Lombok 1.16.16"/>
+        <Preference android:summary="Jsoup 1.10.2"/>
+        <Preference android:summary="Google json-simple 1.1.1"/>
+        </PreferenceCategory>
+    -->
+
+
+</PreferenceScreen>

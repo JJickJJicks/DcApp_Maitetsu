@@ -1,0 +1,155 @@
+<resources>
+    <string name="app_name">Maitetsu</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="error">오류가 발생했습니다.</string>
+    <string name="comment">[%1$d]</string>
+    <string name="view">조회 %1$d</string>
+    <string name="recommend">추천 %1$d</string>
+
+    <string name="other">그 외 : 다시 시작해야 적용됩니다</string>
+    <string name="maru_viewer_title">마루 뷰어</string>
+
+
+    <string name="title_gallery_list">갤러리 목록 및 검색</string>
+    <string name="title_article_list">%1$s 갤러리</string>
+    <string name="write_article_title_bar">%1$s 갤러리 : 글 쓰기</string>
+    <string name="modify_article_title_bar">%1$s 갤러리 : 글 수정</string>
+    <string name="read_article_title_bar">%1$s 갤러리 : 글 읽기</string>
+    <string name="title_my_article">내가 쓴 글</string>
+    <string name="title_recommend_article_title_bar">%1$s 갤러리 : 개념글</string>
+
+    <string name="open_mov">동영상 링크 열기</string>
+
+
+    <string name="search_button">검색</string>
+    <string name="search_close_button">검색결과 닫기</string>
+    <string name="close">닫기</string>
+    <string name="open">열기</string>
+    <string name="setting">설정</string>
+    <string name="not_visited_gallery">방문한 갤러리가 없습니다.\n갤러리를 검색해 방문하세요</string>
+    <string name="login_ok">로그인 되었습니다.</string>
+    <string name="login_failure">로그인에 실패했습니다.</string>
+
+    <string name="article_load_failure">게시물 내용을 가져오지 못했습니다.</string>
+    <string name="comment_reload_failure">댓글을 다시 가져오지 못했습니다.</string>
+
+    <string name="article_list_failure">게시물들을 가져오는데 실패했습니다.</string>
+    <string name="article_list_zero">결과가 없습니다.</string>
+    <string name="article_list_ok">게시물들을 가져왔습니다.</string>
+
+    <string name="recommend_article_list_ok">개념글 게시물들을 가져왔습니다.</string>
+    <string name="recommend_article_list_failure">개념글 게시물들을 가져오는데 실패했습니다.</string>
+    <string name="my_article_list_failure">내가 쓴 게시물들을 가져오는데 실패했습니다.</string>
+
+    <string name="gallery_search_failure">갤러리를 검색하는데 실패했습니다.</string>
+    <string name="article_write_complete">글이 등록되었습니다.</string>
+    <string name="article_write_failure">글 등록에 실패했습니다.</string>
+    <string name="article_write_image_upload_failure">이미지 업로드에 실패했습니다.</string>
+
+    <string name="article_write_title">제목</string>
+    <string name="article_write_content">내용</string>
+    <string name="article_write_add">첨부</string>
+    <string name="article_write_submit">등록</string>
+    <string name="delete">삭제</string>
+    <string name="cancle">취소</string>
+    <string name="ok">확인</string>
+    <string name="save">저장</string>
+    <string name="save_msg">저장되었습니다.</string>
+    <string name="filter_user_list_title">차단된 유저 리스트</string>
+    <string name="filter_user_list_setting">차단 유저 관리</string>
+    <string name="filter_user_list_dialog">이 유저를 차단하시겠습니까?</string>
+    <string name="filter_user_list_dialog_success">%1$s가 차단되었습니다.</string>
+    <string name="filter_user_list_dialog_failure">유저를 차단하는중 에러가 발생했습니다.</string>
+
+    <string name="comment_delete_dialog_text">정말 댓글을 삭제하시겠습니까?</string>
+    <string name="article_delete_dialog_text">정말 이 글을 삭제하시겠습니까?</string>
+
+    <string name="article_submit_dialog_text">글을 등록하시겠습니까?</string>
+
+
+    <string name="article_read_recommend_success">글을 추천했습니다.</string>
+    <string name="article_read_recommend_failure">글 추천에 실패했습니다.</string>
+
+    <string name="article_read_delete_success">글을 삭제했습니다.</string>
+    <string name="article_read_delete_failure">글 삭제에 실패했습니다.</string>
+    <string name="comment_delete_success">댓글을 삭제했습니다.</string>
+    <string name="comment_delete_failure">댓글 삭제에 실패했습니다.</string>
+
+    <string name="comment_submit_length">댓글을 입력하세요</string>
+    <string name="comment_submit_success">댓글을 추가했습니다.</string>
+    <string name="comment_submit_failure">댓글 추가에 실패했습니다.</string>
+
+    <string name="comment_dccon_submit_success">디시콘 댓글을 추가했습니다.</string>
+    <string name="comment_dccon_submit_failure">디시콘 댓글 추가에 실패했습니다.</string>
+
+
+    <string name="setting_user_info_category">유저 정보</string>
+    <string name="setting_user_id">갤로그 아이디</string>
+    <string name="setting_user_id_detail">로그인 시 사용할 아이디</string>
+    <string name="setting_user_pw">갤로그 비밀번호</string>
+    <string name="setting_user_pw_detail">로그인 시 사용할 비밀번호</string>
+    <string name="setting_login">설정을 적용하고 다시 로그인</string>
+
+    <string name="setting_image_attach_title">첨부할 이미지를 선택하세요</string>
+    <string name="setting_image_category">이미지와 영상</string>
+    <string name="setting_movie_check">영상 링크를 무시합니다</string>
+    <string name="setting_image_check">이미지를 바로 보지 않습니다</string>
+    <string name="setting_dccon_check">디시콘을 바로 보지 않습니다</string>
+
+    <string name="setting_filter_category">유저 차단</string>
+    <string name="setting_telcom_filter">통신사 IP를 차단합니다</string>
+    <string name="setting_flow_filter">모든 유동닉을 차단합니다</string>
+
+    <string name="image_loading">이미지 로드 중...</string>
+    <string name="image_load_failure">이미지를 읽어오는데 실패했습니다.\n인터넷 연결 상태나 파일 저장 권한을 확인해보세요.</string>
+    <string name="image_select_failure">이미지를 선택하지 못했습니다</string>
+    <string name="write_empty_msg">글 제목과 내용을 모두 적어야 합니다.</string>
+    <string name="image_permission_failure">이미지 첨부 권한이 없습니다.\n권한 설정을 확인해보세요.</string>
+
+    <string name="splash_login_keep">이전 로그인 정보를 사용합니다</string>
+    <string name="splash_login_expire">로그인 정보가 만료되었습니다.\n다시 로그인합니다.</string>
+    <string name="splash_login_try">로그인 중</string>
+    <string name="splash_login_success">로그인 성공</string>
+    <string name="splash_login_failure">로그인 실패</string>
+
+    <string name="dccon_list_load_try">내 디시콘 로드 중</string>
+    <string name="dccon_list_load_success">디시콘 로드 완료</string>
+    <string name="dccon_list_load_failure">디시콘 로드중 문제가 발생했습니다.\n인터넷 연결 상태나 사용자 정보를 확인해보세요.</string>
+
+
+    <string name="modify">수정</string>
+    <string name="article_modify_try_failure">글을 수정할 수 없습니다.</string>
+
+
+
+    <string name="exit_app">버튼을 한번 더 누르면 종료됩니다.</string>
+
+    <string name="comment_hint">댓글</string>
+    <string name="comment_refresh_button">댓글 새로고침</string>
+    <string name="comment_refresh_msg">댓글을 다시 가져왔습니다.</string>
+    <string name="use_opensource">사용된 오픈소스</string>
+
+
+    <string name="fast_login">빠른 로그인</string>
+    <string name="fast_login_msg">이전 로그인 정보를 사용합니다</string>
+    <string name="image_save_msg">이 이미지를 저장하시겠습니까?</string>
+
+    <string name="vib_category">진동</string>
+    <string name="vib_category_simple_article_tab">글을 터치하면 진동으로 알립니다</string>
+    <string name="vib_category_article_close">글을 닫을 때 진동으로 알립니다</string>
+
+    <string name="search_hint">검색할 내용</string>
+    <string name="search_title">- 검색 결과</string>
+
+    <string name="image_category">이미지</string>
+    <string name="touch_image_open">이미지를 터치하면 기본 앱으로 엽니다</string>
+
+    <string name="use_maru_viewer">마루 뷰어를 사용합니다</string>
+
+    <string name="must_restart">다시 시작해야 정상적으로 적용됩니다</string>
+
+    <string name="background_color_category">색상</string>
+    <string name="background_color_dark">어두운 배경을 사용합니다</string>
+</resources>

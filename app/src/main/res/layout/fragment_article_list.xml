@@ -1,0 +1,50 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".ui.MainActivity">
+
+
+    <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/article_list_swipe_layout"
+            android:padding="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_marginLeft="0dp" android:layout_marginRight="0dp"
+            android:layout_alignParentTop="true" android:layout_alignParentStart="true">
+
+    <ListView
+            android:layout_width="match_parent"
+            android:id="@+id/article_list"
+            android:layout_height="match_parent"
+            android:divider="@color/colorPrimaryLight"
+            android:dividerHeight="1px"
+            android:layout_alignParentStart="true"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/search_article_continue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccentDark"
+            android:tint="@color/colorWhite"
+            android:layout_margin="@dimen/fab_margin"
+            android:visibility="invisible"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            app:srcCompat="@drawable/fast_forward"/>
+
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/colorWhite"
+            android:background="@color/colorAccentDark"
+            app:srcCompat="@drawable/article_write_icon"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"/>
+
+</RelativeLayout>
