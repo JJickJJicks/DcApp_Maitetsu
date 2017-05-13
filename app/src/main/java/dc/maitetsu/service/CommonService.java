@@ -4,7 +4,6 @@ import dc.maitetsu.models.UserInfo;
 import org.jsoup.nodes.Element;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-21
  */
 class CommonService {

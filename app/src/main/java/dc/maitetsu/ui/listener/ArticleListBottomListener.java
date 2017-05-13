@@ -8,7 +8,6 @@ import dc.maitetsu.service.ServiceProvider;
 import dc.maitetsu.ui.viewmodel.HasViewModelFragment;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  *
  * 게시물 하단 다음 페이지 리스너

@@ -14,7 +14,6 @@ import dc.maitetsu.ui.adapter.SearchGalleryListAdapter;
 import dc.maitetsu.ui.viewmodel.GalleryListViewModel;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-25
  *
  * 갤러리 리스트의 비 동적인 부분을 처리하는 클래스

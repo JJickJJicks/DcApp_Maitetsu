@@ -4,7 +4,6 @@ import android.app.Application;
 import com.bumptech.glide.Glide;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-29
  *
  * 어플리케이션 설정 클래스.

@@ -6,7 +6,6 @@ import android.support.v4.view.ViewPager;
 import dc.maitetsu.R;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-05-02
  */
 public class SelectViewPage {

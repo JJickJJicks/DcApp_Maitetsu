@@ -11,10 +11,9 @@ import dc.maitetsu.utils.MainUIThread;
 import dc.maitetsu.ui.adapter.FilterUserListAdapter;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-25
  *
- * 차단 유저 리스트 프레젠터.
+ * 차단 유저 리스트 뷰모델.
  */
 public class FilterUserListViewModel {
   private FilterUserListActivity activity;

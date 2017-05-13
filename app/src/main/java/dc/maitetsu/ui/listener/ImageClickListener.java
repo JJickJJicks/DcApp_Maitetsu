@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.view.View;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-28
  * 이미지를 클릭하면 기본 갤러리 앱으로 여는 리스너
  */

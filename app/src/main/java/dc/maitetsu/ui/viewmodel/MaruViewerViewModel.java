@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-29
  *
  * 마루 만화 뷰 프레젠터

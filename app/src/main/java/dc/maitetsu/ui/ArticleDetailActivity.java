@@ -6,18 +6,23 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
+import dc.maitetsu.data.ImageData;
 import dc.maitetsu.enums.RequestCodes;
 import dc.maitetsu.enums.ResultCodes;
 import dc.maitetsu.models.ArticleDetail;
 import dc.maitetsu.service.ServiceProvider;
 import dc.maitetsu.ui.viewmodel.ArticleDetailViewModel;
+import dc.maitetsu.utils.ThreadPoolManager;
 import dc.maitetsu.utils.VibrateUtils;
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
@@ -31,6 +36,9 @@ public class ArticleDetailActivity extends SwipeBackActivity {
   private Context context;
   private ArticleDetail articleDetail;
   @BindView(R.id.article_detail_dccon_layout) LinearLayout dcconLayout;
+  @BindView(R.id.article_detail_scroll)  ScrollView scrollView;
+  private int scrollY = 0;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +101,6 @@ public class ArticleDetailActivity extends SwipeBackActivity {
   }
 
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-  }
 
   @Override
   public void onBackPressed() {
@@ -119,6 +123,8 @@ public class ArticleDetailActivity extends SwipeBackActivity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    ThreadPoolManager.shutdownContentEc();
+    ImageData.clearHoldImageBytes();
   }
 
 }

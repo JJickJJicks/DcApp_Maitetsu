@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-21
  */
 

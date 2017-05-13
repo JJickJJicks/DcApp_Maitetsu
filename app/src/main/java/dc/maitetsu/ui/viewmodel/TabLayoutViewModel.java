@@ -15,7 +15,6 @@ import dc.maitetsu.ui.adapter.MyPagerAdapter;
 import dc.maitetsu.ui.listener.TabEventListener;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  *
  *  탭 레이아웃

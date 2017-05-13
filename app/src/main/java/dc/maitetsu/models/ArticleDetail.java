@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-21
  */
 
@@ -21,10 +20,6 @@ public class ArticleDetail implements Serializable{
   private int viewCount;
   private String url;
   private String modifyUrl;
-
-//  private List<String> images = new ArrayList<>();
-//  private List<String> content = new ArrayList<>();
-//  private List<String> embeds = new ArrayList<>();
 
   private List<Comment> comments = new ArrayList<>();
   private List<ContentData> contentDataList;
@@ -49,7 +44,6 @@ public class ArticleDetail implements Serializable{
 
 
   /**
-   * @author Park Hyo Jun
    * @since 2017-04-21
    */
   @Data
@@ -65,7 +59,6 @@ public class ArticleDetail implements Serializable{
   }
 
   /**
-   * @author Park Hyo Jun
    * @since 2017-04-21
    */
   @Data
@@ -87,7 +80,6 @@ public class ArticleDetail implements Serializable{
   }
 
   /**
-   * @author Park Hyo Jun
    * @since 2017-04-22
    */
 
@@ -103,7 +95,6 @@ public class ArticleDetail implements Serializable{
   }
 
   /**
-   * @author Park Hyo Jun
    * @since 2017-04-22
    */
   @Data

@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.Target;
 import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
@@ -32,12 +34,14 @@ import dc.maitetsu.ui.MaruViewerDetailActivity;
 import dc.maitetsu.ui.SplashActivity;
 import dc.maitetsu.ui.fragment.GalleryListFragment;
 import dc.maitetsu.ui.fragment.MaruViewerFragment;
+import dc.maitetsu.ui.listener.ImageViewerListener;
 import dc.maitetsu.ui.viewmodel.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  * UI 쓰레드에서 해야하는 작업을 정의한 클래스.
  */
@@ -325,7 +329,7 @@ public class MainUIThread {
     final int prevCount = presenter.getCommentLayoutCount();
     presenter.addComments(activity, presenter, newComments);
 
-    ThreadPoolManager.getActivityEc().submit(new Runnable() {
+    ThreadPoolManager.getContentEc().submit(new Runnable() {
       @Override
       public void run() {
         activity.runOnUiThread(new Runnable() {
@@ -347,7 +351,9 @@ public class MainUIThread {
    * @param imageView the image view
    * @param bytes     the bytes
    */
-  static void setImageView(final Activity activity, final ImageView imageView, final byte[] bytes) {
+  static void setImageView(final Activity activity,
+                           final ImageView imageView,
+                           final byte[] bytes) {
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -355,11 +361,39 @@ public class MainUIThread {
                 .getApplicationContext())
                 .load(bytes)
                 .skipMemoryCache(true)
-//                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(imageView);
       }
     });
   }
+
+
+  /**
+   * 이미지뷰에 이미지를 추가하는 메소드.
+   * 원본 크기로 가져온다.
+   *
+   * @param activity  the activity
+   * @param imageView the image view
+   * @param bytes     the bytes
+   */
+  static void setImageViewOriginalSize(final Activity activity,
+                           final ImageView imageView,
+                           final byte[] bytes){
+    activity.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        Glide.with(activity
+                .getApplicationContext())
+                .load(bytes)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                .into(imageView);
+      }
+    });
+  }
+
+
 
   /**
    * activity를 종료하는 메소드
@@ -384,6 +418,8 @@ public class MainUIThread {
                                   final LinearLayout imageLayout,
                                   final List<ImageView> imageViews,
                                   final MaruModel maruModel) {
+
+    final Map<Integer, byte[]> imageBytes = new HashMap<>();
 
     activity.runOnUiThread(new Runnable() {
       @Override
@@ -415,7 +451,6 @@ public class MainUIThread {
           }
         });
 
-
         // 마지막 닫기 버튼
         Button closeButton = new Button(activity);
         closeButton.setLayoutParams(btnLayout);
@@ -431,13 +466,15 @@ public class MainUIThread {
 
         imageLayout.removeAllViews();
 
-        for (String imageUrl : maruModel.getImagesUrls()) {
+        for(int i=0; i < maruModel.getImagesUrls().size(); i++ ) {
+          imageBytes.put(i, null); // initialize
+          String imageUrl = maruModel.getImagesUrls().get(i);
           ImageView imageView = new ImageView(activity);
           imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
           imageView.setLayoutParams(il);
           imageViews.add(imageView);
-          ContentUtils.loadBitmapFromUrl(activity, imageUrl, imageView);
-
+          ContentUtils.loadBitmapFromUrl(activity, i, imageBytes, imageUrl, imageView);
+          imageView.setOnClickListener(ImageViewerListener.get(activity, maruModel.getNo(), i, imageBytes, true));
           imageLayout.addView(imageView);
         }
 

@@ -4,10 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-24
  *
- * 통신사 아이피를 가지고있는 클래스
+ * 통신사 아이피 클래스
  */
 public class TelcomIp {
 

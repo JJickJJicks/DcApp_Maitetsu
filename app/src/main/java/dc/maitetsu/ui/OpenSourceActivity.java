@@ -45,6 +45,8 @@ public class OpenSourceActivity extends AppCompatActivity {
                                   "Apache common-io 2.5",
                                   "Lombok 1.16.16",
                                   "Jsoup 1.10.2",
+                                  "PhotoView 1.2.4",
+                                  "Simple Magic 1.11",
                                   "Google json-simple 1.1.1"};
 
     ArrayList<Map<String, String>> dataList = new ArrayList<>();

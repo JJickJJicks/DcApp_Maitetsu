@@ -8,7 +8,6 @@ import dc.maitetsu.service.MaruServiceProvider;
 import dc.maitetsu.ui.fragment.MaruViewerFragment;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  *
  * 마루뷰어 하단, 다음페이지

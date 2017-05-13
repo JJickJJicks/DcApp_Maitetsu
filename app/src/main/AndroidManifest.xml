@@ -8,15 +8,15 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
+            android:name=".BaseApplication"
             android:allowBackup="true"
             android:icon="@drawable/icon"
             android:label="@string/app_name"
-            android:supportsRtl="true"
             android:largeHeap="true"
-            android:name="dc.maitetsu.BaseApplication"
+            android:supportsRtl="true"
             android:theme="@style/BasicTheme">
         <activity
-                android:name="dc.maitetsu.ui.MainActivity"
+                android:name=".ui.MainActivity"
                 android:label="@string/app_name"
                 android:screenOrientation="portrait"
                 android:theme="@style/BasicTheme.NoTranslucent"
@@ -28,35 +28,42 @@
             </intent-filter>
         </activity>
         <activity
-                android:name="dc.maitetsu.ui.ArticleWriteActivity"
+                android:name=".ui.ArticleWriteActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/BasicTheme">
         </activity>
         <activity
-                android:name="dc.maitetsu.ui.SplashActivity"
+                android:name=".ui.SplashActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/BasicTheme">
         </activity>
         <activity
-                android:name="dc.maitetsu.ui.ArticleDetailActivity"
+                android:name=".ui.ArticleDetailActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/BasicTheme"
                 android:windowSoftInputMode="stateHidden">
         </activity>
         <activity
-                android:name="dc.maitetsu.ui.FilterUserListActivity"
+                android:name=".ui.FilterUserListActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/BasicTheme"
                 android:windowSoftInputMode="stateHidden">
         </activity>
-        <activity android:name="dc.maitetsu.ui.OpenSourceActivity"
-                  android:screenOrientation="portrait"
-                  android:theme="@style/BasicTheme"
-                  android:windowSoftInputMode="stateHidden">
+        <activity
+                android:name=".ui.OpenSourceActivity"
+                android:screenOrientation="portrait"
+                android:theme="@style/BasicTheme"
+                android:windowSoftInputMode="stateHidden">
         </activity>
-        <activity android:name="dc.maitetsu.ui.MaruViewerDetailActivity"
+        <activity
+                android:name=".ui.MaruViewerDetailActivity"
+                android:screenOrientation="portrait"
+                android:theme="@style/BasicTheme"
+                android:windowSoftInputMode="stateHidden">
+        </activity>
+        <activity android:name=".ui.ImageViewActivity"
                   android:screenOrientation="portrait"
-                  android:theme="@style/BasicTheme"
+                  android:theme="@style/DarkTheme"
                   android:windowSoftInputMode="stateHidden">
         </activity>
     </application>

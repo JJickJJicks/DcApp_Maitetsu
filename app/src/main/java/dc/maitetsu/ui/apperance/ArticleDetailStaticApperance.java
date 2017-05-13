@@ -23,7 +23,6 @@ import dc.maitetsu.utils.KeywordUtils;
 import dc.maitetsu.utils.UserTypeManager;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-25
  *
  *  댓글과 글 내용을 제외한 비 동적인 요소를 설정하는 클래스

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-24
  *
  * 차단된 유저 글을 지워버림

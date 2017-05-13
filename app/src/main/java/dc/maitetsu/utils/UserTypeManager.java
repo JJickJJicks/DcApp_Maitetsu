@@ -6,7 +6,6 @@ import dc.maitetsu.R;
 import dc.maitetsu.models.UserInfo;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-24
  *
  * 유저 타입을 설정해줌

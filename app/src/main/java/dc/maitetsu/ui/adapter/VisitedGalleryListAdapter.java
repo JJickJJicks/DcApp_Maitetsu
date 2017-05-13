@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-23
  *
  * 내가 방문한 갤러리 리스트에 사용되는 어댑터
@@ -109,7 +108,6 @@ public class VisitedGalleryListAdapter extends BaseAdapter {
         currentData.getMyGalleryList().add(0, target);
         saveVisitedGallerys();
         SelectViewPage.select(fragment.getActivity(), 1);
-//        TabLayoutViewModel.getInstance().setTabAndTitle(1, currentData);
       }
     });
   }

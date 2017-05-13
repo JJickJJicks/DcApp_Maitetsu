@@ -23,7 +23,6 @@ import dc.maitetsu.ui.listener.ArticleListSwipeRefreshListener;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  *
  * 게시글 목록 프레젠터

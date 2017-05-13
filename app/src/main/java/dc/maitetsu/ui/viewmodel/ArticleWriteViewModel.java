@@ -106,6 +106,8 @@ public class ArticleWriteViewModel {
 
     if(articleModify != null) { // 수정모드면 이전 등록된 이미지를 표기한다
       for(final ArticleModify.AttachFile file : articleModify.getAttachFileList()) {
+        if(articleModify.getDeleteFileList().contains(file.getFno())) continue;
+
         final TextView textView = new TextView(activity);
         textView.setText(file.getName());
         textView.setTextAppearance(activity, R.style.List_subText);

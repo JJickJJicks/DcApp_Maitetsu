@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  */
 @Data

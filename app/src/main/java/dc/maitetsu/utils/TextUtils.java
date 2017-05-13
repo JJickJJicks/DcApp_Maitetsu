@@ -1,7 +1,6 @@
 package dc.maitetsu.utils;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-05-07
  */
 public class TextUtils {

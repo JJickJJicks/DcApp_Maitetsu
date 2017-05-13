@@ -13,7 +13,6 @@ import static android.support.v7.preference.PreferenceManager.getDefaultSharedPr
 /**
  * 사용자 정보를 저장하고 로드 할 수 있는 메소드를 지원하는 클래스
  *
- * @author Park Hyo Jun
  * @since 2017-04-24
  */
 public class CurrentDataManager {

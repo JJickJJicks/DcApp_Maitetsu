@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-29
  */
 public class MaruListAdapter extends BaseAdapter {
@@ -81,7 +80,7 @@ public class MaruListAdapter extends BaseAdapter {
     final MaruSimpleModel model = maruSimpleModels.get(position);
 
     // 섬네일 로드
-    ContentUtils.loadBitmapFromUrl(fragment.getActivity(), model.getThumbUrl(), thumb);
+    ContentUtils.loadBitmapFromUrl(fragment.getActivity(), 0, null, model.getThumbUrl(), thumb);
     viewModel.getThumbList().add(thumb);
 
     // 제목 날짜

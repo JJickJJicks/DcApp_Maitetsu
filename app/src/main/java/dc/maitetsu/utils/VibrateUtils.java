@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Vibrator;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-26
  *
  * 부르르 진동

@@ -18,17 +18,16 @@ import java.util.List;
 /**
  *  글 등록 확인 다이얼로그
  *
- * @author Park Hyo Jun
  * @since 2017-04-24
  */
 public class ArticleSubmitDialogFragment extends DialogFragment {
-  public String articleTitle;
-  public String articleContent;
-  public ArticleWriteActivity articleWriteActivity;
-  public List<File> attachFiles;
-  public Button submitButton;
-  public ArticleModify articleModify;
-  public CurrentData currentData;
+  private String articleTitle;
+  private String articleContent;
+  private ArticleWriteActivity articleWriteActivity;
+  private List<File> attachFiles;
+  private Button submitButton;
+  private ArticleModify articleModify;
+  private CurrentData currentData;
 
   public static ArticleSubmitDialogFragment newInstance(ArticleWriteActivity activity,
                                                         String articleTitle,

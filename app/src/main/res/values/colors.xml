@@ -21,4 +21,7 @@
     <color name="darkThemeGray">#767676</color>
     <color name="darkThemeLightBackground">#363b3f</color>
     <color name="darkThemeBlue">#3982a2</color>
+
+    <color name="imageViewTools">#b000</color>
+
 </resources>

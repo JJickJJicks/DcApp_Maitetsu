@@ -8,7 +8,6 @@ import dc.maitetsu.ui.viewmodel.HasViewModelFragment;
 import dc.maitetsu.utils.VibrateUtils;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-23
  *
  * 게시물 목록을 눌렀을 때 이벤트 처리

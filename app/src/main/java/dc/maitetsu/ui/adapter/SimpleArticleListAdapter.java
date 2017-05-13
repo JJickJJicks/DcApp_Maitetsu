@@ -24,7 +24,6 @@ import dc.maitetsu.utils.UserTypeManager;
 import java.util.ArrayList;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  *
  * 갤러리의 글 목록을 관리하는 어댑터

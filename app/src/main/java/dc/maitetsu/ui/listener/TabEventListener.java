@@ -17,9 +17,9 @@ import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
 import dc.maitetsu.utils.MainUIThread;
 import dc.maitetsu.ui.adapter.MyPagerAdapter;
+import dc.maitetsu.utils.ThreadPoolManager;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  *
  * 탭바를 눌렀을 때 리스너
@@ -91,7 +91,10 @@ public class TabEventListener {
   // 탭 전환시
   private void setTabAutoRefresh(TabLayout.Tab tab) {
 
+
     if ((int) tab.getTag() == R.string.title_article_list) { // 일반글
+      // 이전 작업 셧다운
+      ThreadPoolManager.shutdownServiceEc();
       searchLayout.setVisibility(View.VISIBLE);
       searchBtn.setVisibility(View.VISIBLE);
       searchBtn.setOnClickListener(SearchBtnListener.get(pagerAdapter.getSimpleArticleListFragment(),
@@ -99,9 +102,13 @@ public class TabEventListener {
       MainUIThread.refreshArticleListView(pagerAdapter.getSimpleArticleListFragment(), true);
 
     }else if((int) tab.getTag() == R.string.maru_viewer_title) { // 실험실
+      // 이전 작업 셧다운
+      ThreadPoolManager.shutdownServiceEc();
       MainUIThread.refreshMaruListView(pagerAdapter.getDcmysDcMysFragment(), true);
 
     } else if ((int) tab.getTag() == R.string.title_recommend_article_title_bar) { // 개념글
+      // 이전 작업 셧다운
+      ThreadPoolManager.shutdownServiceEc();
       MainUIThread.refreshArticleListView(pagerAdapter.getRecommendArticleListFragment(), true);
     }
   }

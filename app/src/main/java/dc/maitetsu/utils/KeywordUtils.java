@@ -8,9 +8,7 @@ import android.text.style.ForegroundColorSpan;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-28
- * <p>
  * 검색 단어 글자 색상 처리
  */
 public class KeywordUtils {

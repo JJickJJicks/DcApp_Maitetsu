@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-23
  *
  * 갤러리명을 검색했을 때 나오는 리스트 어댑터

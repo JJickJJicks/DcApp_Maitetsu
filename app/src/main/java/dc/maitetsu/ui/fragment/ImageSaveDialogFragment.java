@@ -13,7 +13,6 @@ import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.ui.ArticleDetailActivity;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-24
  *
  * 이미지 저장 여부 확인 프래그먼트.

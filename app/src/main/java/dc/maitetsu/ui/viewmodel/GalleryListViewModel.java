@@ -17,7 +17,6 @@ import dc.maitetsu.ui.apperance.GalleryListStaticApperance;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  */
 public class GalleryListViewModel {

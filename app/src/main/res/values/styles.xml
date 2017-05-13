@@ -1,5 +1,10 @@
 <resources>
 
+    <style name="BasicTheme.NoStatus.NoAction" parent="BasicTheme">
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
     <style name="BasicTheme.NoTranslucent" parent="BasicTheme">
         <item name="android:windowIsTranslucent">false</item>
     </style>

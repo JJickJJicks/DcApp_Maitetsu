@@ -12,7 +12,6 @@ import dc.maitetsu.models.UserInfo;
 import dc.maitetsu.utils.MainUIThread;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-25
  *
  * 유저 차단 확인 메시지 다이얼로그.

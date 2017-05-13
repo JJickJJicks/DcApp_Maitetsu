@@ -26,7 +26,6 @@ import java.io.File;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-21
  */
 public class ServiceProvider {

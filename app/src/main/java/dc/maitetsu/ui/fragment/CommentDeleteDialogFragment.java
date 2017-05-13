@@ -22,10 +22,9 @@ import dc.maitetsu.ui.viewmodel.ArticleDetailViewModel;
  */
 public class CommentDeleteDialogFragment extends DialogFragment {
     public ArticleDetailActivity activity;
-    public ArticleDetailViewModel presenter;
-    public LinearLayout commentLayout;
-    public String deleteCode;
-    public String articleUrl;
+    private ArticleDetailViewModel presenter;
+    private String deleteCode;
+    private String articleUrl;
     public CurrentData currentData;
     public ArticleDetail articleDetail;
 
@@ -42,7 +41,6 @@ public class CommentDeleteDialogFragment extends DialogFragment {
       fragment.deleteCode = deleteCode;
       fragment.activity = articleDetailActivity;
       fragment.presenter = presenter;
-      fragment.commentLayout = commentLayout;
       fragment.articleUrl = articleUrl;
       return fragment;
     }

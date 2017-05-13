@@ -101,19 +101,6 @@ public class SettingFragment extends PreferenceFragmentCompat {
       }
     });
 
-    final Preference touchImage = fragment.getPreferenceManager()
-            .findPreference("touch_image_open");
-    touchImage.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-      @Override
-      public boolean onPreferenceClick(Preference preference) {
-        currentData = CurrentDataManager.getInstance(fragment.getContext());
-        currentData.setTouchImageOpen(!currentData.isTouchImageOpen());
-        return false;
-      }
-    });
-
-
-
 
     final Preference dcconCheck = fragment.getPreferenceManager()
             .findPreference("dccon_check");

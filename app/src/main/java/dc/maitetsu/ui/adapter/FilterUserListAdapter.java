@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-25
  *
  * 설정의 차단 유저 관리 액티비티에서 사용되는 어댑터.

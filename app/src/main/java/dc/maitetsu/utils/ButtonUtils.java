@@ -8,7 +8,6 @@ import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-27
  *
  * 백버튼 두번눌러야 꺼지게하는 메소드

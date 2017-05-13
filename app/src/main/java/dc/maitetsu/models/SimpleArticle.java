@@ -5,7 +5,6 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-21
  */
 

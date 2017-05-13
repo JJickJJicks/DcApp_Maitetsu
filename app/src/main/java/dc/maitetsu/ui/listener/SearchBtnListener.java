@@ -9,7 +9,6 @@ import dc.maitetsu.ui.viewmodel.HasViewModelFragment;
 import dc.maitetsu.utils.MainUIThread;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-28
  *
  * 검색 툴바 세터.

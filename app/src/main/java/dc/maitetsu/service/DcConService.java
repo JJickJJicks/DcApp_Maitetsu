@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  */
 enum DcConService {

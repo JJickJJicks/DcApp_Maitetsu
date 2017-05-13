@@ -13,7 +13,6 @@ import dc.maitetsu.service.ServiceProvider;
 import dc.maitetsu.ui.ArticleDetailActivity;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-24
  *
  * 글 삭제 확인 다이얼로그
@@ -22,7 +21,7 @@ import dc.maitetsu.ui.ArticleDetailActivity;
 public class ArticleDeleteDialogFragment extends DialogFragment {
 
     public ArticleDetail articleDetail;
-    public ArticleDetailActivity articleDetailActivity;
+    private ArticleDetailActivity articleDetailActivity;
     public CurrentData currentData;
 
     public ArticleDeleteDialogFragment(){}

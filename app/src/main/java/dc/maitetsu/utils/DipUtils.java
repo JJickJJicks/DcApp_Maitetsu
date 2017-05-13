@@ -5,7 +5,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-27
  *
  * Pixel <ㅡ> Dip를 변환하는 메소드

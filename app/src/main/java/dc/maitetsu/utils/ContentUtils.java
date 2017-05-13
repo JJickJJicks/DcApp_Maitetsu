@@ -11,28 +11,25 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Map;
 
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-24
- ㅋ
+ * ㅋ
  * 이미지 로드를 처리하는 클래스.
- *
  */
 public class ContentUtils {
 
 
-
-
   public static void clearContext(final Context context) {
-        ThreadPoolManager.getServiceEc().submit(new Runnable() {
-          @Override
-          public void run() {
-            Glide.get(context).clearDiskCache();
-            Glide.get(context).clearMemory();
-          }
-        });
+    ThreadPoolManager.getServiceEc().submit(new Runnable() {
+      @Override
+      public void run() {
+        Glide.get(context).clearDiskCache();
+        Glide.get(context).clearMemory();
+      }
+    });
   }
 
   /**
@@ -68,22 +65,55 @@ public class ContentUtils {
    * @param imageView the image view
    */
   public static void loadBitmapFromUrl(final Activity activity,
+                                       final int position,
+                                       final Map<Integer, byte[]> imageBytes,
                                        final String url,
                                        final ImageView imageView) {
+
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
           InputStream in = (InputStream) new URL(url).getContent();
-          MainUIThread.setImageView(activity, imageView, IOUtils.toByteArray(in));
+          byte[] bytes = IOUtils.toByteArray(in);
+          if (imageBytes != null) imageBytes.put(position, bytes);
+          MainUIThread.setImageView(activity, imageView, bytes);
           in.close();
         } catch (Exception e) {
-          MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
+          if (!e.getMessage().equals("thread interrupted")) // 쓰레드 인터럽트 예외는 무시
+            MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
         }
       }
     });
-
   }
+
+
+  /**
+   * 이미지뷰에서 사용된다.
+   * 바이트 배열을 이미지처리한다.
+   * 개별 쓰레드 사용됨.
+   *
+   * @param activity  the activity
+   * @param bytes     the bytes
+   * @param imageView the image view
+   */
+  public static void loadBitMap(final Activity activity,
+                                final byte[] bytes,
+                                final ImageView imageView) {
+
+    ThreadPoolManager.getImageViewEc().submit(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          MainUIThread.setImageViewOriginalSize(activity, imageView, bytes);
+        } catch (Exception e) {
+          if (!e.getMessage().equals("thread interrupted")) // 쓰레드 인터럽트 예외는 무시
+            MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
+        }
+      }
+    });
+  }
+
 
   /**
    * 먼저 저장된 이미지인지 체크하고 없으면 URL에서 받아 저장한 후
@@ -103,8 +133,8 @@ public class ContentUtils {
           byte[] bytes = getOrSave(activity, url);
           MainUIThread.setImageView(activity, imageView, bytes);
         } catch (Exception e) {
-          Log.e("err", e.getMessage() + "we");
-          MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
+          if (!e.getMessage().equals("thread interrupted")) // 쓰레드 인터럽트 예외는 무시
+            MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
         }
       }
     });

@@ -22,15 +22,15 @@ import dc.maitetsu.service.ServiceProvider;
 import dc.maitetsu.ui.ArticleDetailActivity;
 import dc.maitetsu.ui.apperance.ArticleDetailStaticApperance;
 import dc.maitetsu.ui.fragment.CommentDeleteDialogFragment;
-import dc.maitetsu.ui.fragment.ImageSaveDialogFragment;
 import dc.maitetsu.ui.listener.FilterUserLongClickListener;
-import dc.maitetsu.ui.listener.ImageClickListener;
+import dc.maitetsu.ui.listener.ImageViewerListener;
 import dc.maitetsu.utils.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-23
  */
 public class ArticleDetailViewModel {
@@ -43,6 +43,7 @@ public class ArticleDetailViewModel {
   private ArticleDetailViewModel viewModel;
   public EditText commentText;
   public ImageView deleteButton;
+  private Map<Integer, byte[]> imageBytes;
 
   public ArticleDetailViewModel(ArticleDetailActivity articleDetailActivity,
                                 ArticleDetail articleDetail, String articleUrl) {
@@ -54,6 +55,8 @@ public class ArticleDetailViewModel {
     this.commentText = (EditText) articleDetailActivity.findViewById(R.id.article_detail_comment);
     this.viewModel = this;
     this.currentData = CurrentDataManager.getInstance(articleDetailActivity);
+    this.imageBytes = new HashMap<>();
+
 
     setMyDcconList(articleDetailActivity, currentData);
     new ArticleDetailStaticApperance(articleDetailActivity, this, articleDetail, articleUrl, currentData)
@@ -73,6 +76,7 @@ public class ArticleDetailViewModel {
 
     int dp15 = DipUtils.getDp(res, 15);
     int dp5 = DipUtils.getDp(res, 5);
+    int imagePosition = 0;
     contentLayout.removeAllViews();
 
 
@@ -82,7 +86,7 @@ public class ArticleDetailViewModel {
       }
 
       else if(!data.getImageUrl().isEmpty()) {
-        addImageContent(activity, contentLayout, data);
+        addImageContent(activity, imagePosition++, contentLayout, data);
       }
 
       else if(!data.getEmbedUrl().isEmpty()
@@ -100,7 +104,7 @@ public class ArticleDetailViewModel {
                                  final LinearLayout.LayoutParams webViewParams,
                                  final ArticleDetail.ContentData data) {
 
-    ThreadPoolManager.getActivityEc().submit(new Runnable() { // 단순히 처리 순서를 위해 쓰레드 사용함
+    ThreadPoolManager.getContentEc().submit(new Runnable() { // 단순히 처리 순서를 위해 쓰레드 사용함
       @Override
       public void run() {
         activity.runOnUiThread(new Runnable() {
@@ -122,7 +126,7 @@ public class ArticleDetailViewModel {
                               final int dp5,
                               final ArticleDetail.ContentData data) {
 
-    ThreadPoolManager.getActivityEc().submit(new Runnable() {
+    ThreadPoolManager.getContentEc().submit(new Runnable() {
       @Override
       public void run() {
           final TextView textView = new TextView(activity);
@@ -159,10 +163,11 @@ public class ArticleDetailViewModel {
 
   // 이미지 처리
   private void addImageContent(final Activity activity,
+                               final int imagePostion,
                                final LinearLayout layout,
                                final ArticleDetail.ContentData data) {
 
-    ThreadPoolManager.getActivityEc().submit(new Runnable() {
+    ThreadPoolManager.getContentEc().submit(new Runnable() {
       @Override
       public void run() {
 
@@ -177,25 +182,12 @@ public class ArticleDetailViewModel {
         final ImageView realImageView = (ImageView) view.findViewById(R.id.article_item_real_img);
         realImageView.setDuplicateParentStateEnabled(true);
 
-        // 첨부된 이미지를 클릭하면 기본 갤러리 앱으로 열기
-        if (currentData.isTouchImageOpen()) {
-          String linkUrl = imageUrl;
-          if (!data.getLinkUrl().isEmpty()) linkUrl = data.getLinkUrl();
-          realImageView.setOnClickListener(ImageClickListener.get(articleDetailActivity, linkUrl));
-        }
+        imageBytes.put(imagePostion, null); // 이미지 갯수 설정
 
-        // 첨부된 이미지를 꾹 누르면 저장 확인 다이얼로그를 띄움.
-        realImageView.setOnLongClickListener(new View.OnLongClickListener() {
-          @Override
-          public boolean onLongClick(View view) {
-            String linkUrl = imageUrl;
-            if (!data.getLinkUrl().isEmpty()) linkUrl = data.getLinkUrl();
-            VibrateUtils.call(articleDetailActivity, VibrateUtils.VIBRATE_DURATION);
-            ImageSaveDialogFragment.newInstance(articleDetailActivity, linkUrl, currentData)
-                    .show(articleDetailActivity.getFragmentManager(), "saveDialog");
-            return false;
-          }
-        });
+        // 새로운 이미지 뷰어 클릭 리스너
+        realImageView.setOnClickListener(ImageViewerListener.get(activity,
+                                                            articleDetail.getCommentWriteData().getNo(),
+                                                            imagePostion, imageBytes, false));
 
         final ImageView prevImage = (ImageView) view.findViewById(R.id.article_item_prev_img);
         prevImage.setDuplicateParentStateEnabled(true);
@@ -204,12 +196,12 @@ public class ArticleDetailViewModel {
             @Override
             public void onClick(View view) {
               prevImage.setVisibility(View.GONE);
-              ContentUtils.loadBitmapFromUrl(articleDetailActivity, imageUrl, realImageView);
+              ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePostion, imageBytes, imageUrl, realImageView);
             }
           });
         } else {
           prevImage.setVisibility(View.GONE);
-          ContentUtils.loadBitmapFromUrl(articleDetailActivity, imageUrl, realImageView);
+          ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePostion, imageBytes, imageUrl, realImageView);
         }
 
         activity.runOnUiThread(new Runnable() {
@@ -309,7 +301,7 @@ public class ArticleDetailViewModel {
       addCommentView(activity, viewModel, layoutParams, commentLayout, comment);
 
     // 댓글 새로고침 버튼
-    ThreadPoolManager.getActivityEc().submit(new Runnable() {
+    ThreadPoolManager.getContentEc().submit(new Runnable() {
       @Override
       public void run() {
         final Button btn = getRefreshButton(articleDetailActivity);
@@ -357,7 +349,7 @@ public class ArticleDetailViewModel {
                               final LinearLayout commentLayout,
                               final Comment comment) {
 
-    ThreadPoolManager.getActivityEc().submit(new Runnable() {
+    ThreadPoolManager.getContentEc().submit(new Runnable() {
       @Override
       public void run() {
         LayoutInflater inflater = (LayoutInflater) commentLayout.getContext()

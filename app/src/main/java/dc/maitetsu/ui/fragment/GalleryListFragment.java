@@ -15,13 +15,11 @@ import dc.maitetsu.ui.viewmodel.GalleryListViewModel;
 
 /**
  *  갤러리 리스트 프래그먼트.
- *
- *
  */
 public class GalleryListFragment extends Fragment {
   public GalleryListViewModel galleryListViewModel;
 
-  private static GalleryListFragment galleryListFragment;
+  private static GalleryListFragment galleryListFragment; //TODO Intent로 수정예정
 
   public static GalleryListFragment getInstance() {
     return galleryListFragment;
@@ -38,10 +36,13 @@ public class GalleryListFragment extends Fragment {
   }
 
   static void removeInstance() {
-    if(galleryListFragment.getActivity() != null)
-    galleryListFragment.getActivity()
-            .getSupportFragmentManager().beginTransaction()
-            .remove(galleryListFragment).commit();
+    if(galleryListFragment.getActivity() != null) {
+		try{
+			galleryListFragment.getActivity()
+					.getSupportFragmentManager().beginTransaction()
+					.remove(galleryListFragment).commit();
+		}catch (Exception e) {}
+	}
   }
 
   @Override

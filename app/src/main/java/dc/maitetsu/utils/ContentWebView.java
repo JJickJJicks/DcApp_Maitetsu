@@ -8,7 +8,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-05-02
  */
 public class ContentWebView {
@@ -50,7 +49,11 @@ public class ContentWebView {
       String slashUrl = slashUrls[0];
       if(slashUrls.length > 1) slashUrl = slashUrls[1];
 
-      String[] splitUrl = slashUrl.split("www.youtube.com/v/");
+      String[] splitUrl = slashUrl
+              .replace("www.youtube.com/watch?v=", "www.youtube.com/v/")
+              .split("www.youtube.com/v/");
+
+
       if (splitUrl.length > 1) {
         String code = splitUrl[1].split("\\?")[0];
         return "https://www.youtube.com/embed/" + code;

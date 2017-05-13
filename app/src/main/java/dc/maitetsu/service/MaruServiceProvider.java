@@ -14,7 +14,6 @@ import dc.maitetsu.utils.ThreadPoolManager;
 import java.util.List;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-29
  */
 public class MaruServiceProvider {
@@ -70,6 +69,7 @@ public class MaruServiceProvider {
       public void run() {
         try {
           MaruModel maruModel = MaruService.getInstance.getImageUrls(USER_AGENT, no);
+          maruModel.setNo(no);
           MainUIThread.addMaruImage(activity, currentData, layout, imageViews, maruModel);
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));

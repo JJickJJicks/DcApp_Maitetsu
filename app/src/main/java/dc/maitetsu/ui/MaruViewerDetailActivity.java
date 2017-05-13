@@ -15,8 +15,10 @@ import butterknife.OnClick;
 import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
+import dc.maitetsu.data.ImageData;
 import dc.maitetsu.models.MaruSimpleModel;
 import dc.maitetsu.service.MaruServiceProvider;
+import dc.maitetsu.utils.ThreadPoolManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,6 @@ import java.util.List;
 public class MaruViewerDetailActivity extends AppCompatActivity {
   private List<ImageView> imageViews = new ArrayList<>();
   @BindView(R.id.maru_detail_view_layout) LinearLayout layout;
-  @BindColor(R.color.darkThemeLightBackground) int darkThemeLightBackground;
   @BindView(R.id.maru_detail_view_title) TextView pageTitle;
 
   @Override
@@ -55,10 +56,16 @@ public class MaruViewerDetailActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    ThreadPoolManager.shutdownServiceEc();
+    ImageData.clearHoldImageBytes();
+  }
 
   // 닫기 버튼
   @OnClick(R.id.maru_detail_close)
-  public void finishButton(){
+  void finishButton(){
     finish();
   }
 

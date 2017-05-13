@@ -13,7 +13,6 @@ import dc.maitetsu.service.ServiceProvider;
 import dc.maitetsu.utils.ButtonUtils;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-23
  *
  * 가장 먼저 보여지는 스플래시 액티비티

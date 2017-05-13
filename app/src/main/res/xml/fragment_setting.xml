@@ -31,9 +31,6 @@
                 android:key="dccon_check"
                 android:title="@string/setting_dccon_check"/>
 
-        <CheckBoxPreference android:title="@string/touch_image_open"
-                            android:defaultValue="true"
-                            android:key="touch_image_open"/>
     </PreferenceCategory>
 
 

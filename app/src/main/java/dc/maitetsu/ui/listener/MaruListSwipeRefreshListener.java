@@ -5,7 +5,6 @@ import dc.maitetsu.utils.MainUIThread;
 import dc.maitetsu.ui.fragment.MaruViewerFragment;
 
 /**
- * @author Park Hyo Jun
  * @since 2017-04-22
  *
  * 마루 리스트 상단 스와이프 갱신
