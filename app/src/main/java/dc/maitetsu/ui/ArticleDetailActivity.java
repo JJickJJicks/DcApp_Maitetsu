@@ -124,6 +124,7 @@ public class ArticleDetailActivity extends SwipeBackActivity {
   protected void onDestroy() {
     super.onDestroy();
     ThreadPoolManager.shutdownContentEc();
+    ThreadPoolManager.shutdownServiceEc();
     ImageData.clearHoldImageBytes();
   }
 
