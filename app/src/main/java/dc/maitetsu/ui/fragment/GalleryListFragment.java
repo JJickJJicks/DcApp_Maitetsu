@@ -19,30 +19,11 @@ import dc.maitetsu.ui.viewmodel.GalleryListViewModel;
 public class GalleryListFragment extends Fragment {
   public GalleryListViewModel galleryListViewModel;
 
-  private static GalleryListFragment galleryListFragment; //TODO Intent로 수정예정
-
-  public static GalleryListFragment getInstance() {
-    return galleryListFragment;
-  }
-
   public GalleryListFragment() {
   }
 
   public static GalleryListFragment newInstance() {
-    if(galleryListFragment != null) // 이미 프래그먼트가 존재하면 제거함.
-      removeInstance();
-    galleryListFragment = new GalleryListFragment();
-    return galleryListFragment;
-  }
-
-  static void removeInstance() {
-    if(galleryListFragment.getActivity() != null) {
-		try{
-			galleryListFragment.getActivity()
-					.getSupportFragmentManager().beginTransaction()
-					.remove(galleryListFragment).commit();
-		}catch (Exception e) {}
-	}
+    return new GalleryListFragment();
   }
 
   @Override
@@ -60,7 +41,8 @@ public class GalleryListFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-    imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+    if(getView() != null)
+      imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
   }
 
 

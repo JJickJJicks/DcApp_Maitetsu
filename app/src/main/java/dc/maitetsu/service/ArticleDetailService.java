@@ -140,6 +140,14 @@ public enum ArticleDetailService {
       list.add(contentData);
       return new ArticleDetail.ContentData();
 
+    } else if(node.nodeName().equals("iframe")) {
+      list.add(contentData);
+      contentData = new ArticleDetail.ContentData();
+      contentData.getText().append("iframe");
+      contentData.setLinkUrl(node.attr("abs:src"));
+      list.add(contentData);
+      return new ArticleDetail.ContentData();
+
     } else if (node.nodeName().equals("embed")) {
       list.add(contentData);
       contentData = new ArticleDetail.ContentData();

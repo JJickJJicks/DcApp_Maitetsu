@@ -3,15 +3,18 @@ package dc.maitetsu.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.util.SparseArray;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import dc.maitetsu.R;
+import dc.maitetsu.service.ServiceProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
 
 /**
@@ -61,25 +64,34 @@ public class ContentUtils {
    * URL로부터 이미지를 얻어 액티비티의 이미지뷰에 보여주는 메소드
    *
    * @param activity  the activity
-   * @param url       the url
+   * @param imageUrl       the url
    * @param imageView the image view
    */
   public static void loadBitmapFromUrl(final Activity activity,
                                        final int position,
-                                       final Map<Integer, byte[]> imageBytes,
-                                       final String url,
+                                       final SparseArray<byte[]> imageBytes,
+                                       final String imageUrl,
+                                       final String origin,
                                        final ImageView imageView) {
 
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
-          InputStream in = (InputStream) new URL(url).getContent();
+          URL cUrl = new URL(imageUrl);
+          HttpURLConnection urlConnection = (HttpURLConnection) cUrl.openConnection();
+          urlConnection.setRequestProperty("User-Agent", ServiceProvider.USER_AGENT);
+          urlConnection.setRequestProperty("Origin", origin);
+          urlConnection.setRequestProperty("Referer", origin);
+
+
+          InputStream in = (InputStream) urlConnection.getContent();
           byte[] bytes = IOUtils.toByteArray(in);
           if (imageBytes != null) imageBytes.put(position, bytes);
           MainUIThread.setImageView(activity, imageView, bytes);
           in.close();
         } catch (Exception e) {
+          Log.e("err", e.getMessage());
           if (!e.getMessage().equals("thread interrupted")) // 쓰레드 인터럽트 예외는 무시
             MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
         }
@@ -97,15 +109,17 @@ public class ContentUtils {
    * @param bytes     the bytes
    * @param imageView the image view
    */
-  public static void loadBitMap(final Activity activity,
-                                final byte[] bytes,
-                                final ImageView imageView) {
+  public static void loadBitMapFromBytes(final Activity activity,
+                                         final byte[] bytes,
+                                         final ImageView imageView,
+                                         final PhotoViewAttacher photoViewAttacher,
+                                         final ImageView.ScaleType scaleType) {
 
     ThreadPoolManager.getImageViewEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
-          MainUIThread.setImageViewOriginalSize(activity, imageView, bytes);
+          MainUIThread.setImageViewWithAttacher(activity, imageView, photoViewAttacher, scaleType, bytes);
         } catch (Exception e) {
           if (!e.getMessage().equals("thread interrupted")) // 쓰레드 인터럽트 예외는 무시
             MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));

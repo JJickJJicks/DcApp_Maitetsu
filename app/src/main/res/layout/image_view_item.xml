@@ -8,12 +8,10 @@
         android:background="@android:color/transparent"
         tools:context="dc.maitetsu.ui.ImageViewActivity">
 
-    <uk.co.senab.photoview.PhotoView
+    <ImageView
             android:id="@+id/image_view_item_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:duplicateParentState="true"
-            android:scaleType="fitCenter"
     />
 
 </FrameLayout>

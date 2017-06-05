@@ -98,20 +98,18 @@
                 android:layout_margin="10dp"
                 android:background="@color/colorAccent"/>
 
-        <EditText
-                android:layout_width="match_parent"
-                android:inputType="textMultiLine"
-                android:lines="12"
-                android:minLines="12"
-                android:scrollbars="vertical"
-                android:background="@android:color/transparent"
-                android:gravity="left|top"
-                android:hint="@string/article_write_content"
-                android:ems="10"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:id="@+id/article_write_content"
-                android:layout_marginBottom="10dp" android:layout_height="wrap_content"/>
+            <EditText
+                    android:layout_width="match_parent"
+                    android:inputType="textMultiLine"
+                    android:minLines="12"
+                    android:background="@android:color/transparent"
+                    android:gravity="left|top"
+                    android:hint="@string/article_write_content"
+                    android:ems="10"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:id="@+id/article_write_content"
+                    android:layout_marginBottom="10dp" android:layout_height="wrap_content"/>
 
 
         <View

@@ -31,7 +31,7 @@ import java.util.List;
 public class ServiceProvider {
 
   // 갤럭시 S6 Useragent
-  private static String USER_AGENT = "Mozilla/5.0 (Linux; Android 5.1.1; SM-G925F Build/LMY47X) " +
+  public static String USER_AGENT = "Mozilla/5.0 (Linux; Android 5.1.1; SM-G925F Build/LMY47X) " +
           "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.94 Mobile Safari/537.36";
 
   private static ServiceProvider serviceProvider = null;
@@ -125,8 +125,7 @@ public class ServiceProvider {
         CurrentData currentData = getCurrentData(activity.getApplicationContext());
         try {
           ArticleDetail articleDetail = ArticleDetailService.getInstance
-                  .getArticleDetail(currentData.getLoginCookies()
-                          , USER_AGENT, articleUrl);
+															.getArticleDetail(currentData.getLoginCookies() , USER_AGENT, articleUrl);
           articleDetail.setUrl(articleUrl);
           UserFilter.setComments(currentData, articleDetail.getComments());
           MainUIThread.finishActivity(activity, ResultCodes.NONE);
@@ -161,17 +160,15 @@ public class ServiceProvider {
   }
 
 
-  public void searchGalleryName(final String galleryName) {
+  public void searchGalleryName(final GalleryListFragment fragment, final String galleryName) {
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
-          List<GalleryInfo> galleryInfos = GalleryListService.getInstance
-                                                  .searchGallery(USER_AGENT, galleryName);
-          MainUIThread.setGallerySearchResult(galleryInfos, GalleryListFragment.getInstance());
+          List<GalleryInfo> galleryInfos = GalleryListService.getInstance.searchGallery(USER_AGENT, galleryName);
+          MainUIThread.setGallerySearchResult(galleryInfos, fragment);
         } catch (Exception e) {
-          MainUIThread.showToast(GalleryListFragment.getInstance().getActivity(),
-                  GalleryListFragment.getInstance().getString(R.string.gallery_search_failure));
+          MainUIThread.showToast(fragment.getActivity(), fragment.getString(R.string.gallery_search_failure));
         }
       }
     });
@@ -215,6 +212,7 @@ public class ServiceProvider {
           MainUIThread.setArticleListView(fragment, simpleArticles, showSnackBar);
         } catch (Exception e1) {
           MainUIThread.showToast(fragment.getActivity(), fragment.getActivity().getString(R.string.article_list_failure));
+          fragment.getHasAdapterViewModel().stopRefreshing();
         }
       }
     });
@@ -268,7 +266,7 @@ public class ServiceProvider {
         try {
           if (RecommendService.getInstance.recommend(currentData.getLoginCookies(), articleDetail, USER_AGENT)) {
             MainUIThread.showToast(activity, activity.getString(R.string.article_read_recommend_success));
-            currentData.getRecommendList().put(articleDetail.getUrl(), System.currentTimeMillis());
+            currentData.getRecommendList().put(articleDetail.getArticleDeleteData().getNo(), System.currentTimeMillis());
             CurrentDataManager.save(activity);
           } else throw new Exception();
         } catch (Exception e) {

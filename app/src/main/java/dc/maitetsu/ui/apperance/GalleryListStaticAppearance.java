@@ -1,5 +1,6 @@
 package dc.maitetsu.ui.apperance;
 
+import android.app.Fragment;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.view.KeyEvent;
@@ -11,6 +12,7 @@ import dc.maitetsu.R;
 import dc.maitetsu.service.ServiceProvider;
 import dc.maitetsu.ui.adapter.VisitedGalleryListAdapter;
 import dc.maitetsu.ui.adapter.SearchGalleryListAdapter;
+import dc.maitetsu.ui.fragment.GalleryListFragment;
 import dc.maitetsu.ui.viewmodel.GalleryListViewModel;
 
 /**
@@ -19,21 +21,24 @@ import dc.maitetsu.ui.viewmodel.GalleryListViewModel;
  * 갤러리 리스트의 비 동적인 부분을 처리하는 클래스
  *
  */
-public class GalleryListStaticApperance {
+public class GalleryListStaticAppearance {
   private GalleryListViewModel galleryListViewModel;
   private View view;
   private VisitedGalleryListAdapter visitedGalleryListAdapter;
   private SearchGalleryListAdapter searchGalleryListAdapter;
   private EditText searchName;
+  private GalleryListFragment fragment;
 
-  public GalleryListStaticApperance(GalleryListViewModel galleryListViewModel,
-                                    View view,
-                                    VisitedGalleryListAdapter visitedGalleryListAdapter,
-                                    SearchGalleryListAdapter searchGalleryListAdapter) {
+  public GalleryListStaticAppearance(GalleryListFragment fragment,
+                                     GalleryListViewModel galleryListViewModel,
+                                     View view,
+                                     VisitedGalleryListAdapter visitedGalleryListAdapter,
+                                     SearchGalleryListAdapter searchGalleryListAdapter) {
     this.galleryListViewModel = galleryListViewModel;
     this.visitedGalleryListAdapter = visitedGalleryListAdapter;
     this.searchGalleryListAdapter = searchGalleryListAdapter;
     this.view = view;
+    this.fragment = fragment;
     this.searchName = (EditText) view.findViewById(R.id.search_gallery_name);
   }
 
@@ -61,7 +66,7 @@ public class GalleryListStaticApperance {
       @Override
       public boolean onKey(View view, int keyCode, KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-          ServiceProvider.getInstance().searchGalleryName(searchName.getText().toString());
+          ServiceProvider.getInstance().searchGalleryName(fragment, searchName.getText().toString());
           return true;
         }
         return false;
@@ -76,7 +81,7 @@ public class GalleryListStaticApperance {
     searchButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        ServiceProvider.getInstance().searchGalleryName(searchName.getText().toString());
+        ServiceProvider.getInstance().searchGalleryName(fragment, searchName.getText().toString());
       }
     });
   }

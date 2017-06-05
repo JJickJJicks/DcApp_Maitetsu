@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import butterknife.BindView;
@@ -37,7 +35,7 @@ public class ArticleDetailActivity extends SwipeBackActivity {
   private ArticleDetail articleDetail;
   @BindView(R.id.article_detail_dccon_layout) LinearLayout dcconLayout;
   @BindView(R.id.article_detail_scroll)  ScrollView scrollView;
-  private int scrollY = 0;
+  private boolean isModifyDestroy = false;
 
 
   @Override
@@ -73,6 +71,7 @@ public class ArticleDetailActivity extends SwipeBackActivity {
 
     if(requestCode == RequestCodes.ARTICLE.ordinal()) {
       if(resultCode == ResultCodes.ARTICLE_REFRESH.ordinal()) {
+        this.isModifyDestroy = true;
         ServiceProvider.getInstance()
                 .refreshArticleDetail(this, articleDetail.getUrl());
       }
@@ -123,9 +122,11 @@ public class ArticleDetailActivity extends SwipeBackActivity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    ThreadPoolManager.shutdownContentEc();
-    ThreadPoolManager.shutdownServiceEc();
-    ImageData.clearHoldImageBytes();
+    if(!isModifyDestroy) {
+      ThreadPoolManager.shutdownServiceEc();
+      ThreadPoolManager.shutdownContentEc();
+      ImageData.clearHoldImageBytes();
+    }
   }
 
 }

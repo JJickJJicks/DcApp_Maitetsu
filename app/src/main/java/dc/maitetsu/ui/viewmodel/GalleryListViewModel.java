@@ -1,6 +1,5 @@
 package dc.maitetsu.ui.viewmodel;
 
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -12,7 +11,8 @@ import dc.maitetsu.models.GalleryInfo;
 import dc.maitetsu.ui.adapter.VisitedGalleryListAdapter;
 import dc.maitetsu.ui.adapter.SearchGalleryListAdapter;
 import dc.maitetsu.data.CurrentDataManager;
-import dc.maitetsu.ui.apperance.GalleryListStaticApperance;
+import dc.maitetsu.ui.apperance.GalleryListStaticAppearance;
+import dc.maitetsu.ui.fragment.GalleryListFragment;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class GalleryListViewModel {
   private View view;
   private ImageButton closeButton;
 
-  public GalleryListViewModel(Fragment fragment, View view, CurrentData currentData) {
+  public GalleryListViewModel(GalleryListFragment fragment, View view, CurrentData currentData) {
     this.visitedGalleryListAdapter = new VisitedGalleryListAdapter(fragment, this,
                                                           view.getContext(), currentData);
     this.searchGalleryListAdapter = new SearchGalleryListAdapter(fragment, this);
@@ -35,8 +35,8 @@ public class GalleryListViewModel {
     closeButton = (ImageButton) view.findViewById(R.id.gallery_search_result_close);
     this.searchName = (EditText) view.findViewById(R.id.search_gallery_name);
     this.view = view;
-    new GalleryListStaticApperance(this, view,
-            visitedGalleryListAdapter,
+    new GalleryListStaticAppearance(fragment, this, view,
+                                  visitedGalleryListAdapter,
                                   searchGalleryListAdapter).invoke();
   }
 

@@ -63,7 +63,7 @@ enum SimpleArticleService {
                         .header("Accept-Encoding", "gzip, deflate")
                         .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
                         .cookies(loginCookie)
-                        .timeout(8000)
+                        .timeout(4000)
                         .get();
 
     setNextSerPosValue(currentData, pageRawData);
@@ -139,6 +139,8 @@ enum SimpleArticleService {
       return SimpleArticle.ArticleType.IMG;
     else if (icoPic.hasClass("ico_t"))
       return SimpleArticle.ArticleType.NO_IMG;
+    else if (icoPic.hasClass("ico_mv"))
+      return SimpleArticle.ArticleType.MOV;
     else
       return SimpleArticle.ArticleType.RECOMMAND;
   }

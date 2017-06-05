@@ -3,6 +3,7 @@ package dc.maitetsu.utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -34,6 +35,8 @@ public class ContentWebView {
         }
       }
     });
+
+    webview.setWebChromeClient(new WebChromeClient());
 
     WebSettings webSettings = webview.getSettings();
     webSettings.setJavaScriptEnabled(true);

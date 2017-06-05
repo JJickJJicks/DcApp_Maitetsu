@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.util.Linkify;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +44,7 @@ public class ArticleDetailViewModel {
   private ArticleDetailViewModel viewModel;
   public EditText commentText;
   public ImageView deleteButton;
-  private Map<Integer, byte[]> imageBytes;
+  private SparseArray<byte[]> imageBytes;
 
   public ArticleDetailViewModel(ArticleDetailActivity articleDetailActivity,
                                 ArticleDetail articleDetail, String articleUrl) {
@@ -55,7 +56,7 @@ public class ArticleDetailViewModel {
     this.commentText = (EditText) articleDetailActivity.findViewById(R.id.article_detail_comment);
     this.viewModel = this;
     this.currentData = CurrentDataManager.getInstance(articleDetailActivity);
-    this.imageBytes = new HashMap<>();
+    this.imageBytes =  new SparseArray<>();
 
 
     setMyDcconList(articleDetailActivity, currentData);
@@ -163,7 +164,7 @@ public class ArticleDetailViewModel {
 
   // 이미지 처리
   private void addImageContent(final Activity activity,
-                               final int imagePostion,
+                               final int imagePosition,
                                final LinearLayout layout,
                                final ArticleDetail.ContentData data) {
 
@@ -182,12 +183,12 @@ public class ArticleDetailViewModel {
         final ImageView realImageView = (ImageView) view.findViewById(R.id.article_item_real_img);
         realImageView.setDuplicateParentStateEnabled(true);
 
-        imageBytes.put(imagePostion, null); // 이미지 갯수 설정
+        imageBytes.put(imagePosition, null); // 이미지 갯수 설정
 
-        // 새로운 이미지 뷰어 클릭 리스너
+        // 이미지 뷰어 클릭 리스너
         realImageView.setOnClickListener(ImageViewerListener.get(activity,
                                                             articleDetail.getCommentWriteData().getNo(),
-                                                            imagePostion, imageBytes, false));
+                                                            imagePosition, imageBytes, false));
 
         final ImageView prevImage = (ImageView) view.findViewById(R.id.article_item_prev_img);
         prevImage.setDuplicateParentStateEnabled(true);
@@ -196,12 +197,12 @@ public class ArticleDetailViewModel {
             @Override
             public void onClick(View view) {
               prevImage.setVisibility(View.GONE);
-              ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePostion, imageBytes, imageUrl, realImageView);
+              ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePosition, imageBytes, imageUrl, articleDetail.getUrl(), realImageView);
             }
           });
         } else {
           prevImage.setVisibility(View.GONE);
-          ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePostion, imageBytes, imageUrl, realImageView);
+          ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePosition, imageBytes, imageUrl, articleDetail.getUrl(), realImageView);
         }
 
         activity.runOnUiThread(new Runnable() {
@@ -295,10 +296,17 @@ public class ArticleDetailViewModel {
   public void addComments(final Activity activity, ArticleDetailViewModel viewModel, List<Comment> comments) {
     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT);
+
+    LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT);
+    int dp5 = DipUtils.getDp(activity.getResources(), 5);
+    lineParams.setMargins(dp5, 0, dp5, 0);
+
+
     commentLayout = (LinearLayout) articleDetailActivity.findViewById(R.id.article_read_comment_layout);
 
     for (Comment comment : comments)
-      addCommentView(activity, viewModel, layoutParams, commentLayout, comment);
+      addCommentView(activity, viewModel, layoutParams, lineParams, commentLayout, comment);
 
     // 댓글 새로고침 버튼
     ThreadPoolManager.getContentEc().submit(new Runnable() {
@@ -344,8 +352,9 @@ public class ArticleDetailViewModel {
 
   // 댓글 하나에 해당하는 뷰를 만들고 추가하는 메소드
   private void addCommentView(final Activity activity,
-          final ArticleDetailViewModel viewModel,
+                              final ArticleDetailViewModel viewModel,
                               final LinearLayout.LayoutParams layoutParams,
+                              final LinearLayout.LayoutParams lineParams,
                               final LinearLayout commentLayout,
                               final Comment comment) {
 
@@ -407,12 +416,11 @@ public class ArticleDetailViewModel {
         // 하단 댓글 구분선
         final View yellowLine = inflater.inflate(R.layout.yellow_separator_line, null);
 
-
         activity.runOnUiThread(new Runnable() {
           @Override
           public void run() {
             commentLayout.addView(view, layoutParams);
-            commentLayout.addView(yellowLine, layoutParams);
+            commentLayout.addView(yellowLine, lineParams);
 
           }
         });

@@ -134,7 +134,7 @@ public class ArticleDetailStaticApperance {
     final TextView recommendIconCount = (TextView) activity.findViewById(R.id.article_read_recommend_icon_count);
     recommendIconCount.setText(String.format(res.getString(R.string.comment), articleDetail.getRecommendCount()));
     long timeOut = 1000 * 60 * 60 * 24; // 1일
-    Long time = currentData.getRecommendList().get(articleDetail.getUrl());
+    Long time = currentData.getRecommendList().get(articleDetail.getArticleDeleteData().getNo());
 
     if(time != null && time + timeOut > System.currentTimeMillis()) {
       // 추천 할 수 없으면 이미 눌린 색상으로 설정함
@@ -161,18 +161,25 @@ public class ArticleDetailStaticApperance {
     closeButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        activity.finish();
+        activity.scrollToFinishActivity();
       }
     });
 
     // 삭제 버튼. 글 삭제 여부 확인 다이얼로그를 호출한다.
     final ImageView deleteButton = (ImageView) activity.findViewById(R.id.article_read_delete);
-    final ImageView modifyButton = (ImageView) activity.findViewById(R.id.article_read_modify);
+      // 삭제버튼 핸들링
+    deleteButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        ArticleDeleteDialogFragment alert = ArticleDeleteDialogFragment.newInstance(articleDetail, activity, currentData);
+        alert.show(activity.getFragmentManager(), "alertDialog");
+      }
+          });
 
-    if(articleDetail.getModifyUrl() == null
-            || articleDetail.getModifyUrl().isEmpty()) {
-      deleteButton.setVisibility(View.INVISIBLE);
-      modifyButton.setVisibility(View.INVISIBLE);
+    // 수정 버튼.
+    final ImageView modifyButton = (ImageView) activity.findViewById(R.id.article_read_modify);
+    if(articleDetail.getModifyUrl() == null || articleDetail.getModifyUrl().isEmpty()) {
+      modifyButton.setVisibility(View.GONE);
     } else {
       // 수정버튼 핸들링
       modifyButton.setOnClickListener(new View.OnClickListener() {
@@ -182,16 +189,6 @@ public class ArticleDetailStaticApperance {
                   .openArticleModify(activity, articleDetail, currentData);
         }
       });
-
-      // 삭제버튼 핸들링
-      deleteButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-          ArticleDeleteDialogFragment alert = ArticleDeleteDialogFragment.newInstance(articleDetail, activity, currentData);
-          alert.show(activity.getFragmentManager(), "alertDialog");
-        }
-      });
-
     }
 
   }
@@ -237,7 +234,7 @@ public class ArticleDetailStaticApperance {
     dcconMenuButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        clearCommentText();
+//        clearCommentText();
         presenter.commentText.requestFocus();
         if (activity.isVisibleDcconlayout()) activity.hideDcconLayout();
         else activity.showDcconLayout();

@@ -81,6 +81,8 @@ public class SimpleArticleListAdapter extends BaseAdapter {
       itemImg.setImageDrawable(res.getDrawable(R.drawable.image));
     else if(simpleArticle.getArticleType() == SimpleArticle.ArticleType.NO_IMG)
       itemImg.setImageDrawable(res.getDrawable(R.drawable.none_image));
+    else if(simpleArticle.getArticleType() == SimpleArticle.ArticleType.MOV)
+      itemImg.setImageDrawable(res.getDrawable(R.drawable.movie_article_icon));
     else
       itemImg.setImageDrawable(res.getDrawable(R.drawable.recommand_article_icon));
 

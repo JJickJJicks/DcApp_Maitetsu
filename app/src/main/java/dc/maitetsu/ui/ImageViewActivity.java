@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -24,7 +25,6 @@ import dc.maitetsu.utils.ThreadPoolManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Map;
 
 public class ImageViewActivity extends AppCompatActivity {
 
@@ -34,7 +34,7 @@ public class ImageViewActivity extends AppCompatActivity {
   @BindView(R.id.image_view_height_fit) ImageView widthFitButton;
   @BindView(R.id.image_view_fit) ImageView viewFitButton;
 
-  private Map<Integer, byte[]> imageBytes;
+  private SparseArray<byte[]> imageBytes;
   private ImageViewPagerAdapter imageViewPagerAdapter;
   private boolean isPortrait = true;
   private String name;
@@ -56,6 +56,7 @@ public class ImageViewActivity extends AppCompatActivity {
     imageViewPagerAdapter = new ImageViewPagerAdapter(this, toolLayout, imageBytes, ImageView.ScaleType.FIT_CENTER);
     viewPager.setAdapter(imageViewPagerAdapter);
     viewPager.setCurrentItem(position);
+    viewPager.setOffscreenPageLimit(2);
   }
 
   private void hideStatusBar() {

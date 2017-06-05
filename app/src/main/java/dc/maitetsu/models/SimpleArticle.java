@@ -21,6 +21,6 @@ public class SimpleArticle implements Serializable{
   private ArticleType articleType;
 
   public enum ArticleType {
-    IMG, NO_IMG, RECOMMAND;
+    IMG, NO_IMG, MOV, RECOMMAND
   }
 }

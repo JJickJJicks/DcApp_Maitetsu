@@ -198,8 +198,6 @@ public class SettingFragment extends PreferenceFragmentCompat {
     button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
       @Override
       public boolean onPreferenceClick(Preference preference) {
-//        counter = 0;
-        GalleryListFragment.removeInstance();
         Activity mainActivity = fragment.getActivity();
         Intent intent = new Intent(mainActivity, MainActivity.class);
         intent.putExtra("resetMode", true);

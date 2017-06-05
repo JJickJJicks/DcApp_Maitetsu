@@ -7,8 +7,8 @@ android {
         applicationId "dcmys.maitetsu"
         minSdkVersion 18
         targetSdkVersion 22
-        versionCode 142
-        versionName "1.4.2"
+        versionCode 145
+        versionName "1.4.5"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -22,6 +22,7 @@ android {
 }
 
 dependencies {
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
@@ -38,7 +39,6 @@ dependencies {
     compile group: 'org.projectlombok', name: 'lombok', version: '1.16.16'
     compile group: 'org.jsoup', name: 'jsoup', version: '1.10.2'
     compile group: 'com.j256.simplemagic', name: 'simplemagic', version: '1.11'
-    compile group: 'com.github.chrisbanes.photoview', name: 'library', version: '1.2.4'
 
     compile('com.googlecode.json-simple:json-simple:1.1.1') {
         exclude group: 'org.hamcrest', module: 'hamcrest-core'

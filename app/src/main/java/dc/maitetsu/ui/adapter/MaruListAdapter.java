@@ -80,7 +80,8 @@ public class MaruListAdapter extends BaseAdapter {
     final MaruSimpleModel model = maruSimpleModels.get(position);
 
     // 섬네일 로드
-    ContentUtils.loadBitmapFromUrl(fragment.getActivity(), 0, null, model.getThumbUrl(), thumb);
+    ContentUtils.loadBitmapFromUrl(fragment.getActivity(), 0, null, model.getThumbUrl(),
+                            model.getThumbUrl(), thumb);
     viewModel.getThumbList().add(thumb);
 
     // 제목 날짜

@@ -3,29 +3,28 @@ package dc.maitetsu.ui.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import com.github.chrisbanes.photoview.OnViewTapListener;
+import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import dc.maitetsu.R;
 import dc.maitetsu.utils.ContentUtils;
-import uk.co.senab.photoview.PhotoView;
-import uk.co.senab.photoview.PhotoViewAttacher;
-
-import java.util.Map;
 
 /**
  * @since 2017-05-12
  */
 public class ImageViewPagerAdapter extends PagerAdapter {
-  private Map<Integer, byte[]> imageBytes;
+  private SparseArray<byte[]> imageBytes;
   private Activity activity;
   private LayoutInflater layoutInflater;
   private LinearLayout toolLayout;
   private ImageView.ScaleType scaleType;
 
-  public ImageViewPagerAdapter(Activity activity, LinearLayout toolLayout, Map<Integer, byte[]> imageBytes, ImageView.ScaleType scaleType) {
+  public ImageViewPagerAdapter(Activity activity, LinearLayout toolLayout, SparseArray<byte[]>  imageBytes, ImageView.ScaleType scaleType) {
     this.imageBytes = imageBytes;
     this.activity = activity;
     this.toolLayout = toolLayout;
@@ -46,26 +45,29 @@ public class ImageViewPagerAdapter extends PagerAdapter {
   @Override
   public Object instantiateItem(ViewGroup container, int position) {
     View itemView = layoutInflater.inflate(R.layout.image_view_item, container, false);
-    final PhotoView imageView = (PhotoView) itemView.findViewById(R.id.image_view_item_image);
-    imageView.setMaximumScale(9f);
-    imageView.setMinimumScale(1f);
-    imageView.setScaleType(scaleType);
-    ContentUtils.loadBitMap(activity, imageBytes.get(position), imageView);
+    final ImageView imageView = (ImageView) itemView.findViewById(R.id.image_view_item_image);
+    imageView.setScaleType(ImageView.ScaleType.MATRIX);
 
-    imageView.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
+    PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(imageView);
+    photoViewAttacher.setMaximumScale(9);
+    photoViewAttacher.setMinimumScale(1f);
+
+    photoViewAttacher.setOnViewTapListener(new OnViewTapListener() {
       @Override
       public void onViewTap(View view, float x, float y) {
-          if (toolLayout.getVisibility() == View.INVISIBLE) {
-            toolLayout.setVisibility(View.VISIBLE);
-          } else {
-            toolLayout.setVisibility(View.INVISIBLE);
-          }
+        if (toolLayout.getVisibility() == View.INVISIBLE) {
+          toolLayout.setVisibility(View.VISIBLE);
+        } else {
+          toolLayout.setVisibility(View.INVISIBLE);
+        }
       }
     });
 
+    ContentUtils.loadBitMapFromBytes(activity, imageBytes.get(position), imageView, photoViewAttacher, scaleType);
     container.addView(itemView);
     return itemView;
   }
+
 
 
   @Override
