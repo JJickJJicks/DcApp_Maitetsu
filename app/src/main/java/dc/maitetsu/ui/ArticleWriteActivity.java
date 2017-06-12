@@ -79,6 +79,7 @@ public class ArticleWriteActivity extends AppCompatActivity {
     if (requestCode == 0 && resultCode == RESULT_OK && data.getData() != null) {
       Uri uri = data.getData();
       String path = getAbsolutePath(uri);
+
       if(path != null && !path.isEmpty()) {
         attachFiles.add(new File(path));
         articleWriteViewModel.setAttachFiles(this, attachFiles);
@@ -97,7 +98,7 @@ public class ArticleWriteActivity extends AppCompatActivity {
       cursor.moveToFirst();
       return cursor.getString(column_index);
     } else
-      return null;
+      return uri.getPath();
   }
 
 }

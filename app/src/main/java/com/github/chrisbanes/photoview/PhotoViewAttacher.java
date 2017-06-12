@@ -183,9 +183,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
 
                     if (scale < getMediumScale()) {
                         setScale(getMediumScale(), x, y, true);
-                    } else if (scale >= getMediumScale() && scale < getMaximumScale()) {
-                        setScale(getMaximumScale(), x, y, true);
-                    } else {
+                    } else { // Maximum zoom 제거
                         setScale(getMinimumScale(), x, y, true);
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {

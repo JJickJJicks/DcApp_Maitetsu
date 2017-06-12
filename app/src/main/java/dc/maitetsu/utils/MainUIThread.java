@@ -363,7 +363,7 @@ public class MainUIThread {
                 .getApplicationContext())
                 .load(bytes)
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(imageView);
       }
     });
@@ -389,7 +389,7 @@ public class MainUIThread {
         Glide.with(activity.getApplicationContext())
                 .load(bytes)
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .fitCenter()
                 .override(imageView.getMaxHeight(), Target.SIZE_ORIGINAL)
                 .listener(new RequestListener<byte[], GlideDrawable>() {
