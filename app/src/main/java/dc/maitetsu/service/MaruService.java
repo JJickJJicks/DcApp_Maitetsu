@@ -1,5 +1,6 @@
 package dc.maitetsu.service;
 
+import android.webkit.URLUtil;
 import dc.maitetsu.models.MaruModel;
 import dc.maitetsu.models.MaruSimpleModel;
 import org.jsoup.Jsoup;
@@ -8,6 +9,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +22,6 @@ enum MaruService {
 
   private static final String MARU_URL = "http://marumaru.in/";
   private static final String MARU_LINK_URL = "http://marumaru.in/b/mangaup/";
-  private static final String MARU_IMAGE_URL = "http://wasabisyrup.com/";
   private static final String PASS = "?pass=qndxkr";
 
 
@@ -91,7 +93,8 @@ enum MaruService {
     List<String> urls = new ArrayList<>();
     Elements elements = rawData.select(".lz-lazyload");
     for(Element element : elements) {
-      urls.add(MARU_IMAGE_URL + element.attr("data-src"));
+      String imageUrl = URLUtil.guessUrl(element.attr("abs:data-src").replaceAll(" ", "%20"));
+      urls.add(imageUrl);
     }
 
     MaruModel maruModel = new MaruModel();
