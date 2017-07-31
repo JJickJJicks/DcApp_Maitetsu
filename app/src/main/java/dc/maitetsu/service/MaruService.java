@@ -1,6 +1,7 @@
 package dc.maitetsu.service;
 
-import android.webkit.URLUtil;
+import android.text.TextUtils;
+import android.util.Log;
 import dc.maitetsu.models.MaruModel;
 import dc.maitetsu.models.MaruSimpleModel;
 import org.jsoup.Jsoup;
@@ -9,7 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ enum MaruService {
   private static final String MARU_URL = "http://marumaru.in/";
   private static final String MARU_LINK_URL = "http://marumaru.in/b/mangaup/";
   private static final String PASS = "?pass=qndxkr";
+  private static final String ORIGIN = "http://wasabisyrup.com/";
 
 
   public List<MaruSimpleModel> getMaruSimpleModels(String userAgent, int page, String keyword) throws IOException {
@@ -65,7 +66,7 @@ enum MaruService {
 
 
   private String getMaruUrl(String userAgent, String no) throws IOException {
-    return Jsoup.connect(MARU_LINK_URL + no.substring(1))
+    Elements els = Jsoup.connect(MARU_LINK_URL + no.substring(1))
             .userAgent(userAgent)
             .timeout(5000)
             .header("Origin", "http://marumaru.in/")
@@ -74,7 +75,13 @@ enum MaruService {
             .header("Accept-Encoding", "gzip, deflate, sdch")
             .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
             .get()
-            .select("#vContent a").first().attr("abs:href");
+            .select("#vContent a");
+
+    for (Element e : els) {
+      String url = e.attr("abs:href");
+      if(url.contains("archives")) return url;
+    }
+    return "";
   }
 
 
@@ -93,12 +100,13 @@ enum MaruService {
     List<String> urls = new ArrayList<>();
     Elements elements = rawData.select(".lz-lazyload");
     for(Element element : elements) {
-      String imageUrl = URLUtil.guessUrl(element.attr("abs:data-src").replaceAll(" ", "%20"));
+      String imageUrl = element.attr("abs:data-src");
       urls.add(imageUrl);
     }
 
     MaruModel maruModel = new MaruModel();
     maruModel.setUrl(url);
+    maruModel.setOrigin(ORIGIN);
     maruModel.setImagesUrls(urls);
 
     return maruModel;

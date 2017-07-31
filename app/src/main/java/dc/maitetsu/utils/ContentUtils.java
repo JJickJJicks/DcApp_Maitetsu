@@ -11,9 +11,9 @@ import dc.maitetsu.R;
 import dc.maitetsu.service.ServiceProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 
@@ -78,19 +78,21 @@ public class ContentUtils {
       @Override
       public void run() {
         try {
-          URL cUrl = new URL(imageUrl);
-          HttpURLConnection urlConnection = (HttpURLConnection) cUrl.openConnection();
-          urlConnection.setRequestProperty("User-Agent", ServiceProvider.USER_AGENT);
-          urlConnection.setRequestProperty("Origin", origin);
-          urlConnection.setRequestProperty("Referer", origin);
 
+          byte[] bytes = Jsoup.connect(imageUrl)
+                  .userAgent(ServiceProvider.USER_AGENT)
+                  .header("Origin", origin)
+                  .header("Referer", origin)
+                  .ignoreContentType(true)
+                  .maxBodySize(1024 * 1024 * 30)
+                  .timeout(2000)
+                  .execute()
+                  .bodyAsBytes();
 
-          InputStream in = (InputStream) urlConnection.getContent();
-          byte[] bytes = IOUtils.toByteArray(in);
           if (imageBytes != null) imageBytes.put(position, bytes);
           MainUIThread.setImageView(activity, imageView, bytes);
-          in.close();
         } catch (Exception e) {
+          Log.e("err", imageUrl);
           Log.e("err", e.getMessage());
           if (!e.getMessage().equals("thread interrupted")) // 쓰레드 인터럽트 예외는 무시
             MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));

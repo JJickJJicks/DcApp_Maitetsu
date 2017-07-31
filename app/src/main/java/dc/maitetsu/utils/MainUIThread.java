@@ -100,6 +100,7 @@ public class MainUIThread {
    */
   public static void refreshMaruListView(final MaruViewerFragment fragment,
                                          final boolean resetSearchKeyword) {
+    if(fragment == null) return;
 
     final CurrentData currentData = CurrentDataManager.getInstance((fragment).getContext());
     currentData.setPage(1);
@@ -489,7 +490,7 @@ public class MainUIThread {
           imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
           imageView.setLayoutParams(il);
           imageViews.add(imageView);
-          ContentUtils.loadBitmapFromUrl(activity, i, imageBytes, imageUrl, maruModel.getUrl(), imageView);
+          ContentUtils.loadBitmapFromUrl(activity, i, imageBytes, imageUrl, maruModel.getOrigin(), imageView);
           imageView.setOnClickListener(ImageViewerListener.get(activity, maruModel.getNo(), i, imageBytes, true));
           imageLayout.addView(imageView);
         }

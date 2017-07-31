@@ -27,9 +27,7 @@ import dc.maitetsu.ui.listener.FilterUserLongClickListener;
 import dc.maitetsu.ui.listener.ImageViewerListener;
 import dc.maitetsu.utils.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 2017-04-23
@@ -45,6 +43,8 @@ public class ArticleDetailViewModel {
   public EditText commentText;
   public ImageView deleteButton;
   private SparseArray<byte[]> imageBytes;
+  private List<ImageView> prevBtns;
+  private boolean isImageCheck = false;
 
   public ArticleDetailViewModel(ArticleDetailActivity articleDetailActivity,
                                 ArticleDetail articleDetail, String articleUrl) {
@@ -57,12 +57,13 @@ public class ArticleDetailViewModel {
     this.viewModel = this;
     this.currentData = CurrentDataManager.getInstance(articleDetailActivity);
     this.imageBytes =  new SparseArray<>();
+    this.prevBtns = Collections.synchronizedList(new ArrayList<ImageView>());
+    this.isImageCheck = currentData.isImageCheck();
 
-
+    setAllImageViewButton(articleDetailActivity);
     setMyDcconList(articleDetailActivity, currentData);
     new ArticleDetailStaticApperance(articleDetailActivity, this, articleDetail, articleUrl, currentData)
             .invoke();
-
     setContent(articleDetailActivity);
 
     clearComments();
@@ -94,9 +95,15 @@ public class ArticleDetailViewModel {
               && !currentData.isMovieIgnore()) {
         addWebViewContent(activity, contentLayout, webViewParams, data);
       }
-
     }
 
+    // 이미지 전체보기 체크
+    ThreadPoolManager.getContentEc().submit(new Runnable() {
+      @Override
+      public void run() {
+        checkAllImageViewButton(articleDetailActivity);
+      }
+    });
   }
 
   // 웹뷰가 필요한 영상 내용 추가
@@ -192,10 +199,13 @@ public class ArticleDetailViewModel {
 
         final ImageView prevImage = (ImageView) view.findViewById(R.id.article_item_prev_img);
         prevImage.setDuplicateParentStateEnabled(true);
-        if (currentData.isImageCheck()) { // 이미지 바로보지않기 체크가 되어있으면
+        if (isImageCheck) { // 이미지 바로보지않기 체크가 되어있으면
+          prevBtns.add(prevImage);
           prevImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+              prevBtns.remove(prevImage);
+              checkAllImageViewButton(articleDetailActivity);
               prevImage.setVisibility(View.GONE);
               ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePosition, imageBytes, imageUrl, articleDetail.getUrl(), realImageView);
             }
@@ -216,7 +226,29 @@ public class ArticleDetailViewModel {
 
   }
 
+  // 이미지 전체 보기 버튼 체크
+  private void checkAllImageViewButton(Activity activity){
+      final ImageView allImageBtn = (ImageView) activity.findViewById(R.id.article_read_image_all);
+      if(prevBtns.size() > 1 && isImageCheck) {
+        isImageCheck = false;
+        allImageBtn.setVisibility(View.VISIBLE);
+      } else
+        allImageBtn.setVisibility(View.GONE);
+  }
 
+  // 이미지 전체 보기 버튼 핸들링
+  private void setAllImageViewButton(Activity activity) {
+      final ImageView allImageBtn = (ImageView) activity.findViewById(R.id.article_read_image_all);
+      allImageBtn.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          int count = prevBtns.size();
+          for(int i=0; i < count; i++) {
+            prevBtns.get(0).performClick();
+          }
+        }
+      });
+  }
 
 
   // 디시콘 카테고리, 디시콘 버튼 핸들링을 시작하는 메소드

@@ -11,5 +11,6 @@ import java.util.List;
 public class MaruModel {
   private String no;
   private String url;
+  private String origin;
   private List<String> imagesUrls;
 }

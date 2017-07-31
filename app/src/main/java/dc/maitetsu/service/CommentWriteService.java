@@ -88,14 +88,15 @@ enum CommentWriteService {
     data.put("no", cwd.getNo());
     data.put("id", cwd.getId());
     data.put("board_id", cwd.getBoard_id());
-    data.put("board_name", cwd.getBoard_name());
     data.put("user_no", cwd.getUser_no());
     data.put("ko_name", cwd.getKo_name());
     data.put("subject", cwd.getSubject());
+    data.put("board_name", cwd.getBoard_name());
     data.put("date_time", URLEncoder.encode(cwd.getDate_time(), "UTF-8"));
     data.put("ip", cwd.getIp());
     data.put("best_chk", "");
     data.put("userToken", cwd.getUserToken());
+    data.put("rand_code", "");
     data.put("con_key", getAccessToken(articleUrl, userAgent));
     return data;
   }

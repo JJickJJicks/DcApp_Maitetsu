@@ -203,6 +203,18 @@
                     android:duplicateParentState="true"
                     android:background="@color/colorAccent"/>
 
+            <ImageView android:layout_width="50dp"
+                       android:layout_height="50dp"
+                       android:layout_marginTop="40dp"
+                       android:layout_marginBottom="40dp"
+                       android:layout_gravity="center"
+                       android:adjustViewBounds="true"
+                       android:tint="?attr/editTextColor"
+                       android:scaleType="fitXY"
+                       android:visibility="gone"
+                       android:id="@+id/article_read_image_all"
+                       android:src="@drawable/all_image"/>
+
 
             <LinearLayout android:layout_width="match_parent"
                           android:layout_height="wrap_content"

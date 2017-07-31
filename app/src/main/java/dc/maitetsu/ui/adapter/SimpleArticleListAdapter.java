@@ -22,6 +22,8 @@ import dc.maitetsu.utils.KeywordUtils;
 import dc.maitetsu.utils.UserTypeManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @since 2017-04-22
@@ -32,7 +34,7 @@ import java.util.ArrayList;
 public class SimpleArticleListAdapter extends BaseAdapter {
   private HasViewModelFragment fragment;
   private CurrentData currentData;
-  private ArrayList<SimpleArticle> simpleArticles = new ArrayList<>();
+  private List<SimpleArticle> simpleArticles = Collections.synchronizedList(new ArrayList<SimpleArticle>());
 
   public SimpleArticleListAdapter(HasViewModelFragment fragment) {
     this.fragment = fragment;
@@ -78,7 +80,7 @@ public class SimpleArticleListAdapter extends BaseAdapter {
 
     SimpleArticle simpleArticle = simpleArticles.get(position);
     if (simpleArticle.getArticleType() == SimpleArticle.ArticleType.IMG)
-      itemImg.setImageDrawable(res.getDrawable(R.drawable.image));
+      itemImg.setImageDrawable(res.getDrawable(R.drawable.all_image));
     else if(simpleArticle.getArticleType() == SimpleArticle.ArticleType.NO_IMG)
       itemImg.setImageDrawable(res.getDrawable(R.drawable.none_image));
     else if(simpleArticle.getArticleType() == SimpleArticle.ArticleType.MOV)
