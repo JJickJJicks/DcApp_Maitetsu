@@ -126,7 +126,7 @@ public class ArticleWriteViewModel {
     if(files != null) {
       for (final File file : files) {
         final ImageButton attachImg = new ImageButton(activity);
-        ContentUtils.loadBitmapFromLocal(activity, file, attachImg);
+        ContentUtils.loadBitmapFromLocal(activity, file, attachImg, currentData);
         attachImg.setAdjustViewBounds(true);
         attachImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
         attachImg.setBackgroundColor(android.R.color.transparent);

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
-import dc.maitetsu.models.MaruSimpleModel;
+import dc.maitetsu.models.MaruModel;
 import dc.maitetsu.ui.MaruViewerDetailActivity;
 import dc.maitetsu.ui.viewmodel.MaruViewerViewModel;
 import dc.maitetsu.utils.ContentUtils;
@@ -26,7 +26,7 @@ import java.util.List;
  * @since 2017-04-29
  */
 public class MaruListAdapter extends BaseAdapter {
-  private List<MaruSimpleModel> maruSimpleModels = new ArrayList<>();
+  private List<MaruModel> maruModels = new ArrayList<>();
   private MaruViewerViewModel viewModel;
   private Fragment fragment;
   private CurrentData currentData;
@@ -39,12 +39,12 @@ public class MaruListAdapter extends BaseAdapter {
 
   @Override
   public int getCount() {
-    return maruSimpleModels.size();
+    return maruModels.size();
   }
 
   @Override
   public Object getItem(int i) {
-    return maruSimpleModels.get(i);
+    return maruModels.get(i);
   }
 
   @Override
@@ -52,12 +52,12 @@ public class MaruListAdapter extends BaseAdapter {
     return i;
   }
 
-  public void addItem(MaruSimpleModel maruSimpleModel) {
-    maruSimpleModels.add(maruSimpleModel);
+  public void addItem(MaruModel maruModel) {
+    maruModels.add(maruModel);
   }
 
   public void clearItems() {
-    maruSimpleModels.clear();
+    maruModels.clear();
   }
 
   public void refreshCurrentData(){
@@ -77,11 +77,11 @@ public class MaruListAdapter extends BaseAdapter {
     TextView title = (TextView) convertView.findViewById(R.id.maru_list_item_title);
     TextView date = (TextView) convertView.findViewById(R.id.maru_list_item_date);
 
-    final MaruSimpleModel model = maruSimpleModels.get(position);
+    final MaruModel model = maruModels.get(position);
 
     // 섬네일 로드
     ContentUtils.loadBitmapFromUrl(fragment.getActivity(), 0, null, model.getThumbUrl(),
-                            model.getThumbUrl(), thumb);
+                            model.getThumbUrl(), thumb, currentData);
     viewModel.getThumbList().add(thumb);
 
     // 제목 날짜
@@ -96,7 +96,7 @@ public class MaruListAdapter extends BaseAdapter {
       public void onClick(View view) {
         Intent intent = new Intent(fragment.getActivity(), MaruViewerDetailActivity.class);
         //추가정보
-        intent.putExtra("data", model);
+        intent.putExtra("simpleData", model);
 
         if(CurrentDataManager.getInstance(fragment.getActivity().getApplicationContext()).isArticleTabVib())
           VibrateUtils.call(fragment.getActivity().getApplicationContext(), VibrateUtils.VIBRATE_DURATION_SHORT);

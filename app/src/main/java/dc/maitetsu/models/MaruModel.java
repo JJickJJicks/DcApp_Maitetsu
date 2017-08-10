@@ -1,16 +1,23 @@
 package dc.maitetsu.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * @since 2017-04-29
  */
+
+
 @Data
-public class MaruModel {
+@AllArgsConstructor
+@NoArgsConstructor
+public class MaruModel implements Serializable{
   private String no;
-  private String url;
-  private String origin;
-  private List<String> imagesUrls;
+  private String thumbUrl;
+  private String title;
+  private String date;
+  private boolean isViewerModel;
 }

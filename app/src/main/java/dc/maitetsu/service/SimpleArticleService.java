@@ -104,12 +104,17 @@ enum SimpleArticleService {
       simpleArticle.setUrl(e.attr("abs:href"));
       simpleArticle.setCommentCount(getCommentCount(e));
       simpleArticle.setArticleType(getArticleType(e));
-      simpleArticle.setUserInfo(new UserInfo(e.select(".info .name").first().text(), CommonService.getUserType(e)));
+      simpleArticle.setUserInfo(new UserInfo(e.select(".info .name").first().text(),
+                                            CommonService.getUserType(e),
+                                            span.get(1).text()));
 
-      if (simpleArticle.getUserInfo().getUserType() == UserInfo.UserType.FLOW)
-        simpleArticle.setDate(span.get(1).text());
-      else simpleArticle.setDate(span.get(2).text());
+      if (simpleArticle.getUserInfo().getUserType() == UserInfo.UserType.FLOW){
+        simpleArticle.getUserInfo().setNickname(
+          simpleArticle.getUserInfo().getNickname() + span.get(1).text()
+        );
+      }
 
+      simpleArticle.setDate(span.get(2).text());
       simpleArticle.setRecommendCount(Integer.parseInt(span.get(spanSize - 1).html()));
       simpleArticle.setViewCount(Integer.parseInt(span.get(spanSize - 4).html()));
 

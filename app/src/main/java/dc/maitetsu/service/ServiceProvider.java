@@ -345,10 +345,12 @@ public class ServiceProvider {
         try {
           if (CommentWriteService.getInstance
                   .write(currentData.getLoginCookies(), USER_AGENT, articleDetail,
-                  articleUrl, comment)) {
+                          articleUrl, comment)) {
             MainUIThread.showToast(activity, activity.getString(R.string.comment_submit_success));
             refreshComment(activity, viewModel, articleUrl);
           } else throw new Exception();
+        } catch (IllegalAccessException ie) {
+          MainUIThread.showToast(activity, ie.getMessage());
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.comment_submit_failure));
         }

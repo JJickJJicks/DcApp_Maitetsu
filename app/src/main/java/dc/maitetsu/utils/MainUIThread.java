@@ -40,6 +40,7 @@ import dc.maitetsu.ui.fragment.GalleryListFragment;
 import dc.maitetsu.ui.fragment.MaruViewerFragment;
 import dc.maitetsu.ui.listener.ImageViewerListener;
 import dc.maitetsu.ui.viewmodel.*;
+import lombok.val;
 
 import java.util.List;
 
@@ -50,6 +51,7 @@ import java.util.List;
 public class MainUIThread {
   private static Toast toast;  // 이전에 띄운 토스트가 있다면 제거하고 출력한다.
   private static Snackbar snackbar;
+  private static int IMAGE_LOAD_COUNT = 20;
 
   /**
    * 이미 있는 게시물에 새로운 게시물들을 추가하는 메소드
@@ -100,7 +102,7 @@ public class MainUIThread {
    */
   public static void refreshMaruListView(final MaruViewerFragment fragment,
                                          final boolean resetSearchKeyword) {
-    if(fragment == null) return;
+    if(fragment == null || fragment.getActivity() == null || fragment.getPresenter() == null) return;
 
     final CurrentData currentData = CurrentDataManager.getInstance((fragment).getContext());
     currentData.setPage(1);
@@ -139,7 +141,7 @@ public class MainUIThread {
   /**
    * 마루 결과 UI적용
    */
-  public static void setMaruSearchResult(final List<MaruSimpleModel> maruSearchResult,
+  public static void setMaruSearchResult(final List<MaruModel> maruSearchResult,
                                          final MaruViewerFragment fragment,
                                          final boolean doClear) {
     fragment.getActivity().runOnUiThread(new Runnable() {
@@ -356,16 +358,18 @@ public class MainUIThread {
    */
   static void setImageView(final Activity activity,
                            final ImageView imageView,
-                           final byte[] bytes) {
+                           final byte[] bytes,
+                           final CurrentData currentData) {
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        Glide.with(activity
+        val imm = Glide.with(activity
                 .getApplicationContext())
                 .load(bytes)
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(imageView);
+                .diskCacheStrategy(DiskCacheStrategy.NONE);
+//        if(currentData.isLowResolution()) imm.fitCenter();
+                imm.into(imageView);
       }
     });
   }
@@ -390,9 +394,8 @@ public class MainUIThread {
         Glide.with(activity.getApplicationContext())
                 .load(bytes)
                 .skipMemoryCache(true)
+                .dontTransform()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .fitCenter()
-                .override(imageView.getMaxHeight(), Target.SIZE_ORIGINAL)
                 .listener(new RequestListener<byte[], GlideDrawable>() {
                   @Override
                   public boolean onException(Exception e, byte[] model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -434,14 +437,15 @@ public class MainUIThread {
                                   final CurrentData currentData,
                                   final LinearLayout imageLayout,
                                   final List<ImageView> imageViews,
-                                  final MaruModel maruModel) {
+                                  final MaruContentModel maruContentModel,
+                                  final int start) {
 
     final SparseArray<byte[]> imageBytes = new SparseArray<>();
 
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        Resources res = activity.getResources();
+        final Resources res = activity.getResources();
         LinearLayout.LayoutParams il
                 = new LinearLayout.LayoutParams
                 (LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -463,7 +467,7 @@ public class MainUIThread {
           @Override
           public void onClick(View view) {
             Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(maruModel.getUrl()));
+                    Uri.parse(maruContentModel.getUrl()));
             activity.startActivity(intent);
           }
         });
@@ -483,24 +487,44 @@ public class MainUIThread {
 
         imageLayout.removeAllViews();
 
-        for(int i=0; i < maruModel.getImagesUrls().size(); i++ ) {
+        for(int i = 0; i + start < maruContentModel.getImagesUrls().size(); i++ ) {
+          if(i > IMAGE_LOAD_COUNT) {
+            final int nextStart = i + start;
+            Button continueBtn = new Button(activity);
+            continueBtn.setLayoutParams(btnLayout);
+            continueBtn.setGravity(Gravity.CENTER);
+            continueBtn.setText(res.getString(R.string.next_page_load));
+            ButtonUtils.setBtnTheme(activity, currentData, continueBtn);
+            continueBtn.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View view) {
+                for (ImageView imageView : imageViews) {
+                  imageView.setImageBitmap(null);
+                }
+                imageBytes.clear();
+                imageViews.clear();
+                addMaruImage(activity, currentData, imageLayout, imageViews, maruContentModel, nextStart);
+              }
+            });
+            imageLayout.addView(continueBtn);
+            break;
+          }
           imageBytes.put(i, null); // initialize
-          String imageUrl = maruModel.getImagesUrls().get(i);
+          String imageUrl = maruContentModel.getImagesUrls().get(i + start);
           ImageView imageView = new ImageView(activity);
           imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
           imageView.setLayoutParams(il);
           imageViews.add(imageView);
-          ContentUtils.loadBitmapFromUrl(activity, i, imageBytes, imageUrl, maruModel.getOrigin(), imageView);
-          imageView.setOnClickListener(ImageViewerListener.get(activity, maruModel.getNo(), i, imageBytes, true));
+          ContentUtils.loadBitmapFromUrl(activity, i, imageBytes, imageUrl, maruContentModel.getOrigin(), imageView, currentData);
+          imageView.setOnClickListener(ImageViewerListener.get(activity, maruContentModel.getNo(), i, imageBytes, true));
           imageLayout.addView(imageView);
         }
 
-        imageLayout.addView(closeButton);
+          imageLayout.addView(closeButton);
       }
 
     });
 
   }
-
 
 }

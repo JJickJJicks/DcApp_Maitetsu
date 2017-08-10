@@ -9,7 +9,7 @@ import android.widget.ListView;
 import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
-import dc.maitetsu.models.MaruSimpleModel;
+import dc.maitetsu.models.MaruModel;
 import dc.maitetsu.utils.MainUIThread;
 import dc.maitetsu.ui.adapter.MaruListAdapter;
 import dc.maitetsu.ui.fragment.MaruViewerFragment;
@@ -92,10 +92,10 @@ public class MaruViewerViewModel {
     ContentUtils.clearContext(fragment.getContext());
   }
 
-  public void addItems(List<MaruSimpleModel> simpleArticles) {
+  public void addItems(List<MaruModel> simpleArticles) {
     adapter.refreshCurrentData();
 
-    for (MaruSimpleModel simpleArticle : simpleArticles) {
+    for (MaruModel simpleArticle : simpleArticles) {
       adapter.addItem(simpleArticle);
     }
     adapter.notifyDataSetChanged();

@@ -4,6 +4,7 @@ package dc.maitetsu.service;
 import dc.maitetsu.models.ArticleDetail;
 import dc.maitetsu.models.Comment;
 import dc.maitetsu.models.UserInfo;
+import dc.maitetsu.utils.TextUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
@@ -65,13 +66,15 @@ public enum ArticleDetailService {
   private void setUserInfoAndDate(ArticleDetail article, Elements userElements) {
     if(userElements.size() > 2) {
       UserInfo userInfo = new UserInfo(userElements.first().text(),
-              CommonService.getUserType(userElements.get(1)));
+              CommonService.getUserType(userElements.get(1)),
+              "");
       article.setUserInfo(userInfo);
       article.setDate(userElements.get(2).text());
     } else {
       UserInfo userInfo = new UserInfo(userElements.first().text()
                             + "(" + userElements.parents().next().select(".ip").text() + ")",
-                                    UserInfo.UserType.FLOW);
+                              UserInfo.UserType.FLOW,
+                              "");
       article.setUserInfo(userInfo);
       article.setDate(userElements.get(1).text());
     }
@@ -313,13 +316,20 @@ public enum ArticleDetailService {
     List<Comment> comments = new ArrayList<>();
 
     for (Element e : innerBestSpan) {
+      String ipAddr = e.select(".ip").text().trim();
+      String userIpAddr = "";
+      String[] userIpAddrSplit = ipAddr.split("\\.");
+      if(!ipAddr.isEmpty() && userIpAddrSplit.length > 1) {
+        userIpAddr = userIpAddrSplit[0] + "." + userIpAddrSplit[1];
+      }
 
       Comment comment = new Comment(
               new UserInfo(e.select(".id").text()
                       .replace("[", "")
                       .replace("]", "").trim(),
-                      CommonService.getUserType(e.select("a span").first())),
-              e.select(".ip").text().trim(),
+                      CommonService.getUserType(e.select("a span").first()),
+                      userIpAddr),
+              ipAddr,
               e.select(".title .txt").text().trim(),
               e.select(".info .date").text(),
               e.select(".title .txt img").attr("abs:src"),

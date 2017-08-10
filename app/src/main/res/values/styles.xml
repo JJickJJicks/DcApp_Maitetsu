@@ -26,6 +26,7 @@
         <item name="actionBarSize">40dp</item>
         <item name="preferenceTheme">@style/BasicPreferenceTheme</item>
         <item name="android:buttonStyle">@style/BasicButton</item>
+        <item name="android:spinnerDropDownItemStyle">@style/WhiteSpinner</item>
     </style>
 
 
@@ -44,6 +45,7 @@
         <item name="dialogTheme">@style/DarkTheme.DialogCustom</item>
         <item name="android:buttonStyle">@style/DarkButton</item>
         <item name="android:textColorHint">@color/colorGray</item>
+        <item name="android:spinnerDropDownItemStyle">@style/BlackSpinner</item>
     </style>
 
     <style name="BasicButton" parent="Base.Widget.AppCompat.Button">
@@ -60,6 +62,15 @@
         <item name="android:textColor">@color/colorWhite</item>
     </style>
 
+    <style name="WhiteSpinner" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:background">@color/colorWhite</item>
+    </style>
+
+    <style name="BlackSpinner" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
+        <item name="android:background">@color/colorBlack</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
 
     <style name="preferenceBackground" parent="android:Widget.TextView">
         <item name="android:background">@android:color/transparent</item>

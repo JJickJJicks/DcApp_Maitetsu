@@ -26,6 +26,9 @@
     <string name="search_button">검색</string>
     <string name="search_close_button">검색결과 닫기</string>
     <string name="close">닫기</string>
+    <string name="next_page_load">다음 페이지 로드</string>
+    <string name="continue_article_load">내용 이어서 로드</string>
+    <string name="next_episode">다음화 보기</string>
     <string name="open">열기</string>
     <string name="setting">설정</string>
     <string name="not_visited_gallery">방문한 갤러리가 없습니다.\n갤러리를 검색해 방문하세요</string>
@@ -93,7 +96,7 @@
     <string name="setting_login">설정을 적용하고 다시 로그인</string>
 
     <string name="setting_image_attach_title">첨부할 이미지를 선택하세요</string>
-    <string name="setting_image_category">이미지와 영상</string>
+    <string name="setting_image_category">이미지와 영상, 글 내용</string>
     <string name="setting_movie_check">영상 링크를 무시합니다</string>
     <string name="setting_image_check">이미지를 바로 보지 않습니다</string>
     <string name="setting_dccon_check">디시콘을 바로 보지 않습니다</string>
@@ -158,6 +161,7 @@
     <string name="download_success">%1$s\n다운로드 되었습니다.</string>
 
 
+    <string name="is_split_load">첨부된 이미지가 많은 경우 나눠서 로드합니다</string>
 
 
 </resources>

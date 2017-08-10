@@ -36,7 +36,7 @@ public class ArticleDetailActivity extends SwipeBackActivity {
   @BindView(R.id.article_detail_dccon_layout) LinearLayout dcconLayout;
   @BindView(R.id.article_detail_scroll)  ScrollView scrollView;
   private boolean isModifyDestroy = false;
-
+  private int scrollY = 0;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +99,6 @@ public class ArticleDetailActivity extends SwipeBackActivity {
     });
   }
 
-
-
   @Override
   public void onBackPressed() {
     if(!isVisibleDcconlayout()){
@@ -120,11 +118,26 @@ public class ArticleDetailActivity extends SwipeBackActivity {
 
 
   @Override
+  protected void onPause() {
+    super.onPause();
+    scrollView.computeScroll();
+    scrollY = scrollView.getScrollY();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    scrollView.computeScroll();
+    scrollView.setScrollY(scrollY);
+  }
+
+  @Override
   protected void onDestroy() {
     super.onDestroy();
     if(!isModifyDestroy) {
       ThreadPoolManager.shutdownServiceEc();
       ThreadPoolManager.shutdownContentEc();
+      articleDetailViewModel.clearImageBytes();
       ImageData.clearHoldImageBytes();
     }
   }

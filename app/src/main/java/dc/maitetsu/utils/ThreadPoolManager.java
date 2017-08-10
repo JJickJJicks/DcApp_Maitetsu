@@ -15,7 +15,16 @@ public class ThreadPoolManager {
   private static ExecutorService imageViewEc;
 
   private static void setServiceEc() {
-    serviceEc = Executors.newFixedThreadPool(2, new ThreadFactory() {
+//    serviceEc = Executors.newFixedThreadPool(2, new ThreadFactory() {
+//      @Override
+//      public Thread newThread(Runnable runnable) {
+//        Thread t = Executors.defaultThreadFactory().newThread(runnable);
+//        t.setDaemon(true);
+//        return t;
+//      }
+//    });
+
+    serviceEc = Executors.newCachedThreadPool(new ThreadFactory() {
       @Override
       public Thread newThread(Runnable runnable) {
         Thread t = Executors.defaultThreadFactory().newThread(runnable);

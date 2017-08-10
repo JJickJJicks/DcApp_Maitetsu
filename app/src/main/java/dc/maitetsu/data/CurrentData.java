@@ -41,6 +41,7 @@ public class CurrentData implements Serializable {
   private long lastLogin;
   private int serPos;
   private int nextSerPos;
+  private boolean isSplitLoad;
 
   public GalleryInfo getGalleryInfo() {
     GalleryInfo galleryInfo;

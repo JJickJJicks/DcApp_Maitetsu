@@ -29,6 +29,7 @@ public class CurrentDataManager {
   private static final String USERTYPE = "USERTYPE";
   private static final String KEY = "KEY";
   private static final String VALUE = "VALUE";
+  private static final String IP = "IP";
   private static final String RECOMMEND = "RECOMMEND";
 
   private static CurrentData currentData;
@@ -59,6 +60,7 @@ public class CurrentDataManager {
     editor.putBoolean("touch_image_open", currentData.isTouchImageOpen());
     editor.putBoolean("maru_viewer", currentData.isMaruViewer());
     editor.putBoolean("movie_ignore", currentData.isMovieIgnore());
+    editor.putBoolean("is_split_load", currentData.isSplitLoad());
     saveMyGallList(currentData, editor);
     saveFilterUserList(currentData, editor);
     saveDcconPackage(currentData, editor);
@@ -102,9 +104,11 @@ public class CurrentDataManager {
     editor.putInt("filter_user_list_size", currentData.getFilterUserList().size());
     for (int i = 0; i < currentData.getFilterUserList().size(); i++) {
       String nickname = currentData.getFilterUserList().get(i).getNickname();
+      String ip = currentData.getFilterUserList().get(i).getIpAdd();
       String userType = currentData.getFilterUserList().get(i).getUserType().toString();
       editor.putString(FILTER_USER_LIST + i + NICKNAME, nickname);
       editor.putString(FILTER_USER_LIST + i + USERTYPE, userType);
+      editor.putString(FILTER_USER_LIST + i + IP, ip);
     }
   }
 
@@ -181,6 +185,7 @@ public class CurrentDataManager {
     boolean touchImageOpen = sharedPreferences.getBoolean("touch_image_open", true);
     boolean maruViewer = sharedPreferences.getBoolean("maru_viewer", false);
     boolean movieIgnore = sharedPreferences.getBoolean("movie_ignore", false);
+    boolean isSplitLoad = sharedPreferences.getBoolean("is_split_load", true);
 
     String searchWord = sharedPreferences.getString("search_word", "");
 
@@ -200,6 +205,8 @@ public class CurrentDataManager {
     loadCurrentData.setTouchImageOpen(touchImageOpen);
     loadCurrentData.setMaruViewer(maruViewer);
     loadCurrentData.setMovieIgnore(movieIgnore);
+    loadCurrentData.setSplitLoad(isSplitLoad);
+
     loadMyGallList(sharedPreferences, loadCurrentData);
     loadLoginCookie(sharedPreferences, loadCurrentData);
     loadFilteruserList(sharedPreferences, loadCurrentData);
@@ -249,8 +256,11 @@ public class CurrentDataManager {
     int filterUserListSize = sharedPreferences.getInt("filter_user_list_size", 0);
     for (int i = 0; i < filterUserListSize; i++) {
       String nickname = sharedPreferences.getString(FILTER_USER_LIST + i + NICKNAME, "");
+      String ip = sharedPreferences.getString(FILTER_USER_LIST + i + IP, "");
       String userType = sharedPreferences.getString(FILTER_USER_LIST + i + USERTYPE, "");
-      currentData.getFilterUserList().add(new UserInfo(nickname, UserInfo.UserType.valueOf(userType)));
+      currentData.getFilterUserList().add(new UserInfo(nickname,
+                                                        UserInfo.UserType.valueOf(userType),
+                                                        ip));
     }
   }
 

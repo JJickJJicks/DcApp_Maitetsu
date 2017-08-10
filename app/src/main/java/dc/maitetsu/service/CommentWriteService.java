@@ -27,7 +27,7 @@ enum CommentWriteService {
                 String userAgent,
                 ArticleDetail articleDetail,
                 String articleUrl,
-                String comment) throws IOException, ParseException {
+                String comment) throws IOException, ParseException, IllegalAccessException {
 
     Document result = Jsoup.connect(COMMENT_WRITE_URL).cookies(loginCookie)
                       .userAgent(userAgent)
@@ -45,6 +45,7 @@ enum CommentWriteService {
 
     JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
     String msg = (String) jsonObject.get("msg");
+    if(msg.equals("44")) throw new IllegalAccessException((String) jsonObject.get("data"));
     return msg.equals("1");
   }
 

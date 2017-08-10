@@ -20,16 +20,24 @@
             android:title="@string/setting_image_category">
 
         <CheckBoxPreference
+                android:key="is_split_load"
+                android:title="@string/is_split_load"
+                android:defaultValue="true"/>
+
+        <CheckBoxPreference
                 android:key="movie_ignore"
                 android:defaultValue="false"
                 android:title="@string/setting_movie_check"/>
         <CheckBoxPreference
                 android:key="image_check"
+                android:defaultValue="false"
                 android:title="@string/setting_image_check"/>
 
         <CheckBoxPreference
                 android:key="dccon_check"
+                android:defaultValue="false"
                 android:title="@string/setting_dccon_check"/>
+
 
     </PreferenceCategory>
 

@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -16,7 +16,7 @@ import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
 import dc.maitetsu.data.ImageData;
-import dc.maitetsu.models.MaruSimpleModel;
+import dc.maitetsu.models.MaruModel;
 import dc.maitetsu.service.MaruServiceProvider;
 import dc.maitetsu.utils.ThreadPoolManager;
 
@@ -27,20 +27,21 @@ public class MaruViewerDetailActivity extends AppCompatActivity {
   private List<ImageView> imageViews = new ArrayList<>();
   @BindView(R.id.maru_detail_view_layout) LinearLayout layout;
   @BindView(R.id.maru_detail_view_title) TextView pageTitle;
+  @BindView(R.id.maru_detail_scroll) ScrollView scrollView;
+  private int scrollY = 0;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    MaruSimpleModel model = (MaruSimpleModel) getIntent()
-                            .getSerializableExtra("data");
+    MaruModel model = (MaruModel) getIntent()
+                            .getSerializableExtra("simpleData");
     CurrentData currentData = CurrentDataManager.getInstance(this);
     setTheme(currentData);
     setContentView(R.layout.activity_maru_detail_view);
     ButterKnife.bind(this);
     pageTitle.setText(model.getTitle());
-
     MaruServiceProvider.getInstance().addMaruImages(model.getNo(),
-                            this, currentData, layout, imageViews);
+                            this, currentData, layout, imageViews, model.isViewerModel());
   }
 
 
@@ -55,6 +56,22 @@ public class MaruViewerDetailActivity extends AppCompatActivity {
       }
     }
   }
+
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    scrollView.computeScroll();
+    scrollY = scrollView.getScrollY();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    scrollView.computeScroll();
+    scrollView.setScrollY(scrollY);
+  }
+
 
   @Override
   protected void onDestroy() {

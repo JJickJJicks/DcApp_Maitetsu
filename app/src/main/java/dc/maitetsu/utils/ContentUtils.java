@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import dc.maitetsu.R;
+import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.service.ServiceProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -45,12 +46,13 @@ public class ContentUtils {
    */
   public static void loadBitmapFromLocal(final Activity activity,
                                          final File file,
-                                         final ImageView imageView) {
+                                         final ImageView imageView,
+                                         final CurrentData currentData) {
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
-          MainUIThread.setImageView(activity, imageView, IOUtils.toByteArray(new FileInputStream(file)));
+          MainUIThread.setImageView(activity, imageView, IOUtils.toByteArray(new FileInputStream(file)), currentData);
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
         }
@@ -72,7 +74,8 @@ public class ContentUtils {
                                        final SparseArray<byte[]> imageBytes,
                                        final String imageUrl,
                                        final String origin,
-                                       final ImageView imageView) {
+                                       final ImageView imageView,
+                                       final CurrentData currentData) {
 
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
@@ -90,7 +93,7 @@ public class ContentUtils {
                   .bodyAsBytes();
 
           if (imageBytes != null) imageBytes.put(position, bytes);
-          MainUIThread.setImageView(activity, imageView, bytes);
+          if (imageView != null) MainUIThread.setImageView(activity, imageView, bytes, currentData);
         } catch (Exception e) {
           Log.e("err", imageUrl);
           Log.e("err", e.getMessage());
@@ -141,13 +144,14 @@ public class ContentUtils {
    */
   public static void loadBitmapFromUrlWithLocalCheck(final Activity activity,
                                                      final String url,
-                                                     final ImageView imageView) {
+                                                     final ImageView imageView,
+                                                     final CurrentData currentData) {
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
           byte[] bytes = getOrSave(activity, url);
-          MainUIThread.setImageView(activity, imageView, bytes);
+          MainUIThread.setImageView(activity, imageView, bytes, currentData);
         } catch (Exception e) {
           if (!e.getMessage().equals("thread interrupted")) // 쓰레드 인터럽트 예외는 무시
             MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));

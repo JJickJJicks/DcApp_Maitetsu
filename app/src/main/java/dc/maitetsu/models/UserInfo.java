@@ -14,6 +14,7 @@ public class UserInfo implements Serializable {
 
   private String nickname;
   private UserType userType;
+  private String ipAdd;
 
   public enum UserType {
     FIX_GALLOG, FLOW_GALLOG, FLOW

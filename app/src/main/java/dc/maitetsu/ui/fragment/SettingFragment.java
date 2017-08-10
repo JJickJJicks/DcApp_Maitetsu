@@ -38,7 +38,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
     setFilterUserButton(this);
     setFilterUserListButton(this);
     setDcmysMode(this);
-    setVibButtons(this);
+    setVibAndResolutionButtons(this);
     setImageAndDcconTouch(this);
     setMovieIgnore(this);
   }
@@ -113,17 +113,11 @@ public class SettingFragment extends PreferenceFragmentCompat {
         return false;
       }
     });
-
-
-
-
-
-
-
   }
 
-  // 진동 버튼 선택시 데이터 인스턴스에도 적용
-  private void setVibButtons(final SettingFragment fragment) {
+
+  // 진동 버튼, 저화질 선택시 데이터 인스턴스에도 적용
+  private void setVibAndResolutionButtons(final SettingFragment fragment) {
     final Preference articleTabVib = fragment.getPreferenceManager()
             .findPreference("article_tab_vib");
     articleTabVib.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -144,6 +138,18 @@ public class SettingFragment extends PreferenceFragmentCompat {
         currentData = CurrentDataManager.getInstance(fragment.getContext());
         currentData
                 .setArticleCloseVib(!currentData.isArticleCloseVib());
+        return false;
+      }
+    });
+
+    final Preference isLowResolution = fragment.getPreferenceManager()
+            .findPreference("is_split_load");
+    isLowResolution.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+      @Override
+      public boolean onPreferenceClick(Preference preference) {
+        currentData = CurrentDataManager.getInstance(fragment.getContext());
+        currentData
+                .setSplitLoad(!currentData.isSplitLoad());
         return false;
       }
     });

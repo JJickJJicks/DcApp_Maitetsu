@@ -30,7 +30,7 @@ enum ArticleDeleteService {
    * @throws IOException    the io exception
    * @throws ParseException the parse exception
    */
-  boolean delete(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail) throws IOException, ParseException {
+  boolean delete(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail) throws IOException, ParseException, IllegalAccessException {
 
     Document result = Jsoup.connect(ARTICLE_DELETE_URL).cookies(loginCookie)
             .userAgent(userAgent)
@@ -47,6 +47,7 @@ enum ArticleDeleteService {
 
     JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
     String msg = (String) jsonObject.get("msg");
+    if(msg.equals("23")) throw new IllegalAccessException((String) jsonObject.get("data"));
     return msg.equals("1");
   }
 

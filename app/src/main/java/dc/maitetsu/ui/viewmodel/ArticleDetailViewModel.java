@@ -44,7 +44,9 @@ public class ArticleDetailViewModel {
   public ImageView deleteButton;
   private SparseArray<byte[]> imageBytes;
   private List<ImageView> prevBtns;
+  private List<ImageView> imageViews;
   private boolean isImageCheck = false;
+  private static final int CONTENT_LOAD_IMAGE_COUNT = 15;
 
   public ArticleDetailViewModel(ArticleDetailActivity articleDetailActivity,
                                 ArticleDetail articleDetail, String articleUrl) {
@@ -56,21 +58,22 @@ public class ArticleDetailViewModel {
     this.commentText = (EditText) articleDetailActivity.findViewById(R.id.article_detail_comment);
     this.viewModel = this;
     this.currentData = CurrentDataManager.getInstance(articleDetailActivity);
-    this.imageBytes =  new SparseArray<>();
+    this.imageBytes = new SparseArray<>();
     this.prevBtns = Collections.synchronizedList(new ArrayList<ImageView>());
+    this.imageViews = new ArrayList<>();
     this.isImageCheck = currentData.isImageCheck();
 
     setAllImageViewButton(articleDetailActivity);
     setMyDcconList(articleDetailActivity, currentData);
     new ArticleDetailStaticApperance(articleDetailActivity, this, articleDetail, articleUrl, currentData)
             .invoke();
-    setContent(articleDetailActivity);
+    setContent(articleDetailActivity, 0);
 
     clearComments();
     addComments(articleDetailActivity, this, articleDetail.getComments());
   }
 
-  public void setContent(final Activity activity) {
+  private void setContent(final Activity activity, final int start) {
     final LinearLayout contentLayout = (LinearLayout) activity.findViewById(R.id.article_read_image_layout);
     final LinearLayout.LayoutParams webViewParams
             = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -79,20 +82,58 @@ public class ArticleDetailViewModel {
     int dp15 = DipUtils.getDp(res, 15);
     int dp5 = DipUtils.getDp(res, 5);
     int imagePosition = 0;
+    int counter = 0;
     contentLayout.removeAllViews();
+    activity.findViewById(R.id.article_detail_scroll).setScrollY(0);
 
+    for (int i = 0; i + start < articleDetail.getContentDataList().size(); i++) {
 
-    for(final ArticleDetail.ContentData data : articleDetail.getContentDataList()) {
-      if(!data.getText().toString().isEmpty()) {
+      final ArticleDetail.ContentData data = articleDetail.getContentDataList().get(i + start);
+
+      // 이미지가 30개 이상이면 글 내용을 나누어 표시한다.
+      if (counter > CONTENT_LOAD_IMAGE_COUNT && currentData.isSplitLoad()) {
+        final int nextStart = i + start;
+        ThreadPoolManager.getContentEc().submit(new Runnable() {
+          @Override
+          public void run() {
+            LinearLayout.LayoutParams btnLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            btnLayout.setMargins(DipUtils.getDp(res, 40), DipUtils.getDp(res, 20),
+                    DipUtils.getDp(res, 40), DipUtils.getDp(res, 20));
+
+            final Button continueBtn = new Button(activity);
+            continueBtn.setLayoutParams(btnLayout);
+            continueBtn.setGravity(Gravity.CENTER);
+            continueBtn.setText(res.getString(R.string.continue_article_load));
+            ButtonUtils.setBtnTheme(activity, currentData, continueBtn);
+            continueBtn.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View view) {
+                for (ImageView imageView : imageViews) { imageView.setImageBitmap(null);}
+                imageViews.clear();
+                imageBytes.clear();
+                setContent(activity, nextStart); }
+            });
+            activity.runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                 contentLayout.addView(continueBtn);
+              }
+            });
+          }
+        });
+        break;
+      }
+
+      if (!data.getText().toString().isEmpty()) {
         addTextContent(activity, contentLayout, dp15, dp5, data);
-      }
-
-      else if(!data.getImageUrl().isEmpty()) {
+      } else if (!data.getImageUrl().isEmpty()) {
+        counter++;
         addImageContent(activity, imagePosition++, contentLayout, data);
-      }
-
-      else if(!data.getEmbedUrl().isEmpty()
+      } else if (!data.getEmbedUrl().isEmpty()
               && !currentData.isMovieIgnore()) {
+        counter++;
         addWebViewContent(activity, contentLayout, webViewParams, data);
       }
     }
@@ -107,6 +148,7 @@ public class ArticleDetailViewModel {
   }
 
   // 웹뷰가 필요한 영상 내용 추가
+
   private void addWebViewContent(final Activity activity,
                                  final LinearLayout contentLayout,
                                  final LinearLayout.LayoutParams webViewParams,
@@ -137,32 +179,32 @@ public class ArticleDetailViewModel {
     ThreadPoolManager.getContentEc().submit(new Runnable() {
       @Override
       public void run() {
-          final TextView textView = new TextView(activity);
-          textView.setAutoLinkMask(Linkify.WEB_URLS);
-          if (Build.VERSION.SDK_INT > 18) {
-            textView.setTextIsSelectable(true);
-          }
-          textView.setTextAppearance(activity, R.style.List_TitleText);
-          SpannableStringBuilder builder = KeywordUtils.getBuilder(TextUtils.replaceHTMLText(data.getText().toString()),
-                                                                    currentData.getSearchWord(),
-                                                                    null);
-          textView.setText(builder, TextView.BufferType.SPANNABLE);
-          textView.setPadding(dp15, dp5, dp15, dp5);
-          textView.setLineSpacing(dp5, 1.0f);
+        final TextView textView = new TextView(activity);
+        textView.setAutoLinkMask(Linkify.WEB_URLS);
+        if (Build.VERSION.SDK_INT > 18) {
+          textView.setTextIsSelectable(true);
+        }
+        textView.setTextAppearance(activity, R.style.List_TitleText);
+        SpannableStringBuilder builder = KeywordUtils.getBuilder(TextUtils.replaceHTMLText(data.getText().toString()),
+                currentData.getSearchWord(),
+                null);
+        textView.setText(builder, TextView.BufferType.SPANNABLE);
+        textView.setPadding(dp15, dp5, dp15, dp5);
+        textView.setLineSpacing(dp5, 1.0f);
 
-          String textMsg = textView.getText().toString();
-          String linkUrl = data.getLinkUrl();
-          if( !linkUrl.isEmpty()
-                  && !textMsg.contains(linkUrl)) {
-            textView.setText(textMsg + " : " + linkUrl);
-          }
+        String textMsg = textView.getText().toString();
+        String linkUrl = data.getLinkUrl();
+        if (!linkUrl.isEmpty()
+                && !textMsg.contains(linkUrl)) {
+          textView.setText(textMsg + " : " + linkUrl);
+        }
 
-          activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              contentLayout.addView(textView);
-            }
-          });
+        activity.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            contentLayout.addView(textView);
+          }
+        });
       }
     });
 
@@ -188,14 +230,15 @@ public class ArticleDetailViewModel {
         view.setDuplicateParentStateEnabled(true);
 
         final ImageView realImageView = (ImageView) view.findViewById(R.id.article_item_real_img);
+        imageViews.add(realImageView);
         realImageView.setDuplicateParentStateEnabled(true);
 
         imageBytes.put(imagePosition, null); // 이미지 갯수 설정
 
         // 이미지 뷰어 클릭 리스너
         realImageView.setOnClickListener(ImageViewerListener.get(activity,
-                                                            articleDetail.getCommentWriteData().getNo(),
-                                                            imagePosition, imageBytes, false));
+                articleDetail.getCommentWriteData().getNo(),
+                imagePosition, imageBytes, false));
 
         final ImageView prevImage = (ImageView) view.findViewById(R.id.article_item_prev_img);
         prevImage.setDuplicateParentStateEnabled(true);
@@ -207,12 +250,12 @@ public class ArticleDetailViewModel {
               prevBtns.remove(prevImage);
               checkAllImageViewButton(articleDetailActivity);
               prevImage.setVisibility(View.GONE);
-              ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePosition, imageBytes, imageUrl, articleDetail.getUrl(), realImageView);
+              ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePosition, imageBytes, imageUrl, articleDetail.getUrl(), realImageView, currentData);
             }
           });
         } else {
           prevImage.setVisibility(View.GONE);
-          ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePosition, imageBytes, imageUrl, articleDetail.getUrl(), realImageView);
+          ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePosition, imageBytes, imageUrl, articleDetail.getUrl(), realImageView, currentData);
         }
 
         activity.runOnUiThread(new Runnable() {
@@ -227,27 +270,27 @@ public class ArticleDetailViewModel {
   }
 
   // 이미지 전체 보기 버튼 체크
-  private void checkAllImageViewButton(Activity activity){
-      final ImageView allImageBtn = (ImageView) activity.findViewById(R.id.article_read_image_all);
-      if(prevBtns.size() > 1 && isImageCheck) {
-        isImageCheck = false;
-        allImageBtn.setVisibility(View.VISIBLE);
-      } else
-        allImageBtn.setVisibility(View.GONE);
+  private void checkAllImageViewButton(Activity activity) {
+    final ImageView allImageBtn = (ImageView) activity.findViewById(R.id.article_read_image_all);
+    if (prevBtns.size() > 1 && isImageCheck) {
+      isImageCheck = false;
+      allImageBtn.setVisibility(View.VISIBLE);
+    } else
+      allImageBtn.setVisibility(View.GONE);
   }
 
   // 이미지 전체 보기 버튼 핸들링
   private void setAllImageViewButton(Activity activity) {
-      final ImageView allImageBtn = (ImageView) activity.findViewById(R.id.article_read_image_all);
-      allImageBtn.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-          int count = prevBtns.size();
-          for(int i=0; i < count; i++) {
-            prevBtns.get(0).performClick();
-          }
+    final ImageView allImageBtn = (ImageView) activity.findViewById(R.id.article_read_image_all);
+    allImageBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        int count = prevBtns.size();
+        for (int i = 0; i < count; i++) {
+          prevBtns.get(0).performClick();
         }
-      });
+      }
+    });
   }
 
 
@@ -289,7 +332,7 @@ public class ArticleDetailViewModel {
   // 디시콘 카테고리 버튼을 만드는 메소드
   private ImageButton createDcconCategoryButton(Activity activity, DcConPackage dcConPackage) {
     ImageButton dcconCategoryBtn = new ImageButton(activity);
-    ContentUtils.loadBitmapFromUrlWithLocalCheck(activity, dcConPackage.getDccon_package_src(), dcconCategoryBtn);
+    ContentUtils.loadBitmapFromUrlWithLocalCheck(activity, dcConPackage.getDccon_package_src(), dcconCategoryBtn, currentData);
     dcconCategoryBtn.setBackgroundColor(Color.TRANSPARENT);
     dcconCategoryBtn.setAdjustViewBounds(true);
     dcconCategoryBtn.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -303,7 +346,7 @@ public class ArticleDetailViewModel {
                                       final GridLayout blockedLayout,
                                       final DcConPackage.DcCon dcCon) {
     ImageView btn = new ImageView(activity);
-    ContentUtils.loadBitmapFromUrlWithLocalCheck(activity, dcCon.getDccon_src(), btn);
+    ContentUtils.loadBitmapFromUrlWithLocalCheck(activity, dcCon.getDccon_src(), btn, currentData);
     btn.setAdjustViewBounds(true);
     btn.setScaleType(ImageView.ScaleType.FIT_CENTER);
     btn.setOnClickListener(new View.OnClickListener() {
@@ -394,7 +437,7 @@ public class ArticleDetailViewModel {
       @Override
       public void run() {
         LayoutInflater inflater = (LayoutInflater) commentLayout.getContext()
-                                                                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.comment_item, null);
         // 닉네임
         TextView nickName = (TextView) view.findViewById(R.id.comment_item_nickname);
@@ -430,7 +473,7 @@ public class ArticleDetailViewModel {
         TextView content = (TextView) view.findViewById(R.id.comment_item_content);
         content.setText(comment.getContent());
         if (Build.VERSION.SDK_INT > 18) {
-         content.setTextIsSelectable(true);
+          content.setTextIsSelectable(true);
         }
 
         // 디시콘 댓글일 때 처리
@@ -475,18 +518,21 @@ public class ArticleDetailViewModel {
         @Override
         public void onClick(View view) {
           commentText.requestFocus();
-          ContentUtils.loadBitmapFromUrlWithLocalCheck(articleDetailActivity, comment.getImgUrl(), dcconImg);
+          ContentUtils.loadBitmapFromUrlWithLocalCheck(articleDetailActivity, comment.getImgUrl(), dcconImg, currentData);
           dcconPrevImg.setVisibility(View.GONE);
           dcconImg.setVisibility(View.VISIBLE);
         }
       });
     } else {
-      ContentUtils.loadBitmapFromUrlWithLocalCheck(articleDetailActivity, comment.getImgUrl(), dcconImg);
+      ContentUtils.loadBitmapFromUrlWithLocalCheck(articleDetailActivity, comment.getImgUrl(), dcconImg, currentData);
       dcconImg.setVisibility(View.VISIBLE);
     }
 
   }
 
+  public void clearImageBytes() {
+    imageBytes.clear();
+  }
 
   public int getCommentLayoutCount() {
     return commentLayout.getChildCount();

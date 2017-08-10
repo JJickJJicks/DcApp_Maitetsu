@@ -1,16 +1,13 @@
 package dc.maitetsu.service;
 
-import android.text.TextUtils;
-import android.util.Log;
+import dc.maitetsu.models.MaruContentModel;
 import dc.maitetsu.models.MaruModel;
-import dc.maitetsu.models.MaruSimpleModel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,10 +22,9 @@ enum MaruService {
   private static final String PASS = "?pass=qndxkr";
   private static final String ORIGIN = "http://wasabisyrup.com/";
 
-
-  public List<MaruSimpleModel> getMaruSimpleModels(String userAgent, int page, String keyword) throws IOException {
+  public List<MaruModel> getMaruSimpleModels(String userAgent, int page, String keyword) throws IOException {
     Document rawData = getTitleRawData(userAgent, page, keyword);
-    List<MaruSimpleModel> maruSimpleModels = new ArrayList<>();
+    List<MaruModel> maruModels = new ArrayList<>();
 
     Elements elements = rawData.select(".list");
     for(Element element: elements) {
@@ -40,10 +36,10 @@ enum MaruService {
       String title = element.select(".subject").text();
       String date = element.select(".info").text().split(" \\|")[0];
 
-      maruSimpleModels.add(new MaruSimpleModel(no, thumbUrl, title, date));
+      maruModels.add(new MaruModel(no, thumbUrl, title, date, false));
     }
 
-    return maruSimpleModels;
+    return maruModels;
   }
 
 
@@ -86,17 +82,37 @@ enum MaruService {
 
 
 
-  public MaruModel getImageUrls(String userAgent, String no) throws IOException {
-    String url = getMaruUrl(userAgent, no);
+  public MaruContentModel getMaruModel(String userAgent, String no, boolean isViewerModel, int count) throws IOException {
+    if(count > 3) throw new IOException();
+
+    String url;
+    if(isViewerModel)
+      url = ORIGIN + "archives/" + no;
+    else
+      url = getMaruUrl(userAgent, no);
+
+
     Document rawData =  Jsoup.connect(url + PASS)
                               .userAgent(userAgent)
                               .timeout(5000)
-                              .header("Origin", "http://marumaru.in/")
-                              .header("Referer", MARU_LINK_URL + no)
-                              .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-                              .header("Accept-Encoding", "gzip, deflate, sdch")
+                              .header("Origin", ORIGIN)
+                              .header("Upgrade-Insecure-Requests", "1")
+                              .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                              .header("Accept-Encoding", "gzip, deflate")
                               .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
                               .get();
+
+    if(rawData.text().trim().isEmpty()){
+      return getMaruModel(userAgent, no, isViewerModel, count+1);
+    }
+
+    int episodeNum = 1;
+    String nowEpisodeName = rawData.select(".title-no").first().text().trim();
+    String title = rawData.select(".title-subject").first().text()
+                    + " " + nowEpisodeName;
+
+
+    // Images
     List<String> urls = new ArrayList<>();
     Elements elements = rawData.select(".lz-lazyload");
     for(Element element : elements) {
@@ -104,12 +120,33 @@ enum MaruService {
       urls.add(imageUrl);
     }
 
-    MaruModel maruModel = new MaruModel();
-    maruModel.setUrl(url);
-    maruModel.setOrigin(ORIGIN);
-    maruModel.setImagesUrls(urls);
 
-    return maruModel;
+    // Episodes
+    List<MaruContentModel.MaruEpisode> episodes = new ArrayList<>();
+    Elements episodeEls = rawData.select("select.list-articles").first().children();
+    for (Element episodeEl : episodeEls) {
+      String episodeName = episodeEl.text().trim();
+      MaruContentModel.MaruEpisode maruEpisode = new MaruContentModel.MaruEpisode(
+                                      episodeName,
+                                      episodeEl.attr("value")
+                                        );
+      if(nowEpisodeName.contains(episodeName)) {
+        episodeNum = episodes.size();
+      }
+      episodes.add(maruEpisode);
+    }
+
+
+    MaruContentModel maruContentModel = new MaruContentModel();
+    maruContentModel.setNo(no);
+    maruContentModel.setTitle(title);
+    maruContentModel.setUrl(url);
+    maruContentModel.setOrigin(ORIGIN);
+    maruContentModel.setTitle(title);
+    maruContentModel.setEpisodeNum(episodeNum);
+    maruContentModel.setEpisodes(episodes);
+    maruContentModel.setImagesUrls(urls);
+    return maruContentModel;
   }
 
 }

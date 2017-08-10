@@ -47,6 +47,11 @@ public class FilterUserDialogFragment extends DialogFragment {
     builder.setMessage(R.string.filter_user_list_dialog)
             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int id) {
+
+                if(userInfo.getUserType() == UserInfo.UserType.FLOW) {
+                  userInfo.setNickname(userInfo.getIpAdd()
+                                        .replaceAll("[()]", ""));
+                }
                 currentData.getFilterUserList().remove(userInfo);
                 currentData.getFilterUserList().add(userInfo);
                 CurrentDataManager.save(getActivity().getApplicationContext());
