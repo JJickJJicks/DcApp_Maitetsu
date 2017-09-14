@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.EditText;
 import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
@@ -17,15 +18,15 @@ import dc.maitetsu.ui.viewmodel.MaruViewerViewModel;
 /**
  * 에러 메시지 출력용 프래그먼트.
  */
-public class MaruViewerFragment extends Fragment{
+public class MangaViewerFragment extends Fragment{
 
   private MaruViewerViewModel maruViewerViewModel;
 
-  public MaruViewerFragment() {
+  public MangaViewerFragment() {
   }
 
-  public static MaruViewerFragment newInstance() {
-    return new MaruViewerFragment();
+  public static MangaViewerFragment newInstance() {
+    return new MangaViewerFragment();
   }
 
   @Override
@@ -53,4 +54,5 @@ public class MaruViewerFragment extends Fragment{
   public MaruViewerViewModel getPresenter() {
     return maruViewerViewModel;
   }
+
 }

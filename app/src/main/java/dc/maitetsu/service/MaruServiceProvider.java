@@ -7,10 +7,10 @@ import android.widget.*;
 import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
-import dc.maitetsu.models.MaruContentModel;
-import dc.maitetsu.models.MaruModel;
+import dc.maitetsu.models.MangaContentModel;
+import dc.maitetsu.models.MangaSimpleModel;
 import dc.maitetsu.ui.MaruViewerDetailActivity;
-import dc.maitetsu.ui.fragment.MaruViewerFragment;
+import dc.maitetsu.ui.fragment.MangaViewerFragment;
 import dc.maitetsu.utils.MainUIThread;
 import dc.maitetsu.utils.ThreadPoolManager;
 import dc.maitetsu.utils.VibrateUtils;
@@ -25,6 +25,7 @@ public class MaruServiceProvider {
   private static String USER_AGENT = "Mozilla/5.0 (Linux; Android 5.1.1; SM-G925F Build/LMY47X) " +
           "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.94 Mobile Safari/537.36";
   private static MaruServiceProvider serviceProvider = null;
+  private static IMangaService mangaService = MaruService.getInstance;
 
 
   private MaruServiceProvider() {}
@@ -43,16 +44,15 @@ public class MaruServiceProvider {
   }
 
 
-  public void getMaruSimpleModels(final MaruViewerFragment fragment,
+  public void getMaruSimpleModels(final MangaViewerFragment fragment,
                                          final int page, final String keyword,
                                   final boolean doClear) {
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
-          List<MaruModel> maruModels
-                  = MaruService.getInstance.getMaruSimpleModels(USER_AGENT, page, keyword);
-          MainUIThread.setMaruSearchResult(maruModels, fragment, doClear);
+          List<MangaSimpleModel> mangaSimpleModels = mangaService.getSimpleModels(USER_AGENT, page, keyword);
+          MainUIThread.setMaruSearchResult(mangaSimpleModels, fragment, doClear);
           MainUIThread.showSnackBar(fragment.getView(), fragment.getActivity().getString(R.string.article_list_ok));
         }catch(Exception e) {
           MainUIThread.showToast(fragment.getActivity(), fragment.getActivity()
@@ -73,9 +73,9 @@ public class MaruServiceProvider {
       @Override
       public void run() {
         try {
-          MaruContentModel maruContentModel = MaruService.getInstance.getMaruModel(USER_AGENT, no, isViewerModel, 0);
-          setMaruActivityDetail(activity, maruContentModel);
-          MainUIThread.addMaruImage(activity, currentData, layout, imageViews, maruContentModel, 0);
+          MangaContentModel mangaContentModel = mangaService.getContentModel(USER_AGENT, no, isViewerModel, 0);
+          setMaruActivityDetail(activity, mangaContentModel);
+          MainUIThread.addMaruImage(activity, currentData, layout, imageViews, mangaContentModel, 0);
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
         }
@@ -85,7 +85,7 @@ public class MaruServiceProvider {
   }
 
   private void setMaruActivityDetail(final MaruViewerDetailActivity activity,
-                                     final MaruContentModel maruContentModel) {
+                                     final MangaContentModel mangaContentModel) {
     final TextView pageTitle = (TextView) activity.findViewById(R.id.maru_detail_view_title);
     final Button nextEpisode = (Button) activity.findViewById(R.id.maru_detail_next);
     final Spinner episodesSpinner = (Spinner) activity.findViewById(R.id.maru_detail_episodes);
@@ -94,13 +94,13 @@ public class MaruServiceProvider {
       @Override
       public void run() {
         // 다음화 버튼
-        pageTitle.setText(maruContentModel.getTitle());
-        if(maruContentModel.getEpisodes().size() > maruContentModel.getEpisodeNum() + 1) {
+        pageTitle.setText(mangaContentModel.getTitle());
+        if(mangaContentModel.getEpisodes().size() > mangaContentModel.getEpisodeNum() + 1) {
           nextEpisode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              MaruModel model = new MaruModel();
-              MaruContentModel.MaruEpisode nextEpisode = maruContentModel.getEpisodes().get(maruContentModel.getEpisodeNum() + 1);
+              MangaSimpleModel model = new MangaSimpleModel();
+              MangaContentModel.MaruEpisode nextEpisode = mangaContentModel.getEpisodes().get(mangaContentModel.getEpisodeNum() + 1);
               model.setNo(nextEpisode.getEpisodeNo());
               model.setTitle(nextEpisode.getEpisodeName());
               model.setViewerModel(true);
@@ -112,22 +112,22 @@ public class MaruServiceProvider {
         }
 
       // 에피소드 목록 스피너
-        final String[] episodeNames = new String[maruContentModel.getEpisodes().size()];
+        final String[] episodeNames = new String[mangaContentModel.getEpisodes().size()];
         for (int i=0; i<episodeNames.length; i++) {
-          episodeNames[i] = maruContentModel.getEpisodes().get(i).getEpisodeName();
+          episodeNames[i] = mangaContentModel.getEpisodes().get(i).getEpisodeName();
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(activity,
                 android.R.layout.simple_dropdown_item_1line, episodeNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         episodesSpinner.setAdapter(adapter);
-        episodesSpinner.setSelection(maruContentModel.getEpisodeNum());
+        episodesSpinner.setSelection(mangaContentModel.getEpisodeNum());
         episodesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
           @Override
           public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-            if(i == maruContentModel.getEpisodeNum()) return;
-            MaruModel model = new MaruModel();
-            MaruContentModel.MaruEpisode nextEpisode = maruContentModel.getEpisodes().get(i);
+            if(i == mangaContentModel.getEpisodeNum()) return;
+            MangaSimpleModel model = new MangaSimpleModel();
+            MangaContentModel.MaruEpisode nextEpisode = mangaContentModel.getEpisodes().get(i);
             model.setNo(nextEpisode.getEpisodeNo());
             model.setTitle(nextEpisode.getEpisodeName());
             model.setViewerModel(true);
@@ -144,7 +144,7 @@ public class MaruServiceProvider {
   }
 
 
-private void maruDetailView(Activity activity, MaruModel model) {
+private void maruDetailView(Activity activity, MangaSimpleModel model) {
   Intent intent = new Intent(activity, MaruViewerDetailActivity.class);
   intent.putExtra("simpleData", model);
   if(CurrentDataManager.getInstance(activity.getApplicationContext()).isArticleTabVib())

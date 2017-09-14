@@ -5,7 +5,7 @@ import android.widget.AbsListView;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
 import dc.maitetsu.service.MaruServiceProvider;
-import dc.maitetsu.ui.fragment.MaruViewerFragment;
+import dc.maitetsu.ui.fragment.MangaViewerFragment;
 
 /**
  * @since 2017-04-22
@@ -15,7 +15,7 @@ import dc.maitetsu.ui.fragment.MaruViewerFragment;
  */
 public class MaruListBottomListener {
 
-  public static AbsListView.OnScrollListener newInstance(final MaruViewerFragment fragment,
+  public static AbsListView.OnScrollListener newInstance(final MangaViewerFragment fragment,
                                                          final SwipeRefreshLayout swipeRefreshLayout) {
 
     return new AbsListView.OnScrollListener() {
@@ -36,7 +36,7 @@ public class MaruListBottomListener {
     };
   }
 
-  public static void action(SwipeRefreshLayout swipeRefreshLayout, MaruViewerFragment fragment) {
+  public static void action(SwipeRefreshLayout swipeRefreshLayout, MangaViewerFragment fragment) {
     swipeRefreshLayout.setRefreshing(true);
     final CurrentData currentData = CurrentDataManager.getInstance(fragment.getActivity().getApplicationContext());
       currentData.setPage(currentData.getPage() + 1);

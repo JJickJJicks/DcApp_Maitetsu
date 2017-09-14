@@ -16,7 +16,7 @@ import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
 import dc.maitetsu.data.ImageData;
-import dc.maitetsu.models.MaruModel;
+import dc.maitetsu.models.MangaSimpleModel;
 import dc.maitetsu.service.MaruServiceProvider;
 import dc.maitetsu.utils.ThreadPoolManager;
 
@@ -33,7 +33,7 @@ public class MaruViewerDetailActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    MaruModel model = (MaruModel) getIntent()
+    MangaSimpleModel model = (MangaSimpleModel) getIntent()
                             .getSerializableExtra("simpleData");
     CurrentData currentData = CurrentDataManager.getInstance(this);
     setTheme(currentData);

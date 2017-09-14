@@ -13,14 +13,12 @@
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            android:contentInsetLeft="0dp"
-            android:contentInsetStart="0dp"
             app:contentInsetLeft="5dp"
             app:contentInsetStart="0dp"
-            android:contentInsetRight="0dp"
-            android:contentInsetEnd="0dp"
             app:contentInsetRight="5dp"
             app:contentInsetEnd="0dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:background="?attr/colorPrimary" android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" android:id="@+id/toolbar">
         <RelativeLayout
@@ -28,6 +26,8 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="8dp">
             <Button
@@ -38,7 +38,8 @@
                     android:textAppearance="@style/TitleButton"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentBottom="true"
-
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:layout_alignParentStart="true"/>
 
             <Button
@@ -48,6 +49,8 @@
                     android:layout_width="50dp"
                     android:gravity="center"
                     android:textAppearance="@style/TitleButton"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"/>
@@ -112,6 +115,8 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="8dp">
 
@@ -119,6 +124,8 @@
                     android:layout_height="25dp" android:id="@+id/maru_detail_episodes"
                     android:layout_width="100dp"
                     android:gravity="center"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:textAppearance="@style/TitleButton"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentBottom="true"
@@ -129,6 +136,8 @@
                     android:layout_height="25dp" android:id="@+id/maru_detail_next"
                     android:layout_width="100dp"
                     android:gravity="center"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:textAppearance="@style/TitleButton"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentBottom="true"

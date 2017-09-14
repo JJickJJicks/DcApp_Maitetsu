@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 
 import java.io.*;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 
 
@@ -71,7 +72,7 @@ public class ContentUtils {
    */
   public static void loadBitmapFromUrl(final Activity activity,
                                        final int position,
-                                       final SparseArray<byte[]> imageBytes,
+                                       final SparseArray<WeakReference<byte[]>> imageBytes,
                                        final String imageUrl,
                                        final String origin,
                                        final ImageView imageView,
@@ -83,16 +84,16 @@ public class ContentUtils {
         try {
 
           byte[] bytes = Jsoup.connect(imageUrl)
-                  .userAgent(ServiceProvider.USER_AGENT)
-                  .header("Origin", origin)
-                  .header("Referer", origin)
-                  .ignoreContentType(true)
-                  .maxBodySize(1024 * 1024 * 30)
-                  .timeout(2000)
-                  .execute()
-                  .bodyAsBytes();
+                              .userAgent(ServiceProvider.USER_AGENT)
+                              .header("Origin", origin)
+                              .header("Referer", origin)
+                              .ignoreContentType(true)
+                              .maxBodySize(1024 * 1024 * 30)
+                              .timeout(2000)
+                              .execute()
+                              .bodyAsBytes();
 
-          if (imageBytes != null) imageBytes.put(position, bytes);
+          if (imageBytes != null) imageBytes.put(position, new WeakReference<byte[]>(bytes));
           if (imageView != null) MainUIThread.setImageView(activity, imageView, bytes, currentData);
         } catch (Exception e) {
           Log.e("err", imageUrl);

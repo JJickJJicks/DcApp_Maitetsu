@@ -48,8 +48,8 @@
 
     <string name="gallery_search_failure">갤러리를 검색하는데 실패했습니다.</string>
     <string name="article_write_complete">글이 등록되었습니다.</string>
-    <string name="article_write_failure">글 등록에 실패했습니다.</string>
-    <string name="article_write_image_upload_failure">이미지 업로드에 실패했습니다.</string>
+    <string name="article_write_failure">글 등록에 실패했습니다. </string>
+    <string name="article_write_image_upload_failure">이미지 업로드에 실패했습니다. </string>
 
     <string name="article_write_title">제목</string>
     <string name="article_write_content">내용</string>

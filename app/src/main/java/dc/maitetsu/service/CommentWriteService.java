@@ -51,7 +51,7 @@ enum CommentWriteService {
 
   boolean writeDcCon(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail,
                      String articleUrl,
-                     DcConPackage.DcCon dcCon) throws IOException, ParseException {
+                     DcConPackage.DcCon dcCon) throws IOException, ParseException, IllegalAccessException {
     String comment = "[[dccon:" + dcCon.getDccon_package() + "|" + dcCon.getDccon_detail() + "]]";
 
       Map<String, String> cwdData = cwdSerailize(articleDetail.getCommentWriteData(), comment, articleDetail.getUrl(), userAgent);
@@ -74,6 +74,7 @@ enum CommentWriteService {
 
     JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
     String msg = (String) jsonObject.get("msg");
+    if(msg.equals("44")) throw new IllegalAccessException((String) jsonObject.get("data"));
     return msg.equals("1");
   }
 

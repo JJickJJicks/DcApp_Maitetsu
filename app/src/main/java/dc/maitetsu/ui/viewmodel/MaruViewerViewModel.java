@@ -9,10 +9,10 @@ import android.widget.ListView;
 import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
-import dc.maitetsu.models.MaruModel;
+import dc.maitetsu.models.MangaSimpleModel;
 import dc.maitetsu.utils.MainUIThread;
 import dc.maitetsu.ui.adapter.MaruListAdapter;
-import dc.maitetsu.ui.fragment.MaruViewerFragment;
+import dc.maitetsu.ui.fragment.MangaViewerFragment;
 import dc.maitetsu.ui.listener.EnterKeyListener;
 import dc.maitetsu.ui.listener.MaruListBottomListener;
 import dc.maitetsu.ui.listener.MaruListSwipeRefreshListener;
@@ -29,14 +29,14 @@ import java.util.List;
  *
  */
 public class MaruViewerViewModel {
-  private MaruViewerFragment fragment;
+  private MangaViewerFragment fragment;
   private MaruListAdapter adapter;
   private SwipeRefreshLayout swipeRefreshLayout;
   private View view;
   @Getter
   private List<ImageView> thumbList = new ArrayList<>();
 
-  public MaruViewerViewModel(MaruViewerFragment fragment, View view, CurrentData currentData) {
+  public MaruViewerViewModel(MangaViewerFragment fragment, View view, CurrentData currentData) {
     this.fragment = fragment;
     this.view = view;
     ListView listView = (ListView) view.findViewById(R.id.dcmys_maru_listview);
@@ -92,10 +92,10 @@ public class MaruViewerViewModel {
     ContentUtils.clearContext(fragment.getContext());
   }
 
-  public void addItems(List<MaruModel> simpleArticles) {
+  public void addItems(List<MangaSimpleModel> simpleArticles) {
     adapter.refreshCurrentData();
 
-    for (MaruModel simpleArticle : simpleArticles) {
+    for (MangaSimpleModel simpleArticle : simpleArticles) {
       adapter.addItem(simpleArticle);
     }
     adapter.notifyDataSetChanged();

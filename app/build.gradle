@@ -9,8 +9,8 @@ android {
         applicationId "dcmys.maitetsu"
         minSdkVersion 18
         targetSdkVersion 22
-        versionCode 1500
-        versionName "1.5.0"
+        versionCode 1503
+        versionName "1.5.3"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -29,6 +29,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     provided 'org.glassfish:javax.annotation:10.0-b28'
+
 //    compile 'com.android.support:support-compat-v7:25.3.1'
     compile "com.android.support:support-core-utils:25.3.1"
     compile 'com.android.support:appcompat-v7:25.3.1'

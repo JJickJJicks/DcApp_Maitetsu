@@ -16,10 +16,13 @@ public class ArticleListSwipeRefreshListener {
     return new SwipeRefreshLayout.OnRefreshListener() {
       @Override
       public void onRefresh() {
-        fragment.getHasAdapterViewModel().hideSearchContinueBtn();
-        MainUIThread.refreshArticleListView(fragment, true);
+        refreshing(fragment);
       }
     };
   }
 
+  public static void refreshing(final HasViewModelFragment fragment) {
+        fragment.getHasAdapterViewModel().hideSearchContinueBtn();
+        MainUIThread.refreshArticleListView(fragment, true);
+  }
 }

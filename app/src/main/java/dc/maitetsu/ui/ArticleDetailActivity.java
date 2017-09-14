@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -20,6 +21,8 @@ import dc.maitetsu.enums.ResultCodes;
 import dc.maitetsu.models.ArticleDetail;
 import dc.maitetsu.service.ServiceProvider;
 import dc.maitetsu.ui.viewmodel.ArticleDetailViewModel;
+import dc.maitetsu.utils.MainUIThread;
+import dc.maitetsu.utils.ShortcutKeyEvent;
 import dc.maitetsu.utils.ThreadPoolManager;
 import dc.maitetsu.utils.VibrateUtils;
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
@@ -142,4 +145,23 @@ public class ArticleDetailActivity extends SwipeBackActivity {
     }
   }
 
+  @Override
+  public boolean dispatchKeyEvent(KeyEvent event) {
+    boolean isDoneEvent = ShortcutKeyEvent.computeArticleDetailKeyEvent(this, scrollView, event);
+    if(isDoneEvent) return false;
+    else return super.dispatchKeyEvent(event);
+  }
+
+  public void focusCommentText() {
+    articleDetailViewModel.commentText.requestFocus();
+    MainUIThread.showKeyboard(this.getCurrentFocus());
+  }
+
+  public boolean isFocusedCommentText(){
+    return articleDetailViewModel.commentText.hasFocus();
+  }
+
+  public void focusScrollView(){
+    scrollView.requestFocus();
+  }
 }

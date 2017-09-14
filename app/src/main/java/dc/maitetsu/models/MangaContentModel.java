@@ -9,7 +9,7 @@ import java.util.List;
  * @since 2017-04-29
  */
 @Data
-public class MaruContentModel {
+public class MangaContentModel {
   private String no;
   private String url;
   private String origin;

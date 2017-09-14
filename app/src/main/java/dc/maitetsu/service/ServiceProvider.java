@@ -246,9 +246,9 @@ public class ServiceProvider {
             MainUIThread.finishActivity(activity, ResultCodes.ARTICLE_REFRESH);
           }
         } catch (IllegalAccessException ie) {
-          MainUIThread.showToast(activity, activity.getString(R.string.article_write_image_upload_failure));
+          MainUIThread.showToast(activity, activity.getString(R.string.article_write_image_upload_failure) + ie.getMessage());
         } catch (Exception e) {
-          MainUIThread.showToast(activity, activity.getString(R.string.article_write_failure));
+          MainUIThread.showToast(activity, activity.getString(R.string.article_write_failure) + e.getMessage());
         }
         MainUIThread.setViewState(activity, writeButton, true);
 
@@ -376,6 +376,8 @@ public class ServiceProvider {
             MainUIThread.showToast(activity, activity.getString(R.string.comment_dccon_submit_success));
             refreshComment(activity, viewModel, articleUrl);
           } else throw new Exception();
+        } catch (IllegalAccessException ie) {
+          MainUIThread.showToast(activity, ie.getMessage());
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.comment_dccon_submit_failure));
         }
@@ -436,7 +438,7 @@ public class ServiceProvider {
   // 마지막 로그인 시간이 2시간 이내라면 true를 반환함.
   private static boolean isLoginCookieUseable(CurrentData currentData) {
     long lastTime = currentData.getLastLogin();
-    long loginKeepTime = lastTime + (1000 * 60) * 60 * 2; // 2시간
+    long loginKeepTime = lastTime + (1000 * 60) * 60 * 6; // 6시간
     long currentTime = System.currentTimeMillis();
     return currentTime < loginKeepTime;
   }

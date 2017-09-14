@@ -17,18 +17,18 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
   private List<Fragment> fragmentList = new ArrayList<>();
   private SimpleArticleListFragment simpleArticleListFragment;
   private RecommendArticleListFragment recommendArticleListFragment;
-  private MaruViewerFragment maruViewerFragment;
+  private MangaViewerFragment mangaViewerFragment;
 
   public MyPagerAdapter(FragmentManager fm) {
     super(fm);
     simpleArticleListFragment = SimpleArticleListFragment.newInstance();
     recommendArticleListFragment = RecommendArticleListFragment.newInstance();
-    maruViewerFragment = MaruViewerFragment.newInstance();
+    mangaViewerFragment = MangaViewerFragment.newInstance();
 
     fragmentList.add(GalleryListFragment.newInstance());
     fragmentList.add(simpleArticleListFragment);
     fragmentList.add(recommendArticleListFragment);
-    fragmentList.add(maruViewerFragment);
+    fragmentList.add(mangaViewerFragment);
     fragmentList.add(SettingFragment.newInstance());
 
   }
@@ -66,8 +66,8 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     return recommendArticleListFragment;
   }
 
-  public MaruViewerFragment getDcmysDcMysFragment() {
-    return maruViewerFragment;
+  public MangaViewerFragment getDcmysDcMysFragment() {
+    return mangaViewerFragment;
   }
 
 }

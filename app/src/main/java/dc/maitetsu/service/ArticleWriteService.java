@@ -59,9 +59,9 @@ enum ArticleWriteService {
     }
 
     if (files != null && !files.isEmpty()) { // 이미지 업로드
-      boolean uploadResult =
+      String uploadResult =
               uploadFiles(loginCookie, writeFormData, files, userAgent, galleryCode, articleModify);
-      if(!uploadResult) throw new IllegalAccessException();
+      if(!uploadResult.isEmpty()) throw new IllegalAccessException(uploadResult);
     }
 
 
@@ -81,7 +81,7 @@ enum ArticleWriteService {
 
 
   // 이미지 업로드하고 이미지 정보를 writeFormData에 추가
-  private boolean uploadFiles(Map<String, String> loginCookie,
+  private String uploadFiles(Map<String, String> loginCookie,
                               Map<String, String> writeFormData,
                               List<File> files,
                               String userAgent,
@@ -118,14 +118,17 @@ enum ArticleWriteService {
 
       List<String> data = Arrays.asList(scriptText.split("'"));
 
-      if (data.size() < 9) throw new Exception();
+      if (data.size() < 9) {
+        String message = script.select("td[align='center']").text();
+        throw new Exception(message);
+      }
       writeFormData.put("FL_DATA", data.get(5));
       writeFormData.put("OFL_DATA", data.get(9));
-      return true;
+      return "";
 
     } catch (Exception e) {
-            Log.i("err", e.getMessage());
-      return false;}
+      return e.getMessage();
+    }
   }
 
 

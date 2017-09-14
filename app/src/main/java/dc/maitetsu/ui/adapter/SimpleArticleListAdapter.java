@@ -39,6 +39,7 @@ public class SimpleArticleListAdapter extends BaseAdapter {
   public SimpleArticleListAdapter(HasViewModelFragment fragment) {
     this.fragment = fragment;
     this.currentData = CurrentDataManager.getInstance(fragment.getActivity().getApplicationContext());
+
   }
 
   public void loadCurrentData(){
@@ -148,4 +149,5 @@ public class SimpleArticleListAdapter extends BaseAdapter {
   public void clearItem() {
     simpleArticles.clear();
   }
+
 }

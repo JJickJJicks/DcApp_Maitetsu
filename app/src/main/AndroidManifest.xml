@@ -14,7 +14,9 @@
             android:label="@string/app_name"
             android:largeHeap="true"
             android:supportsRtl="true"
+            android:resizeableActivity="false"
             android:theme="@style/BasicTheme">
+
         <activity
                 android:name=".ui.MainActivity"
                 android:label="@string/app_name"
@@ -23,7 +25,6 @@
                 android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>

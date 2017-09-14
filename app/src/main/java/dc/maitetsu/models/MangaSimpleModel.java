@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MaruModel implements Serializable{
+public class MangaSimpleModel implements Serializable{
   private String no;
   private String thumbUrl;
   private String title;

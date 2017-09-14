@@ -27,6 +27,7 @@ import dc.maitetsu.ui.listener.FilterUserLongClickListener;
 import dc.maitetsu.ui.listener.ImageViewerListener;
 import dc.maitetsu.utils.*;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 
 /**
@@ -42,7 +43,7 @@ public class ArticleDetailViewModel {
   private ArticleDetailViewModel viewModel;
   public EditText commentText;
   public ImageView deleteButton;
-  private SparseArray<byte[]> imageBytes;
+  private SparseArray<WeakReference<byte[]>> imageBytes;
   private List<ImageView> prevBtns;
   private List<ImageView> imageViews;
   private boolean isImageCheck = false;
@@ -84,7 +85,8 @@ public class ArticleDetailViewModel {
     int imagePosition = 0;
     int counter = 0;
     contentLayout.removeAllViews();
-    activity.findViewById(R.id.article_detail_scroll).setScrollY(0);
+    final ScrollView scrollView = (ScrollView) activity.findViewById(R.id.article_detail_scroll);
+    scrollView.setScrollY(0);
 
     for (int i = 0; i + start < articleDetail.getContentDataList().size(); i++) {
 
@@ -106,6 +108,7 @@ public class ArticleDetailViewModel {
             continueBtn.setLayoutParams(btnLayout);
             continueBtn.setGravity(Gravity.CENTER);
             continueBtn.setText(res.getString(R.string.continue_article_load));
+            continueBtn.setFocusable(false);
             ButtonUtils.setBtnTheme(activity, currentData, continueBtn);
             continueBtn.setOnClickListener(new View.OnClickListener() {
               @Override
@@ -118,7 +121,8 @@ public class ArticleDetailViewModel {
             activity.runOnUiThread(new Runnable() {
               @Override
               public void run() {
-                 contentLayout.addView(continueBtn);
+               contentLayout.addView(continueBtn);
+                scrollView.requestFocus();
               }
             });
           }
@@ -411,6 +415,7 @@ public class ArticleDetailViewModel {
     refreshBtn.setPadding(dp10, dp10, dp10, dp10);
     refreshBtn.setGravity(Gravity.CENTER);
     refreshBtn.setText(res.getString(R.string.comment_refresh_button));
+    refreshBtn.setFocusable(false);
     ButtonUtils.setBtnTheme(activity, currentData, refreshBtn);
 
     refreshBtn.setOnClickListener(new View.OnClickListener() {

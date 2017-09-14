@@ -7,6 +7,7 @@ import android.view.View;
 import dc.maitetsu.data.ImageData;
 import dc.maitetsu.ui.ImageViewActivity;
 
+import java.lang.ref.WeakReference;
 import java.util.Map;
 
 /**
@@ -17,7 +18,7 @@ public class ImageViewerListener {
   public static View.OnClickListener get(final Activity activity,
                                          final String name,
                                          final int imagePosition,
-                                         final SparseArray<byte[]> imageBytes,
+                                         final SparseArray<WeakReference<byte[]>> imageBytes,
                                          final boolean hideStatusBar) {
     return new View.OnClickListener() {
       @Override

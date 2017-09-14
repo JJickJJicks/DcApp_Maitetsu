@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -15,6 +16,7 @@ import butterknife.ButterKnife;
 import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
+import dc.maitetsu.ui.MainActivity;
 import dc.maitetsu.utils.MainUIThread;
 import dc.maitetsu.ui.adapter.MyPagerAdapter;
 import dc.maitetsu.utils.ThreadPoolManager;
@@ -37,18 +39,19 @@ public class TabEventListener {
   @BindColor(R.color.colorBlack) int blackColor;
   @BindColor(R.color.colorGray) int grayColor;
   @BindColor(R.color.darkThemeGray) int darkThemeGrayColor;
-  private Activity activity;
+  private MainActivity activity;
   private MyPagerAdapter pagerAdapter;
   private CurrentData currentData;
 
 
-  public TabEventListener(final Activity activity, final MyPagerAdapter pagerAdapter){
+  public TabEventListener(final MainActivity activity, final MyPagerAdapter pagerAdapter){
     this.activity = activity;
     this.pagerAdapter = pagerAdapter;
     this.currentData = CurrentDataManager.getInstance(activity);
     ButterKnife.bind(this, activity);
 
     tabLayout.addOnTabSelectedListener(get());
+
   }
 
 
@@ -73,11 +76,11 @@ public class TabEventListener {
           // fragment detach시 nullpointException이 발생 할 수 있음.
           pagerAdapter.getSimpleArticleListFragment().getHasAdapterViewModel().hideSearchContinueBtn();
         }catch(Exception e){}
+
         searchLayout.setVisibility(View.INVISIBLE);
 
         // 탭 전환시 동작
         setTabAutoRefresh(tab);
-
       }
 
       @Override

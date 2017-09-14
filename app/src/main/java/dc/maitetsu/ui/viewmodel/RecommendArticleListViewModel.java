@@ -1,6 +1,7 @@
 package dc.maitetsu.ui.viewmodel;
 
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
 import dc.maitetsu.R;
@@ -10,6 +11,7 @@ import dc.maitetsu.ui.adapter.SimpleArticleListAdapter;
 import dc.maitetsu.ui.fragment.RecommendArticleListFragment;
 import dc.maitetsu.ui.listener.ArticleListBottomListener;
 import dc.maitetsu.ui.listener.ArticleListSwipeRefreshListener;
+import dc.maitetsu.utils.ShortcutKeyEvent;
 
 import java.util.List;
 
@@ -21,13 +23,21 @@ import java.util.List;
 public class RecommendArticleListViewModel implements HasAdapterViewModel<SimpleArticle> {
   private SimpleArticleListAdapter simpleArticleListAdapter;
   private SwipeRefreshLayout swipeRefreshLayout;
+  private ListView listView;
 
-  public RecommendArticleListViewModel(RecommendArticleListFragment fragment, View view, CurrentData currentData) {
+  public RecommendArticleListViewModel(final RecommendArticleListFragment fragment, View view, CurrentData currentData) {
     this.simpleArticleListAdapter = new SimpleArticleListAdapter(fragment);
 
     // 게시물 리스트뷰 처리
-    ListView listView = (ListView) view.findViewById(R.id.recommend_article_list);
+    listView = (ListView) view.findViewById(R.id.recommend_article_list);
     listView.setAdapter(simpleArticleListAdapter);
+    listView.setOnKeyListener(new View.OnKeyListener() {
+      @Override
+      public boolean onKey(View view, int i, KeyEvent keyEvent) {
+        ShortcutKeyEvent.computeSimpleArticleKeyEvent(fragment, listView, keyEvent);
+        return false;
+      }
+    });
 
     // 상단을 끌면 새로고침
     swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.recommend_article_list_swipe_layout);
@@ -79,6 +89,16 @@ public class RecommendArticleListViewModel implements HasAdapterViewModel<Simple
   @Override
   public void stopRefreshing() {
     swipeRefreshLayout.setRefreshing(false);
+  }
+
+  @Override
+  public SwipeRefreshLayout getSwipeRefreshLayout() {
+    return swipeRefreshLayout;
+  }
+
+  @Override
+  public ListView getListView() {
+    return this.listView;
   }
 
 }

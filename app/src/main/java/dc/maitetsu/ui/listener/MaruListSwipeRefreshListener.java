@@ -2,7 +2,7 @@ package dc.maitetsu.ui.listener;
 
 import android.support.v4.widget.SwipeRefreshLayout;
 import dc.maitetsu.utils.MainUIThread;
-import dc.maitetsu.ui.fragment.MaruViewerFragment;
+import dc.maitetsu.ui.fragment.MangaViewerFragment;
 
 /**
  * @since 2017-04-22
@@ -12,7 +12,7 @@ import dc.maitetsu.ui.fragment.MaruViewerFragment;
  */
 public class MaruListSwipeRefreshListener {
 
-  public static SwipeRefreshLayout.OnRefreshListener newInstance(final MaruViewerFragment fragment) {
+  public static SwipeRefreshLayout.OnRefreshListener newInstance(final MangaViewerFragment fragment) {
     return new SwipeRefreshLayout.OnRefreshListener() {
       @Override
       public void onRefresh() {

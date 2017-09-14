@@ -7,6 +7,7 @@ import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.*;
@@ -219,10 +220,21 @@ public class ArticleDetailStaticApperance {
     presenter.commentText.setOnKeyListener(new View.OnKeyListener() {
       @Override
       public boolean onKey(View view, int keyCode, KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-          commentSubmit.performClick();
-          return true;
+        if(event.getAction() == KeyEvent.ACTION_DOWN) {
+          switch (keyCode) {
+            case KeyEvent.KEYCODE_ENTER:
+              commentSubmit.performClick();
+              return true;
+
+            case 59: // SHIFT
+              if(presenter.commentText.length() == 0) {
+                articleDetailActivity.focusScrollView();
+                MainUIThread.hideKeyboard(view);
+              }
+              return true;
+          }
         }
+
         return false;
       }
     });

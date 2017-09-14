@@ -24,7 +24,7 @@ public class ThreadPoolManager {
 //      }
 //    });
 
-    serviceEc = Executors.newCachedThreadPool(new ThreadFactory() {
+    serviceEc = Executors.newSingleThreadExecutor(new ThreadFactory() {
       @Override
       public Thread newThread(Runnable runnable) {
         Thread t = Executors.defaultThreadFactory().newThread(runnable);

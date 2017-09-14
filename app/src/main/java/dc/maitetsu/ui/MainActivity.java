@@ -57,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
     ButterKnife.bind(this);
 
     // 페이저와 탭 설정
+    setupPagerAdaper(currentData);
+
+    setSearchToolsColor();
+  }
+
+  public void setupPagerAdaper(CurrentData currentData){
     MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
     viewPager.setAdapter(myPagerAdapter);
     viewPager.setOffscreenPageLimit(5);
@@ -64,13 +70,13 @@ public class MainActivity extends AppCompatActivity {
     tabLayout.setTabMode(TabLayout.MODE_FIXED);
     tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-    // 실험용 기능 비활성화 처리
+    // 만화 뷰어 기능 비활성화 처리
     if (!currentData.isMaruViewer()) { removeTab(myPagerAdapter, 3); }
 
+    // 탭 모델뷰 설정
     new TabLayoutViewModel(this, myPagerAdapter);
-    setSearchToolsColor();
-
   }
+
 
   // 검색바 색상
   private void setSearchToolsColor() {
@@ -135,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
         SelectViewPage.select(this, 1);
       }
     }
-
-
   }
+
 }

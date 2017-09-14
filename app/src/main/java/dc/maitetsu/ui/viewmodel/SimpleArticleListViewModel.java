@@ -5,6 +5,8 @@ import android.graphics.PorterDuff;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import dc.maitetsu.ui.adapter.SimpleArticleListAdapter;
 import dc.maitetsu.ui.fragment.SimpleArticleListFragment;
 import dc.maitetsu.ui.listener.ArticleListBottomListener;
 import dc.maitetsu.ui.listener.ArticleListSwipeRefreshListener;
+import dc.maitetsu.utils.ShortcutKeyEvent;
 
 import java.util.List;
 
@@ -34,16 +37,24 @@ public class SimpleArticleListViewModel implements HasAdapterViewModel<SimpleArt
   private SimpleArticleListFragment fragment;
   private View view;
   private FloatingActionButton searchContinueBtn;
+  private ListView listView;
 
-  public SimpleArticleListViewModel(SimpleArticleListFragment fragment, View view) {
+  public SimpleArticleListViewModel(final SimpleArticleListFragment fragment, View view) {
     CurrentData currentData = CurrentDataManager.getInstance(fragment.getContext());
     this.simpleArticleListAdapter = new SimpleArticleListAdapter(fragment);
     this.fragment = fragment;
     this.view = view;
 
     // 게시물 리스트뷰
-    ListView listView = (ListView) view.findViewById(R.id.article_list);
+    listView = (ListView) view.findViewById(R.id.article_list);
     listView.setAdapter(simpleArticleListAdapter);
+    listView.setOnKeyListener(new View.OnKeyListener() {
+      @Override
+      public boolean onKey(View view, int i, KeyEvent keyEvent) {
+        ShortcutKeyEvent.computeSimpleArticleKeyEvent(fragment, listView, keyEvent);
+        return false;
+      }
+    });
 
     // 상단 끌어서 갱신
     swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.article_list_swipe_layout);
@@ -82,6 +93,16 @@ public class SimpleArticleListViewModel implements HasAdapterViewModel<SimpleArt
   @Override
   public void stopRefreshing() {
     swipeRefreshLayout.setRefreshing(false);
+  }
+
+  @Override
+  public SwipeRefreshLayout getSwipeRefreshLayout() {
+    return swipeRefreshLayout;
+  }
+
+  @Override
+  public ListView getListView() {
+    return listView;
   }
 
   private void setSearchContinueButton(FloatingActionButton searchContinueBtn) {
@@ -129,7 +150,6 @@ public class SimpleArticleListViewModel implements HasAdapterViewModel<SimpleArt
   }
 
   @Override
-  public void notifyDataChanged() {
-    simpleArticleListAdapter.notifyDataSetChanged();
-  }
+  public void notifyDataChanged() { simpleArticleListAdapter.notifyDataSetChanged(); }
+
 }

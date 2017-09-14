@@ -11,6 +11,7 @@ import butterknife.ButterKnife;
 import dc.maitetsu.R;
 import dc.maitetsu.data.CurrentData;
 import dc.maitetsu.data.CurrentDataManager;
+import dc.maitetsu.ui.MainActivity;
 import dc.maitetsu.ui.adapter.MyPagerAdapter;
 import dc.maitetsu.ui.listener.TabEventListener;
 
@@ -34,7 +35,7 @@ public class TabLayoutViewModel {
   @BindColor(R.color.darkThemeTabBackground) int darkThemeTabBackground;
 
 
-  public TabLayoutViewModel(Activity activity, MyPagerAdapter myPagerAdapter) {
+  public TabLayoutViewModel(MainActivity activity, MyPagerAdapter myPagerAdapter) {
     CurrentData currentData = CurrentDataManager.getInstance(activity);
     this.activity = activity;
     this.myPagerAdapter = myPagerAdapter;
@@ -47,6 +48,7 @@ public class TabLayoutViewModel {
 
     new TabEventListener(activity, myPagerAdapter);
   }
+
 
   // 탭의 배경색 설정
   private void setTabLayoutColor(CurrentData currentData) {

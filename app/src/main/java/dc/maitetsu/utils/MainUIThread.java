@@ -37,11 +37,12 @@ import dc.maitetsu.ui.ArticleDetailActivity;
 import dc.maitetsu.ui.MaruViewerDetailActivity;
 import dc.maitetsu.ui.SplashActivity;
 import dc.maitetsu.ui.fragment.GalleryListFragment;
-import dc.maitetsu.ui.fragment.MaruViewerFragment;
+import dc.maitetsu.ui.fragment.MangaViewerFragment;
 import dc.maitetsu.ui.listener.ImageViewerListener;
 import dc.maitetsu.ui.viewmodel.*;
 import lombok.val;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -66,7 +67,10 @@ public class MainUIThread {
       @Override
       public void run() {
         fragment.getHasAdapterViewModel().addItems(simpleArticleList);
-        if(showSnackBar) showSnackBar(fragment.getView(), "게시물을 가져왔습니다.");
+        if(showSnackBar) {
+          showSnackBar(fragment.getView(), "게시물을 가져왔습니다.");
+          fragment.getHasAdapterViewModel().getListView().requestFocus();
+        }
       }
     });
   }
@@ -100,7 +104,7 @@ public class MainUIThread {
    * 로드된 게시물들을 삭제하고 새로운 게시물들을 읽어온다.
    * 항상 1페이지를 로드함.
    */
-  public static void refreshMaruListView(final MaruViewerFragment fragment,
+  public static void refreshMaruListView(final MangaViewerFragment fragment,
                                          final boolean resetSearchKeyword) {
     if(fragment == null || fragment.getActivity() == null || fragment.getPresenter() == null) return;
 
@@ -141,8 +145,8 @@ public class MainUIThread {
   /**
    * 마루 결과 UI적용
    */
-  public static void setMaruSearchResult(final List<MaruModel> maruSearchResult,
-                                         final MaruViewerFragment fragment,
+  public static void setMaruSearchResult(final List<MangaSimpleModel> maruSearchResult,
+                                         final MangaViewerFragment fragment,
                                          final boolean doClear) {
     fragment.getActivity().runOnUiThread(new Runnable() {
       @Override
@@ -369,6 +373,7 @@ public class MainUIThread {
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE);
 //        if(currentData.isLowResolution()) imm.fitCenter();
+
                 imm.into(imageView);
       }
     });
@@ -437,10 +442,10 @@ public class MainUIThread {
                                   final CurrentData currentData,
                                   final LinearLayout imageLayout,
                                   final List<ImageView> imageViews,
-                                  final MaruContentModel maruContentModel,
+                                  final MangaContentModel mangaContentModel,
                                   final int start) {
 
-    final SparseArray<byte[]> imageBytes = new SparseArray<>();
+    final SparseArray<WeakReference<byte[]>> imageBytes = new SparseArray<>();
 
     activity.runOnUiThread(new Runnable() {
       @Override
@@ -467,7 +472,7 @@ public class MainUIThread {
           @Override
           public void onClick(View view) {
             Intent intent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(maruContentModel.getUrl()));
+                    Uri.parse(mangaContentModel.getUrl()));
             activity.startActivity(intent);
           }
         });
@@ -487,7 +492,7 @@ public class MainUIThread {
 
         imageLayout.removeAllViews();
 
-        for(int i = 0; i + start < maruContentModel.getImagesUrls().size(); i++ ) {
+        for(int i = 0; i + start < mangaContentModel.getImagesUrls().size(); i++ ) {
           if(i > IMAGE_LOAD_COUNT) {
             final int nextStart = i + start;
             Button continueBtn = new Button(activity);
@@ -503,20 +508,20 @@ public class MainUIThread {
                 }
                 imageBytes.clear();
                 imageViews.clear();
-                addMaruImage(activity, currentData, imageLayout, imageViews, maruContentModel, nextStart);
+                addMaruImage(activity, currentData, imageLayout, imageViews, mangaContentModel, nextStart);
               }
             });
             imageLayout.addView(continueBtn);
             break;
           }
           imageBytes.put(i, null); // initialize
-          String imageUrl = maruContentModel.getImagesUrls().get(i + start);
+          String imageUrl = mangaContentModel.getImagesUrls().get(i + start);
           ImageView imageView = new ImageView(activity);
           imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
           imageView.setLayoutParams(il);
           imageViews.add(imageView);
-          ContentUtils.loadBitmapFromUrl(activity, i, imageBytes, imageUrl, maruContentModel.getOrigin(), imageView, currentData);
-          imageView.setOnClickListener(ImageViewerListener.get(activity, maruContentModel.getNo(), i, imageBytes, true));
+          ContentUtils.loadBitmapFromUrl(activity, i, imageBytes, imageUrl, mangaContentModel.getOrigin(), imageView, currentData);
+          imageView.setOnClickListener(ImageViewerListener.get(activity, mangaContentModel.getNo(), i, imageBytes, true));
           imageLayout.addView(imageView);
         }
 
