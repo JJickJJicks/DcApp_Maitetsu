@@ -372,7 +372,6 @@ public class MainUIThread {
                 .load(bytes)
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE);
-//        if(currentData.isLowResolution()) imm.fitCenter();
 
                 imm.into(imageView);
       }

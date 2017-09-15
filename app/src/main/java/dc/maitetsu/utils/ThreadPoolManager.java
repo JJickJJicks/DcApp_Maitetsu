@@ -3,6 +3,7 @@ package dc.maitetsu.utils;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @since 2017-04-28
@@ -47,7 +48,7 @@ public class ThreadPoolManager {
 
 
   private static void setImageViewEc() {
-    imageViewEc = Executors.newSingleThreadExecutor(new ThreadFactory() {
+    imageViewEc = Executors.newFixedThreadPool(4, new ThreadFactory() {
       @Override
       public Thread newThread(Runnable runnable) {
         Thread t = Executors.defaultThreadFactory().newThread(runnable);
@@ -63,7 +64,7 @@ public class ThreadPoolManager {
    * 글 목록 / 글 내용을 부르는 ServiceEc
    * @return the service ec
    */
-  public static ExecutorService getServiceEc() {
+  public static synchronized ExecutorService getServiceEc() {
     if(serviceEc == null || serviceEc.isShutdown()) {
       setServiceEc();
     }
@@ -74,7 +75,7 @@ public class ThreadPoolManager {
    * 글 내용을 UI에 그리기 전 처리하는 쓰레드
    * @return the content ec
    */
-  public static ExecutorService getContentEc() {
+  public static synchronized ExecutorService getContentEc() {
     if(contentEc == null || contentEc.isShutdown()) {
       setContentEc();
     }
@@ -86,7 +87,7 @@ public class ThreadPoolManager {
    * 이미지뷰에서 사용하는 쓰레드
    * @return the image view ec ec
    */
-  public static ExecutorService getImageViewEc() {
+  public static synchronized ExecutorService getImageViewEc() {
     if(imageViewEc == null || imageViewEc.isShutdown()) {
       setImageViewEc();
     }
@@ -97,18 +98,20 @@ public class ThreadPoolManager {
   /**
    * 글 목록을 읽거나 새로고침하는 쓰레드를 shutdown한다
    */
-  public static void shutdownServiceEc() {
+  public static synchronized void shutdownServiceEc() {
     try{
       serviceEc.shutdownNow();
+      serviceEc.awaitTermination(1000, TimeUnit.MILLISECONDS);
     } catch(Exception e) {}
   }
 
   /**
    * 글 내용을 처리하는 쓰레드를 shutdown한다
    */
-  public static void shutdownContentEc() {
+  public static synchronized void shutdownContentEc() {
     try {
       contentEc.shutdownNow();
+      contentEc.awaitTermination(1000, TimeUnit.MILLISECONDS);
     } catch(Exception e) {}
   }
 
@@ -116,9 +119,10 @@ public class ThreadPoolManager {
   /**
    * 이미지뷰 쓰레드 종료
    */
-  public static void shutdownImageViewEc() {
+  public static synchronized void shutdownImageViewEc() {
     try {
       imageViewEc.shutdownNow();
+      imageViewEc.awaitTermination(1000, TimeUnit.MILLISECONDS);
     } catch(Exception e) {}
   }
 

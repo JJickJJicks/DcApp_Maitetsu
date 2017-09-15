@@ -21,7 +21,7 @@ import java.net.URL;
 
 /**
  * @since 2017-04-24
- * ㅋ
+ *
  * 이미지 로드를 처리하는 클래스.
  */
 public class ContentUtils {
@@ -49,7 +49,7 @@ public class ContentUtils {
                                          final File file,
                                          final ImageView imageView,
                                          final CurrentData currentData) {
-    ThreadPoolManager.getServiceEc().submit(new Runnable() {
+    ThreadPoolManager.getImageViewEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
@@ -78,7 +78,7 @@ public class ContentUtils {
                                        final ImageView imageView,
                                        final CurrentData currentData) {
 
-    ThreadPoolManager.getServiceEc().submit(new Runnable() {
+    ThreadPoolManager.getImageViewEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
@@ -93,7 +93,7 @@ public class ContentUtils {
                               .execute()
                               .bodyAsBytes();
 
-          if (imageBytes != null) imageBytes.put(position, new WeakReference<byte[]>(bytes));
+          if (imageBytes != null) imageBytes.put(position, new WeakReference<>(bytes));
           if (imageView != null) MainUIThread.setImageView(activity, imageView, bytes, currentData);
         } catch (Exception e) {
           Log.e("err", imageUrl);
@@ -147,7 +147,7 @@ public class ContentUtils {
                                                      final String url,
                                                      final ImageView imageView,
                                                      final CurrentData currentData) {
-    ThreadPoolManager.getServiceEc().submit(new Runnable() {
+    ThreadPoolManager.getImageViewEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
