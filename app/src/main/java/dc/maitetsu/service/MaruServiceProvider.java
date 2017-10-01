@@ -66,6 +66,7 @@ public class MaruServiceProvider {
   public void addMaruImages(final String no,
                             final MaruViewerDetailActivity activity,
                             final CurrentData currentData,
+                            final ScrollView scrollView,
                             final LinearLayout layout,
                             final List<ImageView> imageViews,
                             final boolean isViewerModel) {
@@ -75,7 +76,7 @@ public class MaruServiceProvider {
         try {
           MangaContentModel mangaContentModel = mangaService.getContentModel(USER_AGENT, no, isViewerModel, 0);
           setMaruActivityDetail(activity, mangaContentModel);
-          MainUIThread.addMaruImage(activity, currentData, layout, imageViews, mangaContentModel, 0);
+          MainUIThread.addMaruImage(activity, currentData, scrollView, layout, imageViews, mangaContentModel, 0);
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
         }

@@ -11,14 +11,12 @@ import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.*;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -367,13 +365,11 @@ public class MainUIThread {
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        val imm = Glide.with(activity
-                .getApplicationContext())
+        Glide.with(activity.getApplicationContext())
                 .load(bytes)
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE);
-
-                imm.into(imageView);
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(imageView);
       }
     });
   }
@@ -439,12 +435,13 @@ public class MainUIThread {
 
   public static void addMaruImage(final MaruViewerDetailActivity activity,
                                   final CurrentData currentData,
+                                  final ScrollView scrollView,
                                   final LinearLayout imageLayout,
                                   final List<ImageView> imageViews,
                                   final MangaContentModel mangaContentModel,
                                   final int start) {
 
-    final SparseArray<WeakReference<byte[]>> imageBytes = new SparseArray<>();
+    final SparseArray<byte[]> imageBytes = new SparseArray<>();
 
     activity.runOnUiThread(new Runnable() {
       @Override
@@ -507,7 +504,10 @@ public class MainUIThread {
                 }
                 imageBytes.clear();
                 imageViews.clear();
-                addMaruImage(activity, currentData, imageLayout, imageViews, mangaContentModel, nextStart);
+                scrollView.setScrollY(0);
+
+                addMaruImage(activity, currentData, scrollView,
+                        imageLayout, imageViews, mangaContentModel, nextStart);
               }
             });
             imageLayout.addView(continueBtn);
@@ -517,7 +517,9 @@ public class MainUIThread {
           String imageUrl = mangaContentModel.getImagesUrls().get(i + start);
           ImageView imageView = new ImageView(activity);
           imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+          imageView.setAdjustViewBounds(true);
           imageView.setLayoutParams(il);
+          imageView.setImageResource(R.drawable.image_loading);
           imageViews.add(imageView);
           ContentUtils.loadBitmapFromUrl(activity, i, imageBytes, imageUrl, mangaContentModel.getOrigin(), imageView, currentData);
           imageView.setOnClickListener(ImageViewerListener.get(activity, mangaContentModel.getNo(), i, imageBytes, true));

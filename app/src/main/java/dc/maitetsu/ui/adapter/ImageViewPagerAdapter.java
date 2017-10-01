@@ -20,13 +20,13 @@ import java.lang.ref.WeakReference;
  * @since 2017-05-12
  */
 public class ImageViewPagerAdapter extends PagerAdapter {
-  private SparseArray<WeakReference<byte[]>> imageBytes;
+  private SparseArray<byte[]> imageBytes;
   private Activity activity;
   private LayoutInflater layoutInflater;
   private LinearLayout toolLayout;
   private ImageView.ScaleType scaleType;
 
-  public ImageViewPagerAdapter(Activity activity, LinearLayout toolLayout, SparseArray<WeakReference<byte[]>>  imageBytes, ImageView.ScaleType scaleType) {
+  public ImageViewPagerAdapter(Activity activity, LinearLayout toolLayout, SparseArray<byte[]>  imageBytes, ImageView.ScaleType scaleType) {
     this.imageBytes = imageBytes;
     this.activity = activity;
     this.toolLayout = toolLayout;
@@ -65,7 +65,7 @@ public class ImageViewPagerAdapter extends PagerAdapter {
       }
     });
 
-    ContentUtils.loadBitMapFromBytes(activity, imageBytes.get(position).get(), imageView, photoViewAttacher, scaleType);
+    ContentUtils.loadBitMapFromBytes(activity, imageBytes.get(position), imageView, photoViewAttacher, scaleType);
     container.addView(itemView);
     return itemView;
   }

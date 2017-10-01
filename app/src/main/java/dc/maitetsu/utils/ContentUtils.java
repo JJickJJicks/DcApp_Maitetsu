@@ -72,7 +72,7 @@ public class ContentUtils {
    */
   public static void loadBitmapFromUrl(final Activity activity,
                                        final int position,
-                                       final SparseArray<WeakReference<byte[]>> imageBytes,
+                                       final SparseArray<byte[]> imageBytes,
                                        final String imageUrl,
                                        final String origin,
                                        final ImageView imageView,
@@ -93,7 +93,7 @@ public class ContentUtils {
                               .execute()
                               .bodyAsBytes();
 
-          if (imageBytes != null) imageBytes.put(position, new WeakReference<>(bytes));
+          if (imageBytes != null) imageBytes.put(position, bytes);
           if (imageView != null) MainUIThread.setImageView(activity, imageView, bytes, currentData);
         } catch (Exception e) {
           Log.e("err", imageUrl);

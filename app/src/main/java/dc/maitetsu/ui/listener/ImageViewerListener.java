@@ -18,7 +18,7 @@ public class ImageViewerListener {
   public static View.OnClickListener get(final Activity activity,
                                          final String name,
                                          final int imagePosition,
-                                         final SparseArray<WeakReference<byte[]>> imageBytes,
+                                         final SparseArray<byte[]> imageBytes,
                                          final boolean hideStatusBar) {
     return new View.OnClickListener() {
       @Override

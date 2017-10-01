@@ -43,7 +43,7 @@ public class ArticleDetailViewModel {
   private ArticleDetailViewModel viewModel;
   public EditText commentText;
   public ImageView deleteButton;
-  private SparseArray<WeakReference<byte[]>> imageBytes;
+  private SparseArray<byte[]> imageBytes;
   private List<ImageView> prevBtns;
   private List<ImageView> imageViews;
   private boolean isImageCheck = false;

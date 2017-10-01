@@ -41,7 +41,7 @@ public class MaruViewerDetailActivity extends AppCompatActivity {
     ButterKnife.bind(this);
     pageTitle.setText(model.getTitle());
     MaruServiceProvider.getInstance().addMaruImages(model.getNo(),
-                            this, currentData, layout, imageViews, model.isViewerModel());
+                            this, currentData, scrollView, layout, imageViews, model.isViewerModel());
   }
 
 

@@ -438,7 +438,7 @@ public class ServiceProvider {
   // 마지막 로그인 시간이 2시간 이내라면 true를 반환함.
   private static boolean isLoginCookieUseable(CurrentData currentData) {
     long lastTime = currentData.getLastLogin();
-    long loginKeepTime = lastTime + (1000 * 60) * 60 * 6; // 6시간
+    long loginKeepTime = lastTime + (1000 * 60) * 60 * 4; // 4시간
     long currentTime = System.currentTimeMillis();
     return currentTime < loginKeepTime;
   }

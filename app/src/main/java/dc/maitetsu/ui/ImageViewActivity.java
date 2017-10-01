@@ -35,7 +35,7 @@ public class ImageViewActivity extends AppCompatActivity {
   @BindView(R.id.image_view_height_fit) ImageView widthFitButton;
   @BindView(R.id.image_view_fit) ImageView viewFitButton;
 
-  private SparseArray<WeakReference<byte[]>> imageBytes;
+  private SparseArray<byte[]> imageBytes;
   private ImageViewPagerAdapter imageViewPagerAdapter;
   private boolean isPortrait = true;
   private String name;
@@ -126,11 +126,11 @@ public class ImageViewActivity extends AppCompatActivity {
     ContentInfoUtil util = new ContentInfoUtil();
     File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
     try {
-      ContentInfo info = util.findMatch(imageBytes.get(item).get());
+      ContentInfo info = util.findMatch(imageBytes.get(item));
       File file = new File(path, name + "_" + item
               + "." + info.getContentType().name());
       FileOutputStream stream = new FileOutputStream(file, true);
-      stream.write(imageBytes.get(item).get());
+      stream.write(imageBytes.get(item));
       stream.close();
       MainUIThread.showToast(this, String.format(getString(R.string.download_success), file.getName()));
       this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + file)));
@@ -153,12 +153,12 @@ public class ImageViewActivity extends AppCompatActivity {
 
       for (int item = 0; item < imageBytes.size(); item++) {
         if (imageBytes.get(item) == null) continue;
-        ContentInfo info = util.findMatch(imageBytes.get(item).get());
+        ContentInfo info = util.findMatch(imageBytes.get(item));
         File file = new File(folder, name + "_" + item
                 + "." + info.getContentType().name());
 
         FileOutputStream stream = new FileOutputStream(file, true);
-        stream.write(imageBytes.get(item).get());
+        stream.write(imageBytes.get(item));
         stream.close();
       }
       MainUIThread.showToast(this, getString(R.string.download_all_success));
