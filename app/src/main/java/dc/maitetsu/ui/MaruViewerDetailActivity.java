@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -76,7 +77,10 @@ public class MaruViewerDetailActivity extends AppCompatActivity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    ThreadPoolManager.shutdownServiceEc();
+    ThreadPoolManager.shutdownImageViewEc();
+    for (ImageView imageView : imageViews) {
+      imageView.setImageResource(0);
+    }
     ImageData.clearHoldImageBytes();
   }
 

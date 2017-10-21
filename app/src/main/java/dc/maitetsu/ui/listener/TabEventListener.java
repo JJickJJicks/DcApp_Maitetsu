@@ -94,10 +94,10 @@ public class TabEventListener {
   // 탭 전환시
   private void setTabAutoRefresh(TabLayout.Tab tab) {
 
+    // 이전 작업 셧다운
+    ThreadPoolManager.shutdownAllEc();
 
     if ((int) tab.getTag() == R.string.title_article_list) { // 일반글
-      // 이전 작업 셧다운
-      ThreadPoolManager.shutdownServiceEc();
       searchLayout.setVisibility(View.VISIBLE);
       searchBtn.setVisibility(View.VISIBLE);
       searchBtn.setOnClickListener(SearchBtnListener.get(pagerAdapter.getSimpleArticleListFragment(),
@@ -105,13 +105,9 @@ public class TabEventListener {
       MainUIThread.refreshArticleListView(pagerAdapter.getSimpleArticleListFragment(), true);
 
     }else if((int) tab.getTag() == R.string.maru_viewer_title) { // 실험실
-      // 이전 작업 셧다운
-      ThreadPoolManager.shutdownServiceEc();
       MainUIThread.refreshMaruListView(pagerAdapter.getDcmysDcMysFragment(), true);
 
     } else if ((int) tab.getTag() == R.string.title_recommend_article_title_bar) { // 개념글
-      // 이전 작업 셧다운
-      ThreadPoolManager.shutdownServiceEc();
       MainUIThread.refreshArticleListView(pagerAdapter.getRecommendArticleListFragment(), true);
     }
   }

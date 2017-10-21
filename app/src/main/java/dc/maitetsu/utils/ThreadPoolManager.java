@@ -16,15 +16,6 @@ public class ThreadPoolManager {
   private static ExecutorService imageViewEc;
 
   private static void setServiceEc() {
-//    serviceEc = Executors.newFixedThreadPool(2, new ThreadFactory() {
-//      @Override
-//      public Thread newThread(Runnable runnable) {
-//        Thread t = Executors.defaultThreadFactory().newThread(runnable);
-//        t.setDaemon(true);
-//        return t;
-//      }
-//    });
-
     serviceEc = Executors.newSingleThreadExecutor(new ThreadFactory() {
       @Override
       public Thread newThread(Runnable runnable) {
@@ -48,7 +39,7 @@ public class ThreadPoolManager {
 
 
   private static void setImageViewEc() {
-    imageViewEc = Executors.newFixedThreadPool(4, new ThreadFactory() {
+    imageViewEc = Executors.newCachedThreadPool(new ThreadFactory() {
       @Override
       public Thread newThread(Runnable runnable) {
         Thread t = Executors.defaultThreadFactory().newThread(runnable);
@@ -95,13 +86,25 @@ public class ThreadPoolManager {
   }
 
 
+  public static synchronized void shutdownAllEc() {
+    try{
+      serviceEc.shutdownNow();
+      contentEc.shutdownNow();
+      imageViewEc.shutdownNow();
+
+      serviceEc.awaitTermination(500, TimeUnit.MILLISECONDS);
+      contentEc.awaitTermination(500, TimeUnit.MILLISECONDS);
+      imageViewEc.awaitTermination(500, TimeUnit.MILLISECONDS);
+    } catch (Exception e) {}
+  }
+
   /**
    * 글 목록을 읽거나 새로고침하는 쓰레드를 shutdown한다
    */
   public static synchronized void shutdownServiceEc() {
     try{
       serviceEc.shutdownNow();
-      serviceEc.awaitTermination(1000, TimeUnit.MILLISECONDS);
+      serviceEc.awaitTermination(500, TimeUnit.MILLISECONDS);
     } catch(Exception e) {}
   }
 
@@ -111,7 +114,7 @@ public class ThreadPoolManager {
   public static synchronized void shutdownContentEc() {
     try {
       contentEc.shutdownNow();
-      contentEc.awaitTermination(1000, TimeUnit.MILLISECONDS);
+      contentEc.awaitTermination(500, TimeUnit.MILLISECONDS);
     } catch(Exception e) {}
   }
 
@@ -122,7 +125,7 @@ public class ThreadPoolManager {
   public static synchronized void shutdownImageViewEc() {
     try {
       imageViewEc.shutdownNow();
-      imageViewEc.awaitTermination(1000, TimeUnit.MILLISECONDS);
+      imageViewEc.awaitTermination(500, TimeUnit.MILLISECONDS);
     } catch(Exception e) {}
   }
 

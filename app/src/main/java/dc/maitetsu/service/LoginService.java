@@ -70,6 +70,7 @@ enum LoginService {
 
     params.put("user_id", id);
     params.put("user_pw", pw);
+    params.put("id_chk", "on");
     return params;
   }
 

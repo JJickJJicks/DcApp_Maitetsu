@@ -1,6 +1,7 @@
 package dc.maitetsu.ui.viewmodel;
 
 import android.content.Intent;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.*;
@@ -126,7 +127,7 @@ public class ArticleWriteViewModel {
     if(files != null) {
       for (final File file : files) {
         final ImageButton attachImg = new ImageButton(activity);
-        ContentUtils.loadBitmapFromLocal(activity, file, attachImg, currentData);
+        ContentUtils.loadBitmapFromLocal(activity, file, attachImg);
         attachImg.setAdjustViewBounds(true);
         attachImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
         attachImg.setBackgroundColor(android.R.color.transparent);

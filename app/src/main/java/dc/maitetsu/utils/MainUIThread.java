@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -11,7 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
@@ -40,7 +42,6 @@ import dc.maitetsu.ui.listener.ImageViewerListener;
 import dc.maitetsu.ui.viewmodel.*;
 import lombok.val;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -50,7 +51,7 @@ import java.util.List;
 public class MainUIThread {
   private static Toast toast;  // 이전에 띄운 토스트가 있다면 제거하고 출력한다.
   private static Snackbar snackbar;
-  private static int IMAGE_LOAD_COUNT = 20;
+  private static int IMAGE_LOAD_COUNT = 12;
 
   /**
    * 이미 있는 게시물에 새로운 게시물들을 추가하는 메소드
@@ -361,15 +362,24 @@ public class MainUIThread {
   static void setImageView(final Activity activity,
                            final ImageView imageView,
                            final byte[] bytes,
-                           final CurrentData currentData) {
+                           final DisplayMetrics dm) {
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        Glide.with(activity.getApplicationContext())
+
+        val builder = Glide.with(activity.getApplicationContext())
                 .load(bytes)
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(imageView);
+                .thumbnail(0.2f)
+                .diskCacheStrategy(DiskCacheStrategy.NONE);
+
+        if(dm != null) {
+                builder.override((int)(dm.widthPixels * 0.7), (int)(dm.heightPixels * 0.7))
+                       .into(imageView);
+        } else {
+            builder.into(imageView);
+        }
+
       }
     });
   }
@@ -393,8 +403,9 @@ public class MainUIThread {
       public void run() {
         Glide.with(activity.getApplicationContext())
                 .load(bytes)
-                .skipMemoryCache(true)
                 .dontTransform()
+                .skipMemoryCache(true)
+                .thumbnail(0.2f)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .listener(new RequestListener<byte[], GlideDrawable>() {
                   @Override
@@ -515,12 +526,14 @@ public class MainUIThread {
           }
           imageBytes.put(i, null); // initialize
           String imageUrl = mangaContentModel.getImagesUrls().get(i + start);
+
           ImageView imageView = new ImageView(activity);
           imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
           imageView.setAdjustViewBounds(true);
           imageView.setLayoutParams(il);
           imageView.setImageResource(R.drawable.image_loading);
           imageViews.add(imageView);
+
           ContentUtils.loadBitmapFromUrl(activity, i, imageBytes, imageUrl, mangaContentModel.getOrigin(), imageView, currentData);
           imageView.setOnClickListener(ImageViewerListener.get(activity, mangaContentModel.getNo(), i, imageBytes, true));
           imageLayout.addView(imageView);

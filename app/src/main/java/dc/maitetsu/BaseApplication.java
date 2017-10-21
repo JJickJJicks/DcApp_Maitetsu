@@ -1,6 +1,8 @@
 package dc.maitetsu;
 
-import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 import com.bumptech.glide.Glide;
 
 /**
@@ -9,7 +11,13 @@ import com.bumptech.glide.Glide;
  * 어플리케이션 설정 클래스.
  * Glide 메모리 정리를 다시 유도함.
  */
-public class BaseApplication extends Application {
+public class BaseApplication extends MultiDexApplication {
+
+  @Override
+  protected void attachBaseContext(Context base) {
+    super.attachBaseContext(base);
+    MultiDex.install(this);
+  }
 
   @Override
   public void onLowMemory() {

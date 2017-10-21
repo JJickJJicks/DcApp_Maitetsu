@@ -2,6 +2,7 @@ package dc.maitetsu.service;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import dc.maitetsu.R;
@@ -10,11 +11,12 @@ import dc.maitetsu.data.CurrentDataManager;
 import dc.maitetsu.models.MangaContentModel;
 import dc.maitetsu.models.MangaSimpleModel;
 import dc.maitetsu.ui.MaruViewerDetailActivity;
+import dc.maitetsu.ui.SeleniumActivity;
 import dc.maitetsu.ui.fragment.MangaViewerFragment;
 import dc.maitetsu.utils.MainUIThread;
 import dc.maitetsu.utils.ThreadPoolManager;
 import dc.maitetsu.utils.VibrateUtils;
-
+import lombok.val;
 import java.util.List;
 
 /**
@@ -55,6 +57,8 @@ public class MaruServiceProvider {
           MainUIThread.setMaruSearchResult(mangaSimpleModels, fragment, doClear);
           MainUIThread.showSnackBar(fragment.getView(), fragment.getActivity().getString(R.string.article_list_ok));
         }catch(Exception e) {
+          val intent = new Intent(fragment.getActivity(), SeleniumActivity.class);
+          fragment.startActivity(intent);
           MainUIThread.showToast(fragment.getActivity(), fragment.getActivity()
                   .getString(R.string.article_load_failure));
         }
@@ -73,14 +77,18 @@ public class MaruServiceProvider {
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
       public void run() {
-        try {
-          MangaContentModel mangaContentModel = mangaService.getContentModel(USER_AGENT, no, isViewerModel, 0);
-          setMaruActivityDetail(activity, mangaContentModel);
-          MainUIThread.addMaruImage(activity, currentData, scrollView, layout, imageViews, mangaContentModel, 0);
-        } catch (Exception e) {
-          MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
+        for(int i=0; i<5; i++) {
+          try {
+            MangaContentModel mangaContentModel = mangaService.getContentModel(USER_AGENT, no, isViewerModel, 0);
+            setMaruActivityDetail(activity, mangaContentModel);
+            MainUIThread.addMaruImage(activity, currentData, scrollView, layout, imageViews, mangaContentModel, 0);
+            break;
+          } catch (Exception e) {
+            if(i == 4) {
+              MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
+            }
+          }
         }
-
       }
     });
   }

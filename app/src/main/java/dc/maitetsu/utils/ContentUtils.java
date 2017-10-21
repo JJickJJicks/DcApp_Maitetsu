@@ -2,6 +2,7 @@ package dc.maitetsu.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.ImageView;
@@ -21,7 +22,7 @@ import java.net.URL;
 
 /**
  * @since 2017-04-24
- *
+ * <p>
  * 이미지 로드를 처리하는 클래스.
  */
 public class ContentUtils {
@@ -47,13 +48,12 @@ public class ContentUtils {
    */
   public static void loadBitmapFromLocal(final Activity activity,
                                          final File file,
-                                         final ImageView imageView,
-                                         final CurrentData currentData) {
+                                         final ImageView imageView) {
     ThreadPoolManager.getImageViewEc().submit(new Runnable() {
       @Override
       public void run() {
         try {
-          MainUIThread.setImageView(activity, imageView, IOUtils.toByteArray(new FileInputStream(file)), currentData);
+          MainUIThread.setImageView(activity, imageView, IOUtils.toByteArray(new FileInputStream(file)), null);
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
         }
@@ -67,7 +67,7 @@ public class ContentUtils {
    * URL로부터 이미지를 얻어 액티비티의 이미지뷰에 보여주는 메소드
    *
    * @param activity  the activity
-   * @param imageUrl       the url
+   * @param imageUrl  the url
    * @param imageView the image view
    */
   public static void loadBitmapFromUrl(final Activity activity,
@@ -77,30 +77,39 @@ public class ContentUtils {
                                        final String origin,
                                        final ImageView imageView,
                                        final CurrentData currentData) {
+    final DisplayMetrics dm = new DisplayMetrics();
+    activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
 
     ThreadPoolManager.getImageViewEc().submit(new Runnable() {
       @Override
       public void run() {
-        try {
 
-          byte[] bytes = Jsoup.connect(imageUrl)
-                              .userAgent(ServiceProvider.USER_AGENT)
-                              .header("Origin", origin)
-                              .header("Referer", origin)
-                              .ignoreContentType(true)
-                              .maxBodySize(1024 * 1024 * 30)
-                              .timeout(2000)
-                              .execute()
-                              .bodyAsBytes();
+        for (int i = 0; i < 5; i++) {
+          try {
+            byte[] bytes = Jsoup.connect(imageUrl)
+                    .userAgent(ServiceProvider.USER_AGENT)
+                    .header("Origin", origin)
+                    .header("Referer", origin)
+                    .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                    .header("Accept-Encoding", "gzip, deflate")
+                    .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
+                    .ignoreContentType(true)
+                    .maxBodySize(1024 * 1024 * 30)
+                    .timeout(2000)
+                    .execute()
+                    .bodyAsBytes();
 
-          if (imageBytes != null) imageBytes.put(position, bytes);
-          if (imageView != null) MainUIThread.setImageView(activity, imageView, bytes, currentData);
-        } catch (Exception e) {
-          Log.e("err", imageUrl);
-          Log.e("err", e.getMessage());
-          if (!e.getMessage().equals("thread interrupted")) // 쓰레드 인터럽트 예외는 무시
-            MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
+            if (imageBytes != null) imageBytes.put(position, bytes);
+            if (imageView != null) MainUIThread.setImageView(activity, imageView, bytes, dm);
+            break;
+          } catch (Exception e) {
+            if (i == 4) {
+              if (!e.getMessage().equals("thread interrupted")) // 쓰레드 인터럽트 예외는 무시
+                MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
+            }
+          }
         }
+
       }
     });
   }
@@ -152,7 +161,7 @@ public class ContentUtils {
       public void run() {
         try {
           byte[] bytes = getOrSave(activity, url);
-          MainUIThread.setImageView(activity, imageView, bytes, currentData);
+          MainUIThread.setImageView(activity, imageView, bytes, null);
         } catch (Exception e) {
           if (!e.getMessage().equals("thread interrupted")) // 쓰레드 인터럽트 예외는 무시
             MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));

@@ -2,71 +2,75 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="dc.maitetsu">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
 
-    <application
-            android:name=".BaseApplication"
-            android:allowBackup="true"
-            android:icon="@drawable/icon"
+  <application
+          android:name=".BaseApplication"
+          android:allowBackup="true"
+          android:icon="@drawable/icon"
+          android:label="@string/app_name"
+          android:largeHeap="true"
+          android:resizeableActivity="false"
+          android:supportsRtl="true"
+          android:theme="@style/BasicTheme">
+    <activity
+            android:name=".ui.MainActivity"
             android:label="@string/app_name"
-            android:largeHeap="true"
-            android:supportsRtl="true"
-            android:resizeableActivity="false"
-            android:theme="@style/BasicTheme">
+            android:screenOrientation="portrait"
+            android:theme="@style/BasicTheme.NoTranslucent"
+            android:windowSoftInputMode="stateHidden">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
 
-        <activity
-                android:name=".ui.MainActivity"
-                android:label="@string/app_name"
-                android:screenOrientation="portrait"
-                android:theme="@style/BasicTheme.NoTranslucent"
-                android:windowSoftInputMode="stateHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity
-                android:name=".ui.ArticleWriteActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/BasicTheme">
-        </activity>
-        <activity
-                android:name=".ui.SplashActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/BasicTheme">
-        </activity>
-        <activity
-                android:name=".ui.ArticleDetailActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/BasicTheme"
-                android:windowSoftInputMode="stateHidden">
-        </activity>
-        <activity
-                android:name=".ui.FilterUserListActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/BasicTheme"
-                android:windowSoftInputMode="stateHidden">
-        </activity>
-        <activity
-                android:name=".ui.OpenSourceActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/BasicTheme"
-                android:windowSoftInputMode="stateHidden">
-        </activity>
-        <activity
-                android:name=".ui.MaruViewerDetailActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/BasicTheme"
-                android:windowSoftInputMode="stateHidden">
-        </activity>
-        <activity android:name=".ui.ImageViewActivity"
-                  android:screenOrientation="portrait"
-                  android:theme="@style/DarkTheme"
-                  android:windowSoftInputMode="stateHidden">
-        </activity>
-    </application>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+    <activity
+            android:name=".ui.ArticleWriteActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/BasicTheme">
+    </activity>
+    <activity
+            android:name=".ui.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/BasicTheme">
+    </activity>
+    <activity
+            android:name=".ui.ArticleDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/BasicTheme"
+            android:windowSoftInputMode="stateHidden">
+    </activity>
+    <activity
+            android:name=".ui.FilterUserListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/BasicTheme"
+            android:windowSoftInputMode="stateHidden">
+    </activity>
+    <activity
+            android:name=".ui.OpenSourceActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/BasicTheme"
+            android:windowSoftInputMode="stateHidden">
+    </activity>
+    <activity
+            android:name=".ui.MaruViewerDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/BasicTheme"
+            android:windowSoftInputMode="stateHidden">
+    </activity>
+    <activity
+            android:name=".ui.ImageViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/DarkTheme"
+            android:windowSoftInputMode="stateHidden">
+    </activity>
+    <activity android:name=".ui.SeleniumActivity">
+    </activity>
+  </application>
 
 </manifest>
