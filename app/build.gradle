@@ -9,8 +9,8 @@ android {
         applicationId "dcmys.maitetsu"
         minSdkVersion 18
         targetSdkVersion 25
-        versionCode 1510
-        versionName "1.5.10"
+        versionCode 1511
+        versionName "1.5.11"
         multiDexEnabled true
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
