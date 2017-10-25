@@ -103,7 +103,6 @@ enum CommentWriteService {
     data.put("userToken", cwd.getUserToken());
     data.put("rand_code", "");
     data.put("con_key", getAccessToken(articleUrl, userAgent));
-    Log.e("err", data.toString());
     return data;
   }
 
