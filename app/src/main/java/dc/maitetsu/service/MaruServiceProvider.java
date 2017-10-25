@@ -11,7 +11,6 @@ import dc.maitetsu.data.CurrentDataManager;
 import dc.maitetsu.models.MangaContentModel;
 import dc.maitetsu.models.MangaSimpleModel;
 import dc.maitetsu.ui.MaruViewerDetailActivity;
-import dc.maitetsu.ui.SeleniumActivity;
 import dc.maitetsu.ui.fragment.MangaViewerFragment;
 import dc.maitetsu.utils.MainUIThread;
 import dc.maitetsu.utils.ThreadPoolManager;
@@ -57,8 +56,8 @@ public class MaruServiceProvider {
           MainUIThread.setMaruSearchResult(mangaSimpleModels, fragment, doClear);
           MainUIThread.showSnackBar(fragment.getView(), fragment.getActivity().getString(R.string.article_list_ok));
         }catch(Exception e) {
-          val intent = new Intent(fragment.getActivity(), SeleniumActivity.class);
-          fragment.startActivity(intent);
+//          val intent = new Intent(fragment.getActivity(), SeleniumActivity.class);
+//          fragment.startActivity(intent);
           MainUIThread.showToast(fragment.getActivity(), fragment.getActivity()
                   .getString(R.string.article_load_failure));
         }

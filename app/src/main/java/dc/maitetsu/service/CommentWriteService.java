@@ -1,5 +1,6 @@
 package dc.maitetsu.service;
 
+import android.util.Log;
 import dc.maitetsu.models.ArticleDetail;
 import dc.maitetsu.models.DcConPackage;
 import org.json.simple.JSONObject;
@@ -58,11 +59,13 @@ enum CommentWriteService {
       cwdData.put("click_dccon", "1");
       cwdData.put("comment_memo2", "");
 
-    Document result = Jsoup.connect(COMMENT_WRITE_URL).cookies(loginCookie)
+    Document result = Jsoup.connect(COMMENT_WRITE_URL)
+            .cookies(loginCookie)
             .userAgent(userAgent)
             .header("Origin", "http://m.dcinside.com")
             .header("Referer", articleUrl)
             .header("X-Requested-With", "XMLHttpRequest")
+            .header("Connection", "keep-alive")
             .header("Accept", "*/*")
             .header("Accept-Encoding", "gzip, deflate")
             .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
@@ -85,7 +88,7 @@ enum CommentWriteService {
   private Map<String, String> cwdSerailize(ArticleDetail.CommentWriteData cwd, String comment, String articleUrl, String userAgent) throws IOException, ParseException {
     Map<String, String> data = new HashMap<>();
     data.put("comment_memo", comment);
-    data.put("mode", cwd.getMode());
+    data.put("mode", "comment");// cwd.getMode());
     data.put("voice_file",cwd.getVoice_file());
     data.put("no", cwd.getNo());
     data.put("id", cwd.getId());
@@ -100,6 +103,7 @@ enum CommentWriteService {
     data.put("userToken", cwd.getUserToken());
     data.put("rand_code", "");
     data.put("con_key", getAccessToken(articleUrl, userAgent));
+    Log.e("err", data.toString());
     return data;
   }
 
