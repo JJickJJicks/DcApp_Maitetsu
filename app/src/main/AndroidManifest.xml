@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="dc.maitetsu">
+          package="dc.maitetsufd">
 
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -9,7 +9,7 @@
   <uses-permission android:name="android.permission.VIBRATE"/>
 
   <application
-          android:name=".BaseApplication"
+          android:name="dc.maitetsufd.BaseApplication"
           android:allowBackup="true"
           android:icon="@drawable/icon"
           android:label="@string/app_name"
@@ -18,7 +18,7 @@
           android:supportsRtl="true"
           android:theme="@style/BasicTheme">
     <activity
-            android:name=".ui.MainActivity"
+            android:name="dc.maitetsufd.ui.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/BasicTheme.NoTranslucent"
@@ -30,46 +30,44 @@
       </intent-filter>
     </activity>
     <activity
-            android:name=".ui.ArticleWriteActivity"
+            android:name="dc.maitetsufd.ui.ArticleWriteActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BasicTheme">
     </activity>
     <activity
-            android:name=".ui.SplashActivity"
+            android:name="dc.maitetsufd.ui.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BasicTheme">
     </activity>
     <activity
-            android:name=".ui.ArticleDetailActivity"
+            android:name="dc.maitetsufd.ui.ArticleDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BasicTheme"
             android:windowSoftInputMode="stateHidden">
     </activity>
     <activity
-            android:name=".ui.FilterUserListActivity"
+            android:name="dc.maitetsufd.ui.FilterUserListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BasicTheme"
             android:windowSoftInputMode="stateHidden">
     </activity>
     <activity
-            android:name=".ui.OpenSourceActivity"
+            android:name="dc.maitetsufd.ui.OpenSourceActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BasicTheme"
             android:windowSoftInputMode="stateHidden">
     </activity>
     <activity
-            android:name=".ui.MaruViewerDetailActivity"
+            android:name="dc.maitetsufd.ui.MaruViewerDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BasicTheme"
             android:windowSoftInputMode="stateHidden">
     </activity>
     <activity
-            android:name=".ui.ImageViewActivity"
+            android:name="dc.maitetsufd.ui.ImageViewActivity"
             android:screenOrientation="portrait"
             android:theme="@style/DarkTheme"
             android:windowSoftInputMode="stateHidden">
-    </activity>
-    <activity android:name=".ui.SeleniumActivity">
     </activity>
   </application>
 

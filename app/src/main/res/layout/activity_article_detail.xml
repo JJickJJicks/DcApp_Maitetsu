@@ -7,7 +7,7 @@
         android:id="@+id/activity_article_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="dc.maitetsu.ui.ArticleDetailActivity">
+        tools:context="dc.maitetsufd.ui.ArticleDetailActivity">
 
 
     <ScrollView

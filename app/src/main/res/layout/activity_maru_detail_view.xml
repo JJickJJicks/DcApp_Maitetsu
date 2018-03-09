@@ -7,144 +7,145 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context="dc.maitetsu.ui.MaruViewerDetailActivity">
+        tools:context="dc.maitetsufd.ui.MaruViewerDetailActivity">
 
-    <android.support.v7.widget.Toolbar
-            xmlns:android="http://schemas.android.com/apk/res/android"
+  <android.support.v7.widget.Toolbar
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="match_parent"
+          android:layout_height="?actionBarSize"
+          app:contentInsetLeft="5dp"
+          app:contentInsetStart="0dp"
+          app:contentInsetRight="5dp"
+          app:contentInsetEnd="0dp"
+          android:focusable="false"
+          android:focusableInTouchMode="false"
+          android:background="?attr/colorPrimary" android:layout_alignParentTop="true"
+          android:layout_alignParentStart="true" android:id="@+id/toolbar">
+    <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            app:contentInsetLeft="5dp"
-            app:contentInsetStart="0dp"
-            app:contentInsetRight="5dp"
-            app:contentInsetEnd="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:background="?attr/colorPrimary" android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" android:id="@+id/toolbar">
-        <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="8dp">
-            <Button
-                    android:text="@string/close"
-                    android:layout_height="25dp" android:id="@+id/maru_detail_close"
-                    android:layout_width="50dp"
-                    android:gravity="center"
-                    android:textAppearance="@style/TitleButton"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentBottom="true"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:layout_alignParentStart="true"/>
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp">
+      <Button
+              android:text="@string/close"
+              android:layout_height="25dp" android:id="@+id/maru_detail_close"
+              android:layout_width="50dp"
+              android:gravity="center"
+              android:textAppearance="@style/TitleButton"
+              android:layout_alignParentTop="true"
+              android:layout_alignParentBottom="true"
+              android:focusable="false"
+              android:focusableInTouchMode="false"
+              android:layout_alignParentStart="true"/>
 
-            <Button
-                    android:layout_height="25dp"
-                    android:id="@+id/maru_detail_open"
-                    android:text="@string/open"
-                    android:layout_width="50dp"
-                    android:gravity="center"
-                    android:textAppearance="@style/TitleButton"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentEnd="true"/>
+      <Button
+              android:layout_height="25dp"
+              android:id="@+id/maru_detail_open"
+              android:text="@string/open"
+              android:layout_width="50dp"
+              android:gravity="center"
+              android:textAppearance="@style/TitleButton"
+              android:focusable="false"
+              android:focusableInTouchMode="false"
+              android:layout_alignParentTop="true"
+              android:layout_alignParentBottom="true"
+              android:layout_alignParentEnd="true"/>
 
-            <TextView
-                    android:id="@+id/maru_detail_view_title"
-                    style="@style/List.SmallTitleText"
-                    android:text=""
-                    android:textColor="@color/colorWhite"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:layout_alignParentTop="true"
-                    android:layout_toStartOf="@+id/maru_detail_open"
-                    android:layout_toEndOf="@+id/maru_detail_close"
-                    android:layout_alignParentBottom="true"/>
+      <TextView
+              android:id="@+id/maru_detail_view_title"
+              style="@style/List.SmallTitleText"
+              android:text=""
+              android:textColor="@color/colorWhite"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:layout_alignParentTop="true"
+              android:layout_toStartOf="@+id/maru_detail_open"
+              android:layout_toEndOf="@+id/maru_detail_close"
+              android:layout_alignParentBottom="true"/>
 
-        </RelativeLayout>
-    </android.support.v7.widget.Toolbar>
+    </RelativeLayout>
+  </android.support.v7.widget.Toolbar>
 
 
-    <ScrollView android:id="@+id/maru_detail_scroll"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_below="@+id/toolbar" android:layout_alignParentStart="true"
-                android:layout_above="@+id/toolbar2">
+  <ScrollView android:id="@+id/maru_detail_scroll"
+              android:layout_width="match_parent" android:layout_height="wrap_content"
+              android:layout_below="@+id/toolbar" android:layout_alignParentStart="true"
+              android:layout_above="@+id/toolbar2">
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:padding="10dp"
-                      android:gravity="center|top"
-                      android:orientation="vertical"
-                      android:id="@+id/maru_detail_view_layout">
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:padding="10dp"
+                  android:gravity="center|top"
+                  android:orientation="vertical"
+                  android:id="@+id/maru_detail_view_layout">
 
-            <TextView android:layout_width="match_parent" android:layout_height="200dp"
-                      android:gravity="center"
-                      android:textAppearance="@style/List.TitleText"
-                      android:text="@string/image_loading"/>
-
-        </LinearLayout>
+      <TextView android:layout_width="match_parent" android:layout_height="200dp"
+                android:gravity="center"
+                android:textAppearance="@style/List.TitleText"
+                android:text="@string/image_loading"/>
 
 
-    </ScrollView>
+    </LinearLayout>
 
 
-    <android.support.v7.widget.Toolbar
-            xmlns:android="http://schemas.android.com/apk/res/android"
+  </ScrollView>
+
+
+  <android.support.v7.widget.Toolbar
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="match_parent"
+          android:layout_height="?actionBarSize"
+          android:contentInsetLeft="0dp"
+          android:contentInsetStart="0dp"
+          app:contentInsetLeft="5dp"
+          app:contentInsetStart="0dp"
+          android:contentInsetRight="0dp"
+          android:contentInsetEnd="0dp"
+          app:contentInsetRight="5dp"
+          app:contentInsetEnd="0dp"
+          android:background="?attr/colorPrimary" android:layout_alignParentBottom="true"
+          android:layout_alignParentStart="true" android:id="@+id/toolbar2">
+
+    <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:contentInsetLeft="0dp"
-            android:contentInsetStart="0dp"
-            app:contentInsetLeft="5dp"
-            app:contentInsetStart="0dp"
-            android:contentInsetRight="0dp"
-            android:contentInsetEnd="0dp"
-            app:contentInsetRight="5dp"
-            app:contentInsetEnd="0dp"
-            android:background="?attr/colorPrimary" android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true" android:id="@+id/toolbar2">
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp">
 
-        <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="8dp">
+      <Spinner
+              android:layout_height="25dp" android:id="@+id/maru_detail_episodes"
+              android:layout_width="160dp"
+              android:gravity="center"
+              android:focusable="false"
+              android:focusableInTouchMode="false"
+              android:textAppearance="@style/TitleButton"
+              android:layout_alignParentTop="true"
+              android:layout_alignParentBottom="true"
+              android:layout_alignParentStart="true"/>
 
-            <Spinner
-                    android:layout_height="25dp" android:id="@+id/maru_detail_episodes"
-                    android:layout_width="160dp"
-                    android:gravity="center"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:textAppearance="@style/TitleButton"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"/>
+      <Button
+              android:text="@string/next_episode"
+              android:layout_height="25dp" android:id="@+id/maru_detail_next"
+              android:layout_width="100dp"
+              android:gravity="center"
+              android:focusable="false"
+              android:focusableInTouchMode="false"
+              android:textAppearance="@style/TitleButton"
+              android:layout_alignParentTop="true"
+              android:layout_alignParentBottom="true"
+              android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
 
-            <Button
-                    android:text="@string/next_episode"
-                    android:layout_height="25dp" android:id="@+id/maru_detail_next"
-                    android:layout_width="100dp"
-                    android:gravity="center"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:textAppearance="@style/TitleButton"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentEnd="true"/>
-        </RelativeLayout>
-
-    </android.support.v7.widget.Toolbar>
+  </android.support.v7.widget.Toolbar>
 
 
 </RelativeLayout>

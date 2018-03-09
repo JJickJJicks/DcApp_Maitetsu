@@ -6,14 +6,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/black"
-        tools:context="dc.maitetsu.ui.ImageViewActivity">
+        tools:context="dc.maitetsufd.ui.ImageViewActivity">
 
-    <dc.maitetsu.utils.ImageViewPager android:layout_width="wrap_content"
-                                      android:layout_height="wrap_content"
-                                      android:id="@+id/image_view_pager"
-                                      android:layout_gravity="center"
-                                      android:background="@android:color/transparent">
-    </dc.maitetsu.utils.ImageViewPager>
+    <dc.maitetsufd.utils.ImageViewPager android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:id="@+id/image_view_pager"
+                                        android:layout_gravity="center"
+                                        android:background="@android:color/transparent">
+    </dc.maitetsufd.utils.ImageViewPager>
 
 
     <LinearLayout android:layout_width="match_parent"

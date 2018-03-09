@@ -3,14 +3,19 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
     }
+    buildTypes {
+        debug {
+            debuggable true
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion '25.0.1'
     defaultConfig {
-        applicationId "dcmys.maitetsu"
+        applicationId "dcmys.maitetsufd"
         minSdkVersion 18
-        targetSdkVersion 25
-        versionCode 1511
-        versionName "1.5.11"
+        targetSdkVersion 21
+        versionCode 1513
+        versionName "1.5.13"
         multiDexEnabled true
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

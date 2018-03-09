@@ -78,6 +78,7 @@
                         android:key="other">
 
         <CheckBoxPreference android:title="@string/background_color_dark"
+                            android:defaultValue="true"
                             android:key="dark_theme"/>
 
         <CheckBoxPreference android:title="@string/use_maru_viewer"
