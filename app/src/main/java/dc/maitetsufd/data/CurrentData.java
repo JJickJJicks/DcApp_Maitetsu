@@ -17,6 +17,8 @@ import java.util.Map;
 
 @Data
 public class CurrentData implements Serializable {
+  public static boolean resetMode = false;
+
   private String id;
   private String pw;
   private Map<String, String> loginCookies;

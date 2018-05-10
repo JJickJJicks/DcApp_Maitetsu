@@ -46,6 +46,10 @@ public class TabLayoutViewModel {
     setTabLayoutColor(currentData);
     setTabAndTitle(0, currentData);
 
+    attachTabEvent(activity, myPagerAdapter);
+  }
+
+  public void attachTabEvent(MainActivity activity, MyPagerAdapter myPagerAdapter) {
     new TabEventListener(activity, myPagerAdapter);
   }
 

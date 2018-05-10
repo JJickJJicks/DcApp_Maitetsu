@@ -360,25 +360,17 @@ public class MainUIThread {
    */
   static void setImageView(final Activity activity,
                            final ImageView imageView,
-                           final byte[] bytes,
-                           final DisplayMetrics dm) {
+                           final byte[] bytes) {
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
 
-        val builder = Glide.with(activity.getApplicationContext())
+        Glide.with(activity.getApplicationContext())
                 .load(bytes)
                 .skipMemoryCache(true)
                 .thumbnail(0.2f)
-                .diskCacheStrategy(DiskCacheStrategy.NONE);
-
-        if(dm != null) {
-                builder.override((int)(dm.widthPixels * 0.7), (int)(dm.heightPixels * 0.7))
-                       .into(imageView);
-        } else {
-            builder.into(imageView);
-        }
-
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(imageView);
       }
     });
   }
@@ -557,7 +549,7 @@ public class MainUIThread {
               public void onClick(View v) {
                 try {
                   MaruServiceProvider.getInstance().postCaptch(mangaContentModel.getUrl(), inputCaptcha.getText().toString());
-                  activity.finish();
+                  activity.recreate();
                 } catch (IOException e) {}
               }
             });

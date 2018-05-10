@@ -20,12 +20,17 @@ import dc.maitetsufd.ui.viewmodel.RecommendArticleListViewModel;
  */
 public class RecommendArticleListFragment extends Fragment implements HasViewModelFragment {
   private RecommendArticleListViewModel presenter;
+  private static RecommendArticleListFragment fragment;
 
   public RecommendArticleListFragment() {
+    fragment = this;
   }
 
-  public static RecommendArticleListFragment newInstance() {
-    return new RecommendArticleListFragment();
+  public static RecommendArticleListFragment instance() {
+    if (fragment == null) {
+      fragment = new RecommendArticleListFragment();
+    }
+    return fragment;
   }
 
   @Override

@@ -1,6 +1,8 @@
 package dc.maitetsufd.ui.fragment;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -22,11 +24,19 @@ import dc.maitetsufd.ui.OpenSourceActivity;
  * 설정 프래그먼트.
  */
 public class SettingFragment extends PreferenceFragmentCompat {
-  public SettingFragment() {}
+  private static SettingFragment fragment;
+
+
+  public SettingFragment() {
+    fragment = this;
+  }
   private CurrentData currentData;
 
-  public static SettingFragment newInstance() {
-    return new SettingFragment();
+  public static SettingFragment instance() {
+    if (fragment == null) {
+      fragment = new SettingFragment();
+    }
+    return fragment;
   }
 
   @Override
@@ -204,11 +214,14 @@ public class SettingFragment extends PreferenceFragmentCompat {
     button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
       @Override
       public boolean onPreferenceClick(Preference preference) {
-        Activity mainActivity = fragment.getActivity();
-        Intent intent = new Intent(mainActivity, MainActivity.class);
-        intent.putExtra("resetMode", true);
-        mainActivity.finishAffinity();
-        mainActivity.startActivity(intent);
+        MainActivity mainActivity = (MainActivity) fragment.getActivity();
+        Intent mStartActivity = new Intent(mainActivity, MainActivity.class);
+        int mPendingIntentId = (int) System.currentTimeMillis();
+        PendingIntent mPendingIntent = PendingIntent.getActivity(mainActivity, mPendingIntentId, mStartActivity,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager mgr = (AlarmManager) mainActivity.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+        System.exit(0);
         return true;
       }
     });

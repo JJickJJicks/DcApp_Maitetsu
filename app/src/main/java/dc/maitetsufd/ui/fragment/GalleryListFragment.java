@@ -18,12 +18,17 @@ import dc.maitetsufd.ui.viewmodel.GalleryListViewModel;
  */
 public class GalleryListFragment extends Fragment {
   public GalleryListViewModel galleryListViewModel;
+  private static GalleryListFragment fragment;
 
   public GalleryListFragment() {
+    fragment = this;
   }
 
-  public static GalleryListFragment newInstance() {
-    return new GalleryListFragment();
+  public static GalleryListFragment instance() {
+    if (fragment == null) {
+      fragment = new GalleryListFragment();
+    }
+    return fragment;
   }
 
   @Override

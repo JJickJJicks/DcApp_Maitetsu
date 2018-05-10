@@ -7,6 +7,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -43,38 +44,39 @@ public class MainActivity extends AppCompatActivity {
   @BindView(R.id.toolbar_search_close) ImageView searchClose;
   @BindView(R.id.toolbar_search_btn) ImageView searchOpen;
   @BindColor(R.color.colorWhite) int whiteColor;
+  TabLayoutViewModel tabLayoutViewModel;
+  MyPagerAdapter myPagerAdapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    CurrentData currentData = CurrentDataManager.load(this);
 
-    // 스플래시 액티비티 호출
+    CurrentData currentData = CurrentDataManager.load(this);
     callSplashActivity();
 
     setTheme(currentData);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
 
+
     // 페이저와 탭 설정
     setupPagerAdaper(currentData);
-
     setSearchToolsColor();
   }
 
-  public void setupPagerAdaper(CurrentData currentData){
-    MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
-    viewPager.setAdapter(myPagerAdapter);
-    viewPager.setOffscreenPageLimit(5);
-    tabLayout.setupWithViewPager(viewPager);
-    tabLayout.setTabMode(TabLayout.MODE_FIXED);
-    tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+  private void setupPagerAdaper(CurrentData currentData){
+      this.myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+      viewPager.setAdapter(myPagerAdapter);
+      viewPager.setOffscreenPageLimit(5);
+      tabLayout.setupWithViewPager(viewPager);
+      tabLayout.setTabMode(TabLayout.MODE_FIXED);
+      tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-    // 만화 뷰어 기능 비활성화 처리
-    if (!currentData.isMaruViewer()) { removeTab(myPagerAdapter, 3); }
+      // 만화 뷰어 기능 비활성화 처리
+      if (!currentData.isMaruViewer()) { removeTab(myPagerAdapter, 3); }
 
-    // 탭 모델뷰 설정
-    new TabLayoutViewModel(this, myPagerAdapter);
+      // 탭 모델뷰 설정
+      this.tabLayoutViewModel = new TabLayoutViewModel(this, myPagerAdapter);
   }
 
 
@@ -92,9 +94,8 @@ public class MainActivity extends AppCompatActivity {
   }
 
   // 스플래시 액티비티를 여는 메소드
-  private void callSplashActivity() {
+  public void callSplashActivity() {
     Intent intent = new Intent(this, SplashActivity.class);
-    intent.putExtra("resetMode", getIntent().getBooleanExtra("resetMode", false));
     startActivityForResult(intent, RequestCodes.LOGIN.ordinal());
   }
 

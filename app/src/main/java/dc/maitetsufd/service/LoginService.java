@@ -1,157 +1,177 @@
 package dc.maitetsufd.service;
 
+import android.util.Log;
+import lombok.val;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
- * @since 2017-04-21
+ * @author John
+ * @since 2018-03-14
  */
-
 public enum LoginService {
   getInstance;
 
+  private static final String MOBILE_INDEX = "http://m.dcinside.com";
   private static final String MOBILE_LOGIN_ACCESS_TOKEN_URL = "http://m.dcinside.com/_access_token.php";
   private static final String MOBILE_LOGIN_FORM_URL = "http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php";
   private static final String MOBILE_LOGIN_URL = "https://dcid.dcinside.com/join/mobile_login_ok.php";
   private static final JSONParser jsonParser = new JSONParser();
-  private static Map<String, String> cookies = new HashMap<>();
 
   /**
-   * 모바일 웹에 로그인해 로그인 데이터를 얻어오는 메소드.
+   * 로그인하는 함수
    *
-   * @param id        유저 아이디
-   * @param pw        유저 비밀번호
-   * @param userAgent 모바일 기기의 userAgent.
-   * @return 로그인 데이터
+   * @param id        dcinside 아이디
+   * @param pw        dcinside 비밀번호
+   * @param userAgent 로그인 시도할 user-agent
+   * @return
+   * @throws IOException
    */
-  public Map<String, String> login(String id, String pw, String userAgent) throws IOException, ParseException, InterruptedException, IllegalAccessException {
-    int i = 0;
-    Connection.Response response = null;
+  public Map<String, String> login(String id, String pw, String userAgent) throws Exception {
+    val cookies = new HashMap<String, String>();
+    cookies.put("user-agent", userAgent);
 
-    do {
-      if (i > 3) throw new IllegalAccessException("\n로그인 정보를 확인해보세요.");
-      TimeUnit.MILLISECONDS.sleep(100L);
-        Map<String, String> data = getLoginParams(id, pw, userAgent);
-      try {
-        response = Jsoup.connect(MOBILE_LOGIN_URL)
-                .ignoreContentType(true)
-                .ignoreHttpErrors(true)
-                .userAgent(userAgent)
-                .data(data)
-//                .header("Host", ".dcinside.com")
-//                .header("Origin", ".dcinside.com")
-                .header("Referer", "http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php")
-                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("Accept-Encoding", "gzip, deflate")
-                .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-                .cookies(LoginService.cookies)
-                .timeout(3000)
-                .method(Connection.Method.POST)
-                .execute();
-        LoginService.cookies.putAll(response.cookies());
+    val loginData = getLoginData(id, pw, userAgent, cookies);
 
-        // 리다이렉트
-        response = Jsoup.connect("http://m.dcinside.com/login.php?r_url=m.dcinside.com%252Findex.php&mode=&rucode=1")
-                .userAgent(userAgent)
-                .cookies(LoginService.cookies)
-                .timeout(3000)
-                .method(Connection.Method.GET)
-                .execute();
-        LoginService.cookies.putAll(response.cookies());
+    // 로그인 시도 후 로그인 쿠키 검사
+    for (int i = 0; i < 3; i++) {
+      val response = Jsoup.connect(MOBILE_LOGIN_URL)
+              .data(loginData)
+              .followRedirects(true)
+              .ignoreContentType(true)
+              .ignoreHttpErrors(true)
+              .userAgent(userAgent)
+              .referrer(MOBILE_LOGIN_FORM_URL)
+              .cookies(cookies)
+              .method(Connection.Method.POST)
+              .execute();
+      val loginCookies = response.cookies();
+      System.out.println(loginCookies);
 
-      } catch (Exception e) {
+      if (loginCookies.get("mc_enc") != null) {
+        loginCookies.put("userAgent", userAgent);
+        return response.cookies();
       }
-      i++;
-    } while (LoginService.cookies.get("mc_enc") == null);
-
-    return LoginService.cookies;
-  }
-
-
-  // 로그인에 필요한 값들을 Map으로 만들어주는 메소드
-  private Map<String, String> getLoginParams(String id, String pw, String userAgent) throws IOException, ParseException {
-    Connection.Response res = Jsoup.connect(MOBILE_LOGIN_FORM_URL)
-            .userAgent(userAgent)
-            .ignoreContentType(true)
-            .ignoreHttpErrors(true)
-//            .header("Host", ".dcinside.com")
-//            .header("Origin", ".dcinside.com")
-            .header("Referer", "http://m.dcinside.com/")
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .header("Pragma", "no-cache")
-            .header("Cache-Control", "no-cache")
-            .header("Connection", "keep-alive")
-            .method(Connection.Method.GET)
-            .execute();
-    LoginService.cookies.putAll(res.cookies());
-
-    Document doc = res.parse();
-    Element loginform = doc.getElementById("login_process");
-    Elements inputElements = loginform.getElementsByTag("input");
-    Map<String, String> params = getConKey(inputElements, userAgent);
-
-    params.put("user_id", id);
-    params.put("user_pw", pw);
-    params.put("id_chk", "on");
-    return params;
-  }
-
-
-  // 로그인 폼에서 con_key를 구해준다.
-  private Map<String, String> getConKey(Elements elements, String userAgent) throws IOException, ParseException {
-    Map<String, String> params = new HashMap<>();
-
-    for (Element inputElement : elements) {
-      String key = inputElement.attr("name");
-      String value = inputElement.attr("value");
-      if (key.equals("con_key")) {
-        value = conKeyToAccessToken(value, userAgent);
-      }
-      params.put(key, value);
     }
-    return params;
+
+    throw new Exception("로그인 정보를 확인하세요");
   }
 
-  // con_key를 이용해 access token을 얻어오는 메소드.
-  private String conKeyToAccessToken(String conKey, String userAgent) throws IOException, ParseException {
-    Connection.Response res = Jsoup.connect(MOBILE_LOGIN_ACCESS_TOKEN_URL)
+  /**
+   * 로그인에 필요한 데이터를 얻어오는 메소드
+   *
+   * @param id
+   * @param pw
+   * @param userAgent
+   * @param cookies
+   * @return
+   * @throws IOException
+   */
+  private Map<String, String> getLoginData(String id, String pw, String userAgent, Map<String, String> cookies) throws IOException {
+    val firstURL = loginRedirect(MOBILE_LOGIN_FORM_URL, userAgent, cookies, MOBILE_LOGIN_FORM_URL);
+    loginRedirect(firstURL, userAgent, cookies, MOBILE_LOGIN_FORM_URL);
+
+    val loginFormResponse = Jsoup.connect(MOBILE_LOGIN_FORM_URL)
+            .userAgent(userAgent)
+            .followRedirects(false)
+            .ignoreContentType(true)
+            .ignoreHttpErrors(true)
+            .referrer(MOBILE_LOGIN_FORM_URL)
+            .method(Connection.Method.GET)
+            .cookies(cookies)
+            .execute();
+
+    // 로그인 페이지 쿠키 처리
+    cookies.putAll(loginFormResponse.cookies());
+
+    val conKeyData = getConKey(loginFormResponse.parse(), userAgent, cookies);
+    conKeyData.put("user_id", id);
+    conKeyData.put("user_pw", pw);
+    conKeyData.put("id_chk", "on");
+    conKeyData.put("r_url", "m.dcinside.com%2Findex.php");
+    return conKeyData;
+  }
+
+  /**
+   * 로그인 페이지에서 con_key를 얻어오는 메소드
+   *
+   * @param document
+   * @param userAgent
+   * @param cookies
+   * @return
+   * @throws IOException
+   */
+  private Map<String, String> getConKey(Document document, String userAgent, Map<String, String> cookies) throws IOException {
+    val loginData = new HashMap<String, String>();
+    val conKey = document.getElementById("login_process")
+            .select("input[name=con_key]")
+            .first().val();
+    val accessToken = getAccessToken(conKey, userAgent, cookies);
+
+    loginData.put("con_key", accessToken);
+    return loginData;
+  }
+
+  /**
+   * 로그인 페이지의 con_key를 이용하여 access_token을 얻어오는 메소드
+   *
+   * @param conKey
+   * @param userAgent
+   * @param cookies
+   * @return
+   * @throws IOException
+   */
+  private String getAccessToken(String conKey, String userAgent, Map<String, String> cookies) throws IOException {
+    val accessTokenResponse = Jsoup.connect(MOBILE_LOGIN_ACCESS_TOKEN_URL)
             .userAgent(userAgent)
             .ignoreContentType(true)
             .ignoreHttpErrors(true)
-//            .header("Host", ".dcinside.com")
-//            .header("Origin", ".dcinside.com")
-            .header("Referer", "http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php")
+            .referrer(MOBILE_LOGIN_FORM_URL)
             .header("X-Requested-With", "XMLHttpRequest")
-            .header("Accept", "*/*")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .header("Connection", "keep-alive")
             .data("token_verify", "login")
             .data("con_key", conKey)
-            .cookies(LoginService.cookies)
-            .ignoreContentType(true)
+            .cookies(cookies)
             .method(Connection.Method.POST)
             .execute();
-    LoginService.cookies.putAll(res.cookies());
 
-    Document doc = res.parse();
-    JSONObject jsonObject = (JSONObject) jsonParser.parse(doc.body().text());
+    // 로그인 페이지 쿠키 처리
+    cookies.putAll(accessTokenResponse.cookies());
 
-    return (String) jsonObject.get("data");
+    // 로그인 엑세스 토큰 리턴
+    try {
+      val jsonObject = (JSONObject) jsonParser.parse(accessTokenResponse.body());
+      return (String) jsonObject.get("data");
+    } catch (ParseException e) {
+      e.printStackTrace();
+      return "";
+    }
+  }
+
+  private String loginRedirect(String URL, String userAgent, Map<String, String> cookies, String previousURL) throws IOException {
+    URL = URLDecoder.decode(URL, "UTF-8");
+
+    val response = Jsoup.connect(URL)
+            .userAgent(userAgent)
+            .followRedirects(false)
+            .ignoreContentType(true)
+            .ignoreHttpErrors(true)
+            .referrer(previousURL)
+            .timeout(3000)
+            .execute();
+    cookies.putAll(response.cookies());
+
+    return response.header("location");
   }
 
 }
+
+

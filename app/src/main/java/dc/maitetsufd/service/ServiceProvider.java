@@ -3,6 +3,7 @@ package dc.maitetsufd.service;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import dc.maitetsufd.R;
@@ -31,8 +32,7 @@ import java.util.List;
 public class ServiceProvider {
 
   // 갤럭시 S6 Useragent
-  public static String USER_AGENT = "Mozilla/5.0 (Linux; Android 5.1.1; SM-G925F Build/LMY47X) " +
-          "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.94 Mobile Safari/537.36";
+  public static String USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; PLUS Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.98 Mobile Safari/537.36";
 
   private static ServiceProvider serviceProvider = null;
 
@@ -81,11 +81,18 @@ public class ServiceProvider {
         try {
           MainUIThread.setSplashText(activity, activity.getString(R.string.splash_login_try));
           currentData.setLoginCookies(LoginService.getInstance.login(currentData.getId(), currentData.getPw(), USER_AGENT));
+          currentData.setLastLogin(System.currentTimeMillis());
+          CurrentDataManager.save(activity);
           MainUIThread.setSplashText(activity, activity.getString(R.string.splash_login_success));
+
           getDcConList(activity, currentData);
+          CurrentData.resetMode = false;
+
         } catch (Exception e) {
-          String appendMsg = "";
-          if (e instanceof IllegalAccessException) appendMsg = e.getMessage();
+          String appendMsg = "\n";
+          if (e instanceof IllegalAccessException) appendMsg += e.getMessage();
+          else appendMsg += "다시 시도해 보세요";
+
           MainUIThread.showToast(activity, activity.getString(R.string.login_failure) + appendMsg);
           MainUIThread.finishActivity(activity, ResultCodes.LOGIN_FAIL);
         }
@@ -198,8 +205,8 @@ public class ServiceProvider {
 
           if (simpleArticles.size() == 0) {
 
-            if (currentData.getLoginCookies().get("mc_enc") == null
-                    || !isLoginCookieUseable(currentData)) {
+            if (currentData.getLoginCookies().get("mc_enc") == null ||
+                    !isLoginCookieUseable(currentData)) {
               restartApplication(fragment);
               return;
             }
@@ -220,10 +227,8 @@ public class ServiceProvider {
 
   private void restartApplication(HasViewModelFragment fragment) {
     MainUIThread.showToast(fragment.getActivity(), fragment.getActivity().getString(R.string.splash_login_expire));
-    Intent intent = new Intent(fragment.getActivity(), MainActivity.class);
-    intent.putExtra("resetMode", true);
-    fragment.getActivity().finish();
-    fragment.getActivity().startActivity(intent);
+    MainActivity activity = (MainActivity) fragment.getActivity();
+    activity.callSplashActivity();
   }
 
   public void writeArticle(final ArticleWriteActivity activity,
@@ -240,7 +245,9 @@ public class ServiceProvider {
           String result = ArticleWriteService.getInstance .write(currentData.getLoginCookies(),
                                                                 currentData.getGalleryInfo().getGalleryCode(),
                                                                 files, USER_AGENT, title, content, articleModify);
-          if (!result.trim().isEmpty()) throw new Exception(result);
+          if (result != null
+              && !result.contains("Warning")
+              && !result.trim().isEmpty()) throw new Exception(result);
           else {
             MainUIThread.showToast(activity, activity.getString(R.string.article_write_complete));
             MainUIThread.finishActivity(activity, ResultCodes.ARTICLE_REFRESH);
@@ -401,6 +408,7 @@ public class ServiceProvider {
           MainUIThread.setSplashText(activity, activity.getString(R.string.dccon_list_load_success));
           MainUIThread.finishActivity(activity, ResultCodes.LOGIN_SUCCESS);
         } catch (Exception e) {
+          Log.e("err", e.getMessage());
           MainUIThread.showToast(activity, activity.getString(R.string.dccon_list_load_failure));
           MainUIThread.finishActivity(activity, ResultCodes.LOGIN_FAIL);
         }

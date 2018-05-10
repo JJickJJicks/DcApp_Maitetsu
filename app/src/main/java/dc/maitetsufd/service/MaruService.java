@@ -37,7 +37,8 @@ enum MaruService implements IMangaService {
       if (thumbStyle.trim().isEmpty()) continue;
 
       String no = element.previousElementSibling().attr("name");
-      String thumbUrl = MARU_URL + thumbStyle.split("\\(")[1].split("\\)")[0];
+      String thumb = thumbStyle.split("\\(")[1].split("\\)")[0];
+      String thumbUrl = thumb.contains("http") ? thumb : MARU_URL + thumb;
       String title = element.select(".subject").text();
       String date = element.select(".info").text().split(" \\|")[0];
 
@@ -50,7 +51,7 @@ enum MaruService implements IMangaService {
 
   // 업데이트 목록
   private Document getTitleRawData(String userAgent, int page, String keyword) throws IOException {
-    String category = "?c=26";
+    String category = "?m=bbs&bid=mangaup";
     String searchKeyword = "&where=subject&keyword=" + keyword;
     String pageKeyword = "&sort=gid&p=" + page;
 

@@ -15,21 +15,19 @@ import java.util.List;
  */
 public class MyPagerAdapter extends FragmentPagerAdapter {
   private List<Fragment> fragmentList = new ArrayList<>();
-  private SimpleArticleListFragment simpleArticleListFragment;
-  private RecommendArticleListFragment recommendArticleListFragment;
-  private MangaViewerFragment mangaViewerFragment;
 
   public MyPagerAdapter(FragmentManager fm) {
     super(fm);
-    simpleArticleListFragment = SimpleArticleListFragment.newInstance();
-    recommendArticleListFragment = RecommendArticleListFragment.newInstance();
-    mangaViewerFragment = MangaViewerFragment.newInstance();
 
-    fragmentList.add(GalleryListFragment.newInstance());
+    SimpleArticleListFragment simpleArticleListFragment = SimpleArticleListFragment.instance();
+    RecommendArticleListFragment recommendArticleListFragment = RecommendArticleListFragment.instance();
+    MangaViewerFragment mangaViewerFragment = MangaViewerFragment.instance();
+
+    fragmentList.add(GalleryListFragment.instance());
     fragmentList.add(simpleArticleListFragment);
     fragmentList.add(recommendArticleListFragment);
     fragmentList.add(mangaViewerFragment);
-    fragmentList.add(SettingFragment.newInstance());
+    fragmentList.add(SettingFragment.instance());
 
   }
 
@@ -59,15 +57,15 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
   }
 
   public SimpleArticleListFragment getSimpleArticleListFragment(){
-    return simpleArticleListFragment;
+    return SimpleArticleListFragment.instance();
   }
 
   public RecommendArticleListFragment getRecommendArticleListFragment(){
-    return recommendArticleListFragment;
+    return RecommendArticleListFragment.instance();
   }
 
   public MangaViewerFragment getDcmysDcMysFragment() {
-    return mangaViewerFragment;
+    return MangaViewerFragment.instance();
   }
 
 }

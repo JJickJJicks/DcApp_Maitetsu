@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +19,17 @@ import dc.maitetsufd.ui.viewmodel.SimpleArticleListViewModel;
  */
 public class SimpleArticleListFragment extends Fragment implements HasViewModelFragment {
   private SimpleArticleListViewModel viewModel;
+  private static SimpleArticleListFragment fragment;
 
   public SimpleArticleListFragment() {
+    fragment = this;
   }
 
-  public static SimpleArticleListFragment newInstance() {
-    return new SimpleArticleListFragment();
+  public static SimpleArticleListFragment instance() {
+    if (fragment == null) {
+      fragment = new SimpleArticleListFragment();
+    }
+    return fragment;
   }
 
   @Override

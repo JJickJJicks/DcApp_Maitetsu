@@ -19,14 +19,18 @@ import dc.maitetsufd.ui.viewmodel.MaruViewerViewModel;
  * 에러 메시지 출력용 프래그먼트.
  */
 public class MangaViewerFragment extends Fragment{
-
+  private static MangaViewerFragment fragment;
   private MaruViewerViewModel maruViewerViewModel;
 
   public MangaViewerFragment() {
+    fragment = this;
   }
 
-  public static MangaViewerFragment newInstance() {
-    return new MangaViewerFragment();
+  public static MangaViewerFragment instance() {
+    if (fragment == null) {
+      fragment = new MangaViewerFragment();
+    }
+    return fragment;
   }
 
   @Override
