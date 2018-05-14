@@ -113,7 +113,7 @@ public enum ArticleDetailService {
   }
 
   // 노드를 데이터로 변환하는 메소드
-  public ArticleDetail.ContentData nodeToData(List<ArticleDetail.ContentData> list, ArticleDetail.ContentData contentData, Node node) {
+  private ArticleDetail.ContentData nodeToData(List<ArticleDetail.ContentData> list, ArticleDetail.ContentData contentData, Node node) {
 
     if (node.nodeName().equals("object")) {
       // child node 중 embed를 얻어낸다
@@ -246,17 +246,18 @@ public enum ArticleDetailService {
 
   // 게시물의 rawData를 얻어오는 메소드
   private Document getArticleRawData(Map<String, String> loginCookie, String userAgent, String articleUrl) throws IOException {
-    return Jsoup.connect(articleUrl)
-            .userAgent(userAgent)
-            .cookies(loginCookie)
-            .timeout(3000)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Referer", "http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php")
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .get();
+    try {
+      return Jsoup.connect(articleUrl)
+              .userAgent(userAgent)
+              .cookies(loginCookie)
+              .timeout(3000)
+              .header("Origin", "http://m.dcinside.com")
+              .header("Referer", "http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php")
+              .header("Content-Type", "application/x-www-form-urlencoded")
+              .get();
+    } catch (Exception e) {
+      return getArticleRawData(loginCookie, userAgent, articleUrl);
+    }
   }
 
 
@@ -324,10 +325,10 @@ public enum ArticleDetailService {
 
       Comment comment = new Comment(
               new UserInfo(e.select(".id").text()
-                      .replace("[", "")
-                      .replace("]", "").trim(),
-                      CommonService.getUserType(e.select("a span").first()),
-                      userIpAddr),
+                            .replace("[", "")
+                            .replace("]", "").trim(),
+                            CommonService.getUserType(e.select("a span").first()),
+                            userIpAddr),
               ipAddr,
               e.select(".title .txt").text().trim(),
               e.select(".info .date").text(),

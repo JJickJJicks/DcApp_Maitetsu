@@ -1,6 +1,5 @@
 package dc.maitetsufd.ui.fragment;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -43,7 +42,8 @@ public class SettingFragment extends PreferenceFragmentCompat {
   public void onCreatePreferences(Bundle bundle, String s) {
     currentData = CurrentDataManager.getInstance(this.getContext());
     addPreferencesFromResource(R.xml.fragment_setting);
-    setLoginButton(this);
+    setRestartButton(this);
+    setLoginTryButton(this);
     setOpenSourceButton(this, currentData);
     setFilterUserButton(this);
     setFilterUserListButton(this);
@@ -209,8 +209,8 @@ public class SettingFragment extends PreferenceFragmentCompat {
     });
   }
 
-  private void setLoginButton(final SettingFragment fragment) {
-    Preference button = fragment.getPreferenceManager().findPreference(fragment.getString(R.string.setting_login));
+  private void setRestartButton(final SettingFragment fragment) {
+    Preference button = fragment.getPreferenceManager().findPreference(fragment.getString(R.string.setting_restart));
     button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
       @Override
       public boolean onPreferenceClick(Preference preference) {
@@ -220,8 +220,20 @@ public class SettingFragment extends PreferenceFragmentCompat {
         PendingIntent mPendingIntent = PendingIntent.getActivity(mainActivity, mPendingIntentId, mStartActivity,
                 PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager mgr = (AlarmManager) mainActivity.getSystemService(Context.ALARM_SERVICE);
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 70, mPendingIntent);
         System.exit(0);
+        return true;
+      }
+    });
+  }
+
+  private void setLoginTryButton(final SettingFragment fragment) {
+    Preference button = fragment.getPreferenceManager().findPreference(fragment.getString(R.string.setting_try_login));
+    button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+      @Override
+      public boolean onPreferenceClick(Preference preference) {
+        MainActivity mainActivity = (MainActivity) fragment.getActivity();
+        mainActivity.callSplashActivity();
         return true;
       }
     });

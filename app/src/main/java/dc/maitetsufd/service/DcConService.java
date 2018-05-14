@@ -1,12 +1,15 @@
 package dc.maitetsufd.service;
 
+import android.util.Log;
 import dc.maitetsufd.models.DcConPackage;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +20,9 @@ import java.util.Map;
 enum DcConService {
   getInstance;
 
+  private static final String DCINSIDE_MAIN = "http://m.dcinside.com";
   private static final String DCCON_LIST_URL = "http://m.dcinside.com/dccon/dccon_box_tpl.php";
+  private static final String DCCON_DETAIL_URL = "http://m.dcinside.com/dccon/dccon_tpl.php";
 
   /**
    * 사용가능한 디씨콘 리스트를 얻어오는 메소드
@@ -27,7 +32,7 @@ enum DcConService {
    * @return 디씨콘 리스트
    * @throws IOException the io exception
    */
-  List<DcConPackage> getDcConList(Map<String, String> loginCookie, String userAgent) throws IOException {
+  List<DcConPackage> getDcConList(Map<String, String> loginCookie, String userAgent) {
     Document dcConRawData = getDcConTabRawData(loginCookie, userAgent);
     List<DcConPackage> dcConPackages = getDcConPackage(dcConRawData.select(".dccon-tab img"));
 
@@ -42,35 +47,51 @@ enum DcConService {
 
 
   // DcCon 리스트의 rawData를 얻어내는 메소드
-  private Document getDcConTabRawData(Map<String, String> loginCookie, String userAgent) throws IOException {
-    return Jsoup
-            .connect("http://m.dcinside.com/dccon/dccon_box_tpl.php")
-            .userAgent(userAgent)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Accept", "text/html, */*; q=0.01")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .header("X-Requested-With", "XMLHttpRequest")
-            .ignoreContentType(true)
-            .cookies(loginCookie)
-            .post();
+  private Document getDcConTabRawData(Map<String, String> loginCookie, String userAgent) {
+    Connection.Response response;
+    try {
+      response = Jsoup.connect(DCCON_LIST_URL)
+                      .userAgent(userAgent)
+                      .header("Host", "m.dcinside.com")
+                      .header("Origin", DCINSIDE_MAIN)
+                      .referrer(DCINSIDE_MAIN)
+                      .header("X-Requested-With", "XMLHttpRequest")
+                      .ignoreContentType(true)
+                      .ignoreHttpErrors(true)
+                      .cookies(loginCookie)
+                      .method(Connection.Method.POST)
+                      .execute();
+      loginCookie.putAll(response.cookies());
+      return response.parse();
+
+    } catch(Exception e) {
+      return getDcConTabRawData(loginCookie, userAgent);
+
+    }
   }
 
   // DcCon 상세정보 rawData를 얻어내는 메소드
-  private Document getDcConRawData(Map<String, String> loginCookie, String userAgent, int i) throws IOException {
-    return Jsoup
-            .connect("http://m.dcinside.com/dccon/dccon_tpl.php")
-            .userAgent(userAgent)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Referer", "http://m.dcinside.com")
-            .header("Accept", "text/html, */*; q=0.01")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .header("X-Requested-With", "XMLHttpRequest")
-            .ignoreContentType(true)
-            .cookies(loginCookie)
-            .data("idx", String.valueOf(i + 1))
-            .post();
+  private Document getDcConRawData(Map<String, String> loginCookie, String userAgent, int i) {
+
+    try {
+      Connection.Response response = Jsoup.connect(DCCON_DETAIL_URL)
+                                          .userAgent(userAgent)
+                                          .header("Host", "m.dcinside.com")
+                                          .header("Origin", DCINSIDE_MAIN)
+                                          .referrer(DCINSIDE_MAIN)
+                                          .header("X-Requested-With", "XMLHttpRequest")
+                                          .ignoreContentType(true)
+                                          .ignoreHttpErrors(true)
+                                          .cookies(loginCookie)
+                                          .data("idx", String.valueOf(i + 1))
+                                          .method(Connection.Method.POST)
+                                          .execute();
+
+      return response.parse();
+    } catch (Exception e) {
+      return getDcConRawData(loginCookie, userAgent, i);
+
+    }
   }
 
   // 디시콘 패키지 리스트를 얻는 메소드

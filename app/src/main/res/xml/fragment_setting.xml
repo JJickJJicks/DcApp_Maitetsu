@@ -91,8 +91,10 @@
 
 
     <PreferenceCategory>
-        <Preference android:title="@string/setting_login"
-                    android:key="@string/setting_login"/>
+        <Preference android:title="@string/setting_try_login"
+                    android:key="@string/setting_try_login"/>
+        <Preference android:title="@string/setting_restart"
+                    android:key="@string/setting_restart"/>
     </PreferenceCategory>
 
     <!--

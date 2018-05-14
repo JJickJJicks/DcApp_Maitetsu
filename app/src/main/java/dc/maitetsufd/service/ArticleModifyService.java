@@ -30,7 +30,7 @@ enum ArticleModifyService {
    * @return the article modify data
    * @throws IOException the io exception
    */
-  public ArticleModify getArticleModifyData(String userAgent, ArticleDetail articleDetail, Map<String, String> loginCookie) throws IOException {
+  public ArticleModify getArticleModifyData(String userAgent, ArticleDetail articleDetail, Map<String, String> loginCookie) {
     Document doc = getArticleModifyRawData(userAgent, articleDetail, loginCookie);
     ArticleModify articleModify = new ArticleModify();
     Map<String, String> articleWriteData = ArticleWriteService.getArticleWriteFormData(doc);
@@ -61,16 +61,18 @@ enum ArticleModifyService {
   }
 
   // 수정 페이지의 rawData를 얻어오는 메소드
-  private Document getArticleModifyRawData(String userAgent, ArticleDetail articleDetail, Map<String, String> loginCookie) throws IOException {
-    return Jsoup.connect(articleDetail.getModifyUrl())
-            .userAgent(userAgent)
-            .cookies(loginCookie)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Referer", articleDetail.getUrl())
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .get();
+  private Document getArticleModifyRawData(String userAgent, ArticleDetail articleDetail, Map<String, String> loginCookie) {
+    try {
+      return Jsoup.connect(articleDetail.getModifyUrl())
+                  .userAgent(userAgent)
+                  .cookies(loginCookie)
+                  .header("Origin", "http://m.dcinside.com")
+                  .referrer(articleDetail.getUrl())
+                  .get();
+    } catch (Exception e) {
+      return getArticleModifyRawData(userAgent, articleDetail, loginCookie);
+
+    }
   }
 
 

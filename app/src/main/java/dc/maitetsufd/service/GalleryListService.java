@@ -16,20 +16,18 @@ import java.util.List;
 enum GalleryListService {
   getInstance;
 
+  private static final String DCINSIDE_MAIN = "http://m.dcinside.com";
   private static final String GALLERY_SEARCH_URL = "http://m.dcinside.com/search_keyword.php";
 
   List<GalleryInfo> searchGallery(String userAgent, String name) throws IOException {
     Document searchRawData = Jsoup.connect(GALLERY_SEARCH_URL)
-            .userAgent(userAgent)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Referer", "http://m.dcinside.com")
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .header("X-Requested-With", "XMLHttpRequest")
-            .data("search_gall", name)
-            .data("search_type", "gall_name")
-            .get();
+                                  .userAgent(userAgent)
+                                  .header("Origin", DCINSIDE_MAIN)
+                                  .referrer(DCINSIDE_MAIN)
+                                  .header("X-Requested-With", "XMLHttpRequest")
+                                  .data("search_gall", name)
+                                  .data("search_type", "gall_name")
+                                  .get();
 
     return getGalleryInfoFromRawData(searchRawData);
   }

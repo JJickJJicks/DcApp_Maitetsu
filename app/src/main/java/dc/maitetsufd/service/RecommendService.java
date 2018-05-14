@@ -16,7 +16,7 @@ import java.util.Map;
  */
 enum RecommendService {
   getInstance;
-
+  private static final String DCINSIDE_MAIN = "http://m.dcinside.com";
   private static final String RECOMMEND_URL = "http://m.dcinside.com/_recommend_join.php";
   private static final JSONParser jsonParser = new JSONParser();
 
@@ -27,16 +27,13 @@ enum RecommendService {
     recommendCookie.put(recommendData.getGall_id() + "_recomPrev_" + recommendData.getNo(), "done");
 
     Document result = Jsoup.connect(RECOMMEND_URL)
-            .userAgent(userAgent)
-            .cookies(recommendCookie)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Referer", articleDetail.getUrl())
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .data(recommendDataSerialize(recommendData))
-            .ignoreContentType(true)
-            .post();
+                          .userAgent(userAgent)
+                          .cookies(recommendCookie)
+                          .header("Origin", DCINSIDE_MAIN)
+                          .referrer(articleDetail.getUrl())
+                          .data(recommendDataSerialize(recommendData))
+                          .ignoreContentType(true)
+                          .post();
 
     JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
     String msg = (String) jsonObject.get("msg");

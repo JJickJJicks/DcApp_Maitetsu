@@ -18,28 +18,26 @@ enum CommentDeleteService {
   private static final String COMMENT_WRITE_URL = "http://m.dcinside.com/_option_write.php";
 
 
-  boolean delete(Map<String, String> loginCookie,
-                 String userAgent,
-                 ArticleDetail articleDetail,
-                 String deleteCode) throws IOException, ParseException {
+  boolean delete(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail, String deleteCode) {
+    try {
+      Document result = Jsoup.connect(COMMENT_WRITE_URL).cookies(loginCookie)
+                              .userAgent(userAgent)
+                              .header("Origin", "http://m.dcinside.com")
+                              .referrer(articleDetail.getUrl())
+                              .header("X-Requested-With", "XMLHttpRequest")
+                              .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                              .data(cddSerialize(articleDetail.getCommentDeleteData(), deleteCode))
+                              .ignoreContentType(true)
+                              .timeout(10000)
+                              .post();
 
-    Document result = Jsoup.connect(COMMENT_WRITE_URL).cookies(loginCookie)
-            .userAgent(userAgent)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Referer", articleDetail.getUrl())
-            .header("X-Requested-With", "XMLHttpRequest")
-            .header("Accept", "*/*")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-            .data(cddSerialize(articleDetail.getCommentDeleteData(), deleteCode))
-            .ignoreContentType(true)
-            .timeout(10000)
-            .post();
+      String msg = result.body().text().trim();
+      return msg.equals("1");
 
+    } catch (Exception e) {
+      return true;
 
-    String msg = result.body().text().trim();
-    return msg.equals("1");
+    }
   }
 
 
@@ -57,7 +55,5 @@ enum CommentDeleteService {
 
     return result;
   }
-
-
 
 }

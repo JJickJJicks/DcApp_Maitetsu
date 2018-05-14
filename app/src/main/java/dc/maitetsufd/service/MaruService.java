@@ -56,17 +56,14 @@ enum MaruService implements IMangaService {
     String pageKeyword = "&sort=gid&p=" + page;
 
     Connection.Response res = Jsoup.connect(MARU_URL + category + searchKeyword + pageKeyword)
-            .userAgent(userAgent)
-            .timeout(5000)
-            .header("Origin", MARU_URL)
-            .header("Referer", MARU_URL)
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-            .header("Accept-Encoding", "gzip, deflate, sdch")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .cookies(cookies)
-            .method(Connection.Method.GET)
-            .followRedirects(true)
-            .execute();
+                                    .userAgent(userAgent)
+                                    .timeout(5000)
+                                    .header("Origin", MARU_URL)
+                                    .header("Referer", MARU_URL)
+                                    .cookies(cookies)
+                                    .method(Connection.Method.GET)
+                                    .followRedirects(true)
+                                    .execute();
 
 //    sendIncapsula(res.body(), userAgent);
     return res.parse();
@@ -75,17 +72,14 @@ enum MaruService implements IMangaService {
 
   private String getMaruUrl(String userAgent, String no) throws IOException {
     Elements els = Jsoup.connect(MARU_LINK_URL + no.substring(1))
-            .userAgent(userAgent)
-            .timeout(5000)
-            .header("Origin", "http://marumaru.in/")
-            .header("Referer", MARU_URL)
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-            .header("Accept-Encoding", "gzip, deflate, sdch")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .cookies(cookies)
-            .followRedirects(true)
-            .get()
-            .select("#vContent a");
+                        .userAgent(userAgent)
+                        .timeout(5000)
+                        .header("Origin", "http://marumaru.in/")
+                        .header("Referer", MARU_URL)
+                        .cookies(cookies)
+                        .followRedirects(true)
+                        .get()
+                        .select("#vContent a");
 
     for (Element e : els) {
       String url = e.attr("abs:href");
@@ -106,17 +100,14 @@ enum MaruService implements IMangaService {
 
 
     Connection.Response response = Jsoup.connect(url)
-            .userAgent(userAgent)
-            .timeout(5000)
-            .header("Origin", ORIGIN)
-            .header("Upgrade-Insecure-Requests", "1")
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .followRedirects(true)
-            .cookies(contentCookies)
-            .method(Connection.Method.GET)
-            .execute();
+                                        .userAgent(userAgent)
+                                        .timeout(5000)
+                                        .header("Origin", ORIGIN)
+                                    // .header("Upgrade-Insecure-Requests", "1")
+                                        .followRedirects(true)
+                                        .cookies(contentCookies)
+                                        .method(Connection.Method.GET)
+                                        .execute();
 
     Document rawData = response.parse();
     contentCookies.putAll(response.cookies());
@@ -138,17 +129,14 @@ enum MaruService implements IMangaService {
 
     if (elements.size() == 0 && captcha == null) {
       rawData = Jsoup.connect(url)
-              .userAgent(userAgent)
-              .data("pass", PASS)
-              .timeout(5000)
-              .header("Origin", ORIGIN)
-              .header("Upgrade-Insecure-Requests", "1")
-              .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-              .header("Accept-Encoding", "gzip, deflate")
-              .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-              .followRedirects(true)
-              .cookies(contentCookies)
-              .post();
+                      .userAgent(userAgent)
+                      .data("pass", PASS)
+                      .timeout(5000)
+                      .header("Origin", ORIGIN)
+        //              .header("Upgrade-Insecure-Requests", "1")
+                      .followRedirects(true)
+                      .cookies(contentCookies)
+                      .post();
       elements = rawData.select(".lz-lazyload");
     }
 
@@ -200,10 +188,7 @@ enum MaruService implements IMangaService {
                                         .userAgent(userAgent)
                                         .timeout(5000)
                                         .header("Origin", ORIGIN)
-                                        .header("Upgrade-Insecure-Requests", "1")
-                                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-                                        .header("Accept-Encoding", "gzip, deflate")
-                                        .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
+//                                        .header("Upgrade-Insecure-Requests", "1")
                                         .header("Content-Type", "application/x-www-form-urlencoded")
                                         .followRedirects(true)
                                         .data("captcha1", captcha)

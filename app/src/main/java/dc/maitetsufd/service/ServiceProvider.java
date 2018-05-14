@@ -89,11 +89,11 @@ public class ServiceProvider {
           CurrentData.resetMode = false;
 
         } catch (Exception e) {
-          String appendMsg = "\n";
-          if (e instanceof IllegalAccessException) appendMsg += e.getMessage();
-          else appendMsg += "다시 시도해 보세요";
+          String msg = activity.getString(R.string.login_failure) + "\n";
+          if (e instanceof IllegalAccessException) msg = e.getMessage();
+          else msg += "다시 시도해 보세요";
 
-          MainUIThread.showToast(activity, activity.getString(R.string.login_failure) + appendMsg);
+          MainUIThread.showToast(activity, msg);
           MainUIThread.finishActivity(activity, ResultCodes.LOGIN_FAIL);
         }
       }
@@ -217,6 +217,7 @@ public class ServiceProvider {
 
           currentData.setLastLogin(System.currentTimeMillis());
           MainUIThread.setArticleListView(fragment, simpleArticles, showSnackBar);
+
         } catch (Exception e1) {
           MainUIThread.showToast(fragment.getActivity(), fragment.getActivity().getString(R.string.article_list_failure));
           fragment.getHasAdapterViewModel().stopRefreshing();
@@ -242,7 +243,7 @@ public class ServiceProvider {
         MainUIThread.setViewState(activity, writeButton, false);
         CurrentData currentData = getCurrentData(activity.getApplicationContext());
         try {
-          String result = ArticleWriteService.getInstance .write(currentData.getLoginCookies(),
+          String result = ArticleWriteService.getInstance.write(currentData.getLoginCookies(),
                                                                 currentData.getGalleryInfo().getGalleryCode(),
                                                                 files, USER_AGENT, title, content, articleModify);
           if (result != null
@@ -252,8 +253,10 @@ public class ServiceProvider {
             MainUIThread.showToast(activity, activity.getString(R.string.article_write_complete));
             MainUIThread.finishActivity(activity, ResultCodes.ARTICLE_REFRESH);
           }
+
         } catch (IllegalAccessException ie) {
           MainUIThread.showToast(activity, activity.getString(R.string.article_write_image_upload_failure) + ie.getMessage());
+
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.article_write_failure) + e.getMessage());
         }
@@ -322,6 +325,7 @@ public class ServiceProvider {
             MainUIThread.showToast(activity, activity.getString(R.string.comment_delete_success));
             refreshComment(activity, viewModel, articleUrl);
           } else throw new Exception();
+
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.comment_delete_failure));
         }
@@ -401,14 +405,13 @@ public class ServiceProvider {
         try {
           MainUIThread.setSplashText(activity, activity.getString(R.string.dccon_list_load_try));
           currentData.setDcConPackages(DcConService.getInstance
-                  .getDcConList(currentData.getLoginCookies(), USER_AGENT));
+                     .getDcConList(currentData.getLoginCookies(), USER_AGENT));
           currentData.setLastLogin(System.currentTimeMillis());
           CurrentDataManager.save(activity.getApplicationContext());
 
           MainUIThread.setSplashText(activity, activity.getString(R.string.dccon_list_load_success));
           MainUIThread.finishActivity(activity, ResultCodes.LOGIN_SUCCESS);
         } catch (Exception e) {
-          Log.e("err", e.getMessage());
           MainUIThread.showToast(activity, activity.getString(R.string.dccon_list_load_failure));
           MainUIThread.finishActivity(activity, ResultCodes.LOGIN_FAIL);
         }

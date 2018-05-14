@@ -34,8 +34,7 @@ public class SplashActivity extends AppCompatActivity {
 
     // 로그인
     ServiceProvider.getInstance()
-            .login(this,
-                   CurrentData.resetMode);
+                   .login(this, CurrentData.resetMode);
 //            getIntent().getBooleanExtra("resetMode", false));
   }
 

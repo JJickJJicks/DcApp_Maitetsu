@@ -27,28 +27,33 @@ enum ArticleDeleteService {
    * @param userAgent     모바일 기기 UserAgent
    * @param articleDetail 게시물
    * @return the boolean
-   * @throws IOException    the io exception
-   * @throws ParseException the parse exception
    */
-  boolean delete(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail) throws IOException, ParseException, IllegalAccessException {
+  boolean delete(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail) {
 
-    Document result = Jsoup.connect(ARTICLE_DELETE_URL).cookies(loginCookie)
-            .userAgent(userAgent)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Referer", articleDetail.getUrl())
-            .header("X-Requested-With", "XMLHttpRequest")
-            .header("Accept", "*/*")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-            .data(adSerialize(articleDetail.getArticleDeleteData()))
-            .ignoreContentType(true)
-            .post();
+    try {
+      Document result = Jsoup.connect(ARTICLE_DELETE_URL).cookies(loginCookie)
+                              .userAgent(userAgent)
+                              .header("Origin", "http://m.dcinside.com")
+                              .referrer(articleDetail.getUrl())
+                              .header("X-Requested-With", "XMLHttpRequest")
+                              .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                              .data(adSerialize(articleDetail.getArticleDeleteData()))
+                              .ignoreContentType(true)
+                              .post();
 
-    JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
-    String msg = (String) jsonObject.get("msg");
-    if(msg.equals("23")) throw new IllegalAccessException((String) jsonObject.get("data"));
-    return msg.equals("1");
+      try {
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
+        String msg = (String) jsonObject.get("msg");
+        if (msg.equals("23")) throw new IllegalAccessException((String) jsonObject.get("data"));
+        return msg.equals("1");
+
+      } catch (ParseException pe) {
+        throw new IllegalAccessException();
+      }
+
+    } catch (Exception e) {
+      return delete(loginCookie, userAgent, articleDetail);
+    }
   }
 
 

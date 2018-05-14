@@ -19,14 +19,10 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
   public MyPagerAdapter(FragmentManager fm) {
     super(fm);
 
-    SimpleArticleListFragment simpleArticleListFragment = SimpleArticleListFragment.instance();
-    RecommendArticleListFragment recommendArticleListFragment = RecommendArticleListFragment.instance();
-    MangaViewerFragment mangaViewerFragment = MangaViewerFragment.instance();
-
     fragmentList.add(GalleryListFragment.instance());
-    fragmentList.add(simpleArticleListFragment);
-    fragmentList.add(recommendArticleListFragment);
-    fragmentList.add(mangaViewerFragment);
+    fragmentList.add(SimpleArticleListFragment.instance());
+    fragmentList.add(RecommendArticleListFragment.instance());
+    fragmentList.add(MangaViewerFragment.instance());
     fragmentList.add(SettingFragment.instance());
 
   }

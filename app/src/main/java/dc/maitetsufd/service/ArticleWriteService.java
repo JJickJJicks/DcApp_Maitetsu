@@ -31,51 +31,52 @@ enum ArticleWriteService {
 
 
   String write(Map<String, String> loginCookie, String galleryCode, List<File> files,
-               String userAgent, String title, String content, ArticleModify articleModify) throws IOException, ParseException, IllegalAccessException {
+               String userAgent, String title, String content, ArticleModify articleModify) throws IllegalAccessException, IOException {
 
-    String mode = "&mode=write";
-    Map<String, String> writeFormData;
-    StringBuilder delcheck = new StringBuilder();
-    Document writeFormRawData = getWriteFormRawData(loginCookie, galleryCode, userAgent);
+      String mode = "&mode=write";
+      Map<String, String> writeFormData;
+      StringBuilder delcheck = new StringBuilder();
+      Document writeFormRawData = getWriteFormRawData(loginCookie, galleryCode, userAgent);
 
-    if(articleModify == null) {
-      writeFormData = getArticleWriteFormData(writeFormRawData);
-    } else {
-      writeFormData = articleModify.getArticleWriteDataList();
-      mode = "&mode=modify";
-      for(String d : articleModify.getDeleteFileList()) {
-        delcheck.append(d)
-                .append(";");
+      if (articleModify == null) {
+        writeFormData = getArticleWriteFormData(writeFormRawData);
+      } else {
+        writeFormData = articleModify.getArticleWriteDataList();
+        mode = "&mode=modify";
+        for (String d : articleModify.getDeleteFileList()) {
+          delcheck.append(d)
+                  .append(";");
+        }
       }
-    }
 
-    if(writeFormData == null) return null;
-    else {
-      writeFormData.put("subject", title);
-      writeFormData.put("memo", content);
-      writeFormData.put("delcheck", delcheck.toString());
-      writeFormData.put("Block_key", getBlockKey(loginCookie, writeFormData, userAgent));
-    }
+      if (writeFormData == null) return null;
+      else {
+        writeFormData.put("subject", title);
+        writeFormData.put("memo", content);
+        writeFormData.put("delcheck", delcheck.toString());
+        writeFormData.put("Block_key", getBlockKey(loginCookie, writeFormData, userAgent));
+      }
 
-    if (files != null && !files.isEmpty()) { // 이미지 업로드
-      String uploadResult =
-              uploadFiles(loginCookie, writeFormData, files, userAgent, galleryCode, articleModify);
-      if(!uploadResult.isEmpty()) throw new IllegalAccessException(uploadResult);
-    }
+      if (files != null && !files.isEmpty()) { // 이미지 업로드
+        String uploadResult = uploadFiles(loginCookie, writeFormData, files, userAgent, galleryCode, articleModify);
+        if (!uploadResult.isEmpty()) throw new IllegalAccessException(uploadResult);
+      }
 
+      try {
+        Document result = Jsoup.connect(ARTICLE_WRITE_URL)
+                                .userAgent(userAgent)
+                                .cookies(loginCookie)
+                                .header("Origin", "http://m.dcinside.com")
+                                .referrer(ARTICLE_WRITE_FORM_URL + "?id=" + galleryCode + mode)
+                                .ignoreHttpErrors(true)
+                                .ignoreContentType(true)
+                                .data(writeFormData)
+                                .post();
 
-    Document result = Jsoup.connect(ARTICLE_WRITE_URL)
-                            .userAgent(userAgent)
-                            .cookies(loginCookie)
-                            .header("Origin", "http://m.dcinside.com")
-                            .header("Referer", ARTICLE_WRITE_FORM_URL + "?id=" + galleryCode + mode)
-                            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-                            .header("Accept-Encoding", "gzip, deflate")
-                            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-                            .data(writeFormData)
-                            .post();
-
-    return result.body().text();
+        return result.body().text();
+      } catch (Exception e) {
+        return "";
+      }
   }
 
 
@@ -91,10 +92,7 @@ enum ArticleWriteService {
               .cookies(loginCookie)
               .userAgent(userAgent)
               .header("Origin", "http://m.dcinside.com")
-              .header("Referer", ARTICLE_WRITE_FORM_URL + "?id=" + galleryCode + "&mode=write")
-              .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-              .header("Accept-Encoding", "gzip, deflate")
-              .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
+              .referrer(ARTICLE_WRITE_FORM_URL + "?id=" + galleryCode + "&mode=write")
               .timeout(10000)
               .data("imgId", writeFormData.get("imgId"))
               .data("mode", writeFormData.get("mode"))
@@ -117,16 +115,16 @@ enum ArticleWriteService {
 
       List<String> data = Arrays.asList(scriptText.split("'"));
 
-      if (data.size() < 9) {
-        String message = script.select("td[align='center']").text();
-        throw new Exception(message);
+      if (data.size() < 9) { // 업로드 실패시
+        return script.select("td[align='center']").text();
       }
       writeFormData.put("FL_DATA", data.get(5));
       writeFormData.put("OFL_DATA", data.get(9));
       return "";
 
     } catch (Exception e) {
-      return e.getMessage();
+      return uploadFiles(loginCookie, writeFormData, files, userAgent, galleryCode, articleModify);
+
     }
   }
 
@@ -156,42 +154,52 @@ enum ArticleWriteService {
 
 
   // 글쓰기 폼의 raw data를 얻어오는 메소드
-  private Document getWriteFormRawData(Map<String, String> loginCookie, String galleryCode, String userAgent) throws IOException {
-    return Jsoup.connect(ARTICLE_WRITE_FORM_URL + "?id=" + galleryCode + "&mode=write")
-            .cookies(loginCookie)
-            .userAgent(userAgent)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Referer", "http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php")
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .timeout(3000)
-            .get();
+  private Document getWriteFormRawData(Map<String, String> loginCookie, String galleryCode, String userAgent) {
+    try {
+      return Jsoup.connect(ARTICLE_WRITE_FORM_URL + "?id=" + galleryCode + "&mode=write")
+                  .cookies(loginCookie)
+                  .userAgent(userAgent)
+                  .header("Origin", "http://m.dcinside.com")
+                  .referrer("http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php")
+                  .header("Content-Type", "application/x-www-form-urlencoded")
+                  .timeout(3000)
+                  .get();
+
+    } catch (Exception e) {
+      return getWriteFormRawData(loginCookie, galleryCode, userAgent);
+
+    }
   }
 
 
-  private String getBlockKey(Map<String, String> loginCookie, Map<String, String> writeFormData, String userAgent) throws IOException, ParseException {
+  private String getBlockKey(Map<String, String> loginCookie, Map<String, String> writeFormData, String userAgent) {
 
-    Document result = Jsoup.connect(ARTICLE_GET_BLOCK_KEY_URL)
-            .userAgent(userAgent)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Referer", "http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php")
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .data("id", writeFormData.get("id"))
-            .data("w_subject", writeFormData.get("subject"))
-            .data("w_memo", writeFormData.get("memo"))
-            .data("w_filter", writeFormData.get("filter"))
-            .data("mode", "write_verify")
-            .cookies(loginCookie)
-            .ignoreContentType(true)
-            .post();
+    try {
+      Document result = Jsoup.connect(ARTICLE_GET_BLOCK_KEY_URL)
+              .userAgent(userAgent)
+              .header("Origin", "http://m.dcinside.com")
+              .header("Referer", "http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php")
+              .header("Content-Type", "application/x-www-form-urlencoded")
+              .data("id", writeFormData.get("id"))
+              .data("w_subject", writeFormData.get("subject"))
+              .data("w_memo", writeFormData.get("memo"))
+              .data("w_filter", writeFormData.get("filter"))
+              .data("mode", "write_verify")
+              .cookies(loginCookie)
+              .ignoreContentType(true)
+              .post();
 
-    JSONObject jo = (JSONObject) jsonParser.parse(result.body().text());
-    return (String) jo.get("data");
+      try {
+        JSONObject jo = (JSONObject) jsonParser.parse(result.body().text());
+        return (String) jo.get("data");
+      } catch (ParseException e) {
+        return "";
+      }
+
+    } catch (Exception e) {
+      return getBlockKey(loginCookie, writeFormData, userAgent);
+
+    }
   }
 
 

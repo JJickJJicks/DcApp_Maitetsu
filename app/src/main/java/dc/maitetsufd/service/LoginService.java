@@ -1,6 +1,5 @@
 package dc.maitetsufd.service;
 
-import android.util.Log;
 import lombok.val;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author John
@@ -21,7 +21,6 @@ import java.util.Map;
 public enum LoginService {
   getInstance;
 
-  private static final String MOBILE_INDEX = "http://m.dcinside.com";
   private static final String MOBILE_LOGIN_ACCESS_TOKEN_URL = "http://m.dcinside.com/_access_token.php";
   private static final String MOBILE_LOGIN_FORM_URL = "http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php";
   private static final String MOBILE_LOGIN_URL = "https://dcid.dcinside.com/join/mobile_login_ok.php";
@@ -33,37 +32,49 @@ public enum LoginService {
    * @param id        dcinside 아이디
    * @param pw        dcinside 비밀번호
    * @param userAgent 로그인 시도할 user-agent
-   * @return
-   * @throws IOException
+   * @return 로그인 쿠키
+   * @throws Exception 로그인 실패 예외
    */
   public Map<String, String> login(String id, String pw, String userAgent) throws Exception {
     val cookies = new HashMap<String, String>();
     cookies.put("user-agent", userAgent);
 
-    val loginData = getLoginData(id, pw, userAgent, cookies);
-
     // 로그인 시도 후 로그인 쿠키 검사
-    for (int i = 0; i < 3; i++) {
-      val response = Jsoup.connect(MOBILE_LOGIN_URL)
-              .data(loginData)
-              .followRedirects(true)
-              .ignoreContentType(true)
-              .ignoreHttpErrors(true)
-              .userAgent(userAgent)
-              .referrer(MOBILE_LOGIN_FORM_URL)
-              .cookies(cookies)
-              .method(Connection.Method.POST)
-              .execute();
-      val loginCookies = response.cookies();
-      System.out.println(loginCookies);
+    for (int i=0; i<3; i++) {
+      val loginData = getLoginData(id, pw, userAgent, cookies);
+      Connection.Response response;
+      try {
+        response = Jsoup.connect(MOBILE_LOGIN_URL)
+                            .data(loginData)
+                            .followRedirects(true)
+                            .ignoreContentType(true)
+                            .ignoreHttpErrors(true)
+                            .userAgent(userAgent)
+                            .referrer(MOBILE_LOGIN_FORM_URL)
+                            .cookies(cookies)
+                            .method(Connection.Method.POST)
+                            .execute();
 
+      } catch (Exception e) {  // unexpected end of stream 예외처리
+        i--;
+        continue;
+      }
+
+      val body = response.body();
+      if (body.contains("alert")) { // 로그인시 경고 메시지
+        throw new IllegalAccessException(body.split("alert\\('")[1].split("'\\)")[0]);
+      }
+
+      val loginCookies = response.cookies();
       if (loginCookies.get("mc_enc") != null) {
         loginCookies.put("userAgent", userAgent);
         return response.cookies();
+
       }
+      TimeUnit.MILLISECONDS.sleep(500L);
     }
 
-    throw new Exception("로그인 정보를 확인하세요");
+    throw new Exception("잠시 후 다시 시도해 주세요");
   }
 
   /**
@@ -75,30 +86,40 @@ public enum LoginService {
    * @param cookies
    * @return
    * @throws IOException
+   * @throws IllegalAccessException
    */
-  private Map<String, String> getLoginData(String id, String pw, String userAgent, Map<String, String> cookies) throws IOException {
+  private Map<String, String> getLoginData(String id, String pw, String userAgent, Map<String, String> cookies) throws IOException, IllegalAccessException {
     val firstURL = loginRedirect(MOBILE_LOGIN_FORM_URL, userAgent, cookies, MOBILE_LOGIN_FORM_URL);
     loginRedirect(firstURL, userAgent, cookies, MOBILE_LOGIN_FORM_URL);
 
-    val loginFormResponse = Jsoup.connect(MOBILE_LOGIN_FORM_URL)
-            .userAgent(userAgent)
-            .followRedirects(false)
-            .ignoreContentType(true)
-            .ignoreHttpErrors(true)
-            .referrer(MOBILE_LOGIN_FORM_URL)
-            .method(Connection.Method.GET)
-            .cookies(cookies)
-            .execute();
+    try {
+      val loginFormResponse = Jsoup.connect(MOBILE_LOGIN_FORM_URL)
+                                    .userAgent(userAgent)
+                                    .followRedirects(false)
+                                    .ignoreContentType(true)
+                                    .ignoreHttpErrors(true)
+                                    .referrer(MOBILE_LOGIN_FORM_URL)
+                                    .method(Connection.Method.GET)
+                                    .cookies(cookies)
+                                    .execute();
 
-    // 로그인 페이지 쿠키 처리
-    cookies.putAll(loginFormResponse.cookies());
+      // 로그인 페이지 쿠키 처리
+      cookies.putAll(loginFormResponse.cookies());
 
-    val conKeyData = getConKey(loginFormResponse.parse(), userAgent, cookies);
-    conKeyData.put("user_id", id);
-    conKeyData.put("user_pw", pw);
-    conKeyData.put("id_chk", "on");
-    conKeyData.put("r_url", "m.dcinside.com%2Findex.php");
-    return conKeyData;
+      val conKeyData = getConKey(loginFormResponse.parse(), userAgent, cookies);
+      conKeyData.put("user_id", id);
+      conKeyData.put("user_pw", pw);
+      conKeyData.put("id_chk", "on");
+      conKeyData.put("r_url", "m.dcinside.com%2Findex.php");
+      return conKeyData;
+    } catch (IllegalAccessException ie) {
+      throw ie;
+
+    } catch (Exception e) {
+      return getLoginData(id, pw, userAgent, cookies);
+
+    }
+
   }
 
   /**
@@ -108,14 +129,15 @@ public enum LoginService {
    * @param userAgent
    * @param cookies
    * @return
-   * @throws IOException
+   * @throws IllegalAccessException
    */
-  private Map<String, String> getConKey(Document document, String userAgent, Map<String, String> cookies) throws IOException {
+  private Map<String, String> getConKey(Document document, String userAgent, Map<String, String> cookies) throws IllegalAccessException {
     val loginData = new HashMap<String, String>();
     val conKey = document.getElementById("login_process")
-            .select("input[name=con_key]")
-            .first().val();
+                          .select("input[name=con_key]")
+                          .first().val();
     val accessToken = getAccessToken(conKey, userAgent, cookies);
+    if (accessToken.isEmpty()) throw new IllegalAccessException("로그인 키 획득에 실패했습니다.");
 
     loginData.put("con_key", accessToken);
     return loginData;
@@ -128,48 +150,59 @@ public enum LoginService {
    * @param userAgent
    * @param cookies
    * @return
-   * @throws IOException
    */
-  private String getAccessToken(String conKey, String userAgent, Map<String, String> cookies) throws IOException {
-    val accessTokenResponse = Jsoup.connect(MOBILE_LOGIN_ACCESS_TOKEN_URL)
-            .userAgent(userAgent)
-            .ignoreContentType(true)
-            .ignoreHttpErrors(true)
-            .referrer(MOBILE_LOGIN_FORM_URL)
-            .header("X-Requested-With", "XMLHttpRequest")
-            .data("token_verify", "login")
-            .data("con_key", conKey)
-            .cookies(cookies)
-            .method(Connection.Method.POST)
-            .execute();
-
-    // 로그인 페이지 쿠키 처리
-    cookies.putAll(accessTokenResponse.cookies());
-
-    // 로그인 엑세스 토큰 리턴
+  private String getAccessToken(String conKey, String userAgent, Map<String, String> cookies) {
+    Connection.Response accessTokenResponse;
     try {
-      val jsonObject = (JSONObject) jsonParser.parse(accessTokenResponse.body());
-      return (String) jsonObject.get("data");
-    } catch (ParseException e) {
-      e.printStackTrace();
-      return "";
+      accessTokenResponse = Jsoup.connect(MOBILE_LOGIN_ACCESS_TOKEN_URL)
+                                  .userAgent(userAgent)
+                                  .ignoreContentType(true)
+                                  .ignoreHttpErrors(true)
+                                  .referrer(MOBILE_LOGIN_FORM_URL)
+                                  .header("X-Requested-With", "XMLHttpRequest")
+                                  .data("token_verify", "login")
+                                  .data("con_key", conKey)
+                                  .cookies(cookies)
+                                  .method(Connection.Method.POST)
+                                  .execute();
+
+      // 로그인 페이지 쿠키 처리
+      cookies.putAll(accessTokenResponse.cookies());
+
+      // 로그인 엑세스 토큰 리턴
+      try {
+        val jsonObject = (JSONObject) jsonParser.parse(accessTokenResponse.body());
+        return (String) jsonObject.get("data");
+
+      } catch (ParseException e) {
+        return "";
+
+      }
+
+    } catch (Exception e) {
+      return getAccessToken(conKey, userAgent, cookies);
     }
   }
 
   private String loginRedirect(String URL, String userAgent, Map<String, String> cookies, String previousURL) throws IOException {
     URL = URLDecoder.decode(URL, "UTF-8");
 
-    val response = Jsoup.connect(URL)
-            .userAgent(userAgent)
-            .followRedirects(false)
-            .ignoreContentType(true)
-            .ignoreHttpErrors(true)
-            .referrer(previousURL)
-            .timeout(3000)
-            .execute();
-    cookies.putAll(response.cookies());
+    try {
+      val response = Jsoup.connect(URL)
+                          .userAgent(userAgent)
+                          .followRedirects(false)
+                          .ignoreContentType(true)
+                          .ignoreHttpErrors(true)
+                          .referrer(previousURL)
+                          .timeout(3000)
+                          .execute();
+      cookies.putAll(response.cookies());
+      return response.header("location");
 
-    return response.header("location");
+    } catch (Exception e) {
+      return loginRedirect(URL, userAgent, cookies, previousURL);
+
+    }
   }
 
 }

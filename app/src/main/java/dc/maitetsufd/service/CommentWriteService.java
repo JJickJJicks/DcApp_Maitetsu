@@ -23,21 +23,14 @@ enum CommentWriteService {
   private static final String COMMENT_ACCESS_TOKEN_URL = "http://m.dcinside.com/_access_token.php";
   private static final JSONParser jsonParser = new JSONParser();
 
-  boolean write(Map<String, String> loginCookie,
-                String userAgent,
-                ArticleDetail articleDetail,
-                String articleUrl,
-                String comment) throws IOException, ParseException, IllegalAccessException {
+  // 댓글
+  boolean write(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail, String articleUrl, String comment) throws IOException, ParseException, IllegalAccessException {
 
     Document result = Jsoup.connect(COMMENT_WRITE_URL).cookies(loginCookie)
                       .userAgent(userAgent)
                       .header("Origin", "http://m.dcinside.com")
-                      .header("Referer", articleUrl)
+                      .referrer(articleUrl)
                       .header("X-Requested-With", "XMLHttpRequest")
-                      .header("Accept", "*/*")
-                      .header("Accept-Encoding", "gzip, deflate")
-                      .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-                      .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
                       .data(cwdSerailize(articleDetail.getCommentWriteData(), comment, articleUrl, userAgent))
                       .timeout(10000)
                       .ignoreContentType(true)
@@ -49,6 +42,7 @@ enum CommentWriteService {
     return msg.equals("1");
   }
 
+  // 디시콘 댓글
   boolean writeDcCon(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail,
                      String articleUrl,
                      DcConPackage.DcCon dcCon) throws IOException, ParseException, IllegalAccessException {
@@ -58,26 +52,29 @@ enum CommentWriteService {
       cwdData.put("click_dccon", "1");
       cwdData.put("comment_memo2", "");
 
-    Document result = Jsoup.connect(COMMENT_WRITE_URL)
-            .cookies(loginCookie)
-            .userAgent(userAgent)
-            .header("Origin", "http://m.dcinside.com")
-            .header("Referer", articleUrl)
-            .header("X-Requested-With", "XMLHttpRequest")
-            .header("Connection", "keep-alive")
-            .header("Accept", "*/*")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-            .data(cwdData)
-            .timeout(10000)
-            .ignoreContentType(true)
-            .post();
+      try {
+        Document result = Jsoup.connect(COMMENT_WRITE_URL)
+                              .cookies(loginCookie)
+                              .userAgent(userAgent)
+                              .header("Origin", "http://m.dcinside.com")
+                              .referrer(articleUrl)
+                              .header("X-Requested-With", "XMLHttpRequest")
+                              .data(cwdData)
+                              .timeout(10000)
+                              .ignoreContentType(true)
+                              .post();
 
-    JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
-    String msg = (String) jsonObject.get("msg");
-    if(msg.equals("44")) throw new IllegalAccessException((String) jsonObject.get("data"));
-    return msg.equals("1");
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
+        String msg = (String) jsonObject.get("msg");
+        if (msg.equals("44")) throw new IllegalAccessException((String) jsonObject.get("data"));
+        return msg.equals("1");
+
+      } catch (IllegalAccessException ie) {
+        throw ie;
+
+      } catch(Exception e) {
+        return true;
+      }
   }
 
 
@@ -109,17 +106,14 @@ enum CommentWriteService {
   // 댓글을 쓰기 위한 access token을 얻어오는 메소드.
   private String getAccessToken(String articleUrl, String userAgent) throws IOException, ParseException {
     Document doc = Jsoup.connect(COMMENT_ACCESS_TOKEN_URL)
-            .userAgent(userAgent)
-            .header("Referer", articleUrl)
-            .header("Origin", "http://m.dcinside.com")
-            .header("X-Requested-With", "XMLHttpRequest")
-            .header("Accept", "*/*")
-            .header("Accept-Encoding", "gzip, deflate")
-            .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-            .data("token_verify", "com_submit")
-            .timeout(10000)
-            .ignoreContentType(true)
-            .post();
+                        .userAgent(userAgent)
+                        .referrer(articleUrl)
+                        .header("Origin", "http://m.dcinside.com")
+                        .header("X-Requested-With", "XMLHttpRequest")
+                        .data("token_verify", "com_submit")
+                        .timeout(10000)
+                        .ignoreContentType(true)
+                        .post();
 
     JSONObject jsonObject = (JSONObject) jsonParser.parse(doc.body().text());
     return (String) jsonObject.get("data");

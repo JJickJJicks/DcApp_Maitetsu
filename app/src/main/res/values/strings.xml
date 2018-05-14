@@ -93,7 +93,8 @@
   <string name="setting_user_id_detail">로그인 시 사용할 아이디</string>
   <string name="setting_user_pw">갤로그 비밀번호</string>
   <string name="setting_user_pw_detail">로그인 시 사용할 비밀번호</string>
-  <string name="setting_login">설정을 적용하고 다시 로그인</string>
+  <string name="setting_try_login">다시 로그인</string>
+  <string name="setting_restart">설정을 적용하고 재시작</string>
 
   <string name="setting_image_attach_title">첨부할 이미지를 선택하세요</string>
   <string name="setting_image_category">이미지와 영상, 글 내용</string>
