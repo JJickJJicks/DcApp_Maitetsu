@@ -24,8 +24,7 @@ import java.util.Map;
  */
 public class MaruServiceProvider {
   // 갤럭시 S6 Useragent
-  private static String USER_AGENT = "Mozilla/5.0 (Linux; Android 5.1.1; SM-G925F Build/LMY47X) " +
-          "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.94 Mobile Safari/537.36";
+  private static String USER_AGENT = "Mozilla/5.0 (Linux; Android 6.0; SAMSUNG SM-G930F Build/MMB29K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/4.0 Chrome/44.0.2403.133 Mobile Safari/537.36";
   private static MaruServiceProvider serviceProvider = null;
   private static IMangaService mangaService = MaruService.getInstance;
 
@@ -47,7 +46,7 @@ public class MaruServiceProvider {
 
 
   public void getMaruSimpleModels(final MangaViewerFragment fragment,
-                                         final int page, final String keyword,
+                                  final int page, final String keyword,
                                   final boolean doClear) {
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
@@ -120,7 +119,7 @@ public class MaruServiceProvider {
           nextEpisode.setVisibility(View.INVISIBLE);
         }
 
-      // 에피소드 목록 스피너
+        // 에피소드 목록 스피너
         final String[] episodeNames = new String[mangaContentModel.getEpisodes().size()];
         for (int i=0; i<episodeNames.length; i++) {
           episodeNames[i] = mangaContentModel.getEpisodes().get(i).getEpisodeName();
@@ -171,13 +170,13 @@ public class MaruServiceProvider {
     return MaruService.contentCookies;
   }
 
-private void maruDetailView(Activity activity, MangaSimpleModel model) {
-  Intent intent = new Intent(activity, MaruViewerDetailActivity.class);
-  intent.putExtra("simpleData", model);
-  if(CurrentDataManager.getInstance(activity.getApplicationContext()).isArticleTabVib())
-    VibrateUtils.call(activity.getApplicationContext(), VibrateUtils.VIBRATE_DURATION_SHORT);
-  activity.startActivity(intent);
-  activity.finish();
-}
+  private void maruDetailView(Activity activity, MangaSimpleModel model) {
+    Intent intent = new Intent(activity, MaruViewerDetailActivity.class);
+    intent.putExtra("simpleData", model);
+    if(CurrentDataManager.getInstance(activity.getApplicationContext()).isArticleTabVib())
+      VibrateUtils.call(activity.getApplicationContext(), VibrateUtils.VIBRATE_DURATION_SHORT);
+    activity.startActivity(intent);
+    activity.finish();
+  }
 
 }

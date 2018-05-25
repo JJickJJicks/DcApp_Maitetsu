@@ -232,6 +232,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
     button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
       @Override
       public boolean onPreferenceClick(Preference preference) {
+        CurrentData.resetMode = true;
         MainActivity mainActivity = (MainActivity) fragment.getActivity();
         mainActivity.callSplashActivity();
         return true;

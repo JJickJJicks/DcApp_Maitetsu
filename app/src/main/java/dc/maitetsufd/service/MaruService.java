@@ -1,5 +1,6 @@
 package dc.maitetsufd.service;
 
+import android.util.Log;
 import dc.maitetsufd.models.MangaContentModel;
 import dc.maitetsufd.models.MangaSimpleModel;
 import org.jsoup.Connection;
@@ -56,31 +57,35 @@ enum MaruService implements IMangaService {
     String pageKeyword = "&sort=gid&p=" + page;
 
     Connection.Response res = Jsoup.connect(MARU_URL + category + searchKeyword + pageKeyword)
-                                    .userAgent(userAgent)
-                                    .timeout(5000)
-                                    .header("Origin", MARU_URL)
-                                    .header("Referer", MARU_URL)
-                                    .cookies(cookies)
-                                    .method(Connection.Method.GET)
-                                    .followRedirects(true)
-                                    .execute();
+                                  .userAgent(userAgent)
+                                  .timeout(5000)
+                                  .header("Origin", MARU_URL)
+                                  .header("Referer", MARU_URL)
+                                  .cookies(cookies)
+                                  .method(Connection.Method.GET)
+                                  .followRedirects(true)
+                                  .execute();
+    cookies.putAll(res.cookies());
 
 //    sendIncapsula(res.body(), userAgent);
     return res.parse();
   }
 
 
-  private String getMaruUrl(String userAgent, String no) throws IOException {
-    Elements els = Jsoup.connect(MARU_LINK_URL + no.substring(1))
+  private String getWasabiUrl(String userAgent, String no) throws IOException {
+    Connection.Response response = Jsoup.connect(MARU_LINK_URL + no.substring(1))
                         .userAgent(userAgent)
                         .timeout(5000)
                         .header("Origin", "http://marumaru.in/")
                         .header("Referer", MARU_URL)
                         .cookies(cookies)
                         .followRedirects(true)
-                        .get()
-                        .select("#vContent a");
+                        .method(Connection.Method.GET)
+                        .execute();
 
+    cookies.putAll(response.cookies());
+
+    Elements els = response.parse().select("#vContent a");
     for (Element e : els) {
       String url = e.attr("abs:href");
       if (url.contains("archives")) return url;
@@ -96,16 +101,17 @@ enum MaruService implements IMangaService {
     if (isViewerModel)
       url = ORIGIN + "archives/" + no;
     else
-      url = getMaruUrl(userAgent, no);
-
+      url = getWasabiUrl(userAgent, no);
 
     Connection.Response response = Jsoup.connect(url)
-                                        .userAgent(userAgent)
                                         .timeout(5000)
                                         .header("Origin", ORIGIN)
-                                    // .header("Upgrade-Insecure-Requests", "1")
-                                        .followRedirects(true)
+                                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                                        .header("Accept-Encoding", "gzip, deflate")
+                                        .header("User-Agent", userAgent)
+                                        .header("Upgrade-Insecure-Requests", "1")
                                         .cookies(contentCookies)
+                                        .followRedirects(true)
                                         .method(Connection.Method.GET)
                                         .execute();
 
@@ -128,15 +134,23 @@ enum MaruService implements IMangaService {
     Elements elements = rawData.select(".lz-lazyload");
 
     if (elements.size() == 0 && captcha == null) {
-      rawData = Jsoup.connect(url)
-                      .userAgent(userAgent)
-                      .data("pass", PASS)
-                      .timeout(5000)
-                      .header("Origin", ORIGIN)
-        //              .header("Upgrade-Insecure-Requests", "1")
-                      .followRedirects(true)
-                      .cookies(contentCookies)
-                      .post();
+      Connection.Response res = Jsoup.connect(url)
+                    .header("Origin", ORIGIN)
+                    .referrer(url)
+                    .userAgent(userAgent)
+                    .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                    .header("Accept-Encoding", "gzip, deflate")
+                    .header("Upgrade-Insecure-Requests", "1")
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .data("pass", PASS)
+                    .timeout(5000)
+                    .followRedirects(true)
+                    .cookies(contentCookies)
+                    .method(Connection.Method.POST)
+                    .execute();
+
+      contentCookies.putAll(res.cookies());
+      rawData = res.parse();
       elements = rawData.select(".lz-lazyload");
     }
 
@@ -185,13 +199,17 @@ enum MaruService implements IMangaService {
 
   public void postCaptcha(String userAgent, String url, String captcha) throws IOException {
     Connection.Response response = Jsoup.connect(url)
+                                        .header("Origin", ORIGIN)
+                                        .referrer(url)
                                         .userAgent(userAgent)
                                         .timeout(5000)
-                                        .header("Origin", ORIGIN)
-//                                        .header("Upgrade-Insecure-Requests", "1")
+                                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                                        .header("Accept-Encoding", "gzip, deflate")
+                                        .header("Upgrade-Insecure-Requests", "1")
                                         .header("Content-Type", "application/x-www-form-urlencoded")
                                         .followRedirects(true)
                                         .data("captcha1", captcha)
+                                        .data("pass", PASS)
                                         .cookies(contentCookies)
                                         .method(Connection.Method.POST)
                                         .execute();

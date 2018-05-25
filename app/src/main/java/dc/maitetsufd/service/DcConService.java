@@ -1,6 +1,5 @@
 package dc.maitetsufd.service;
 
-import android.util.Log;
 import dc.maitetsufd.models.DcConPackage;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -9,7 +8,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.net.ProtocolException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +28,6 @@ enum DcConService {
    * @param loginCookie 유저 로그인 정보
    * @param userAgent   모바일 기기 UserAgent
    * @return 디씨콘 리스트
-   * @throws IOException the io exception
    */
   List<DcConPackage> getDcConList(Map<String, String> loginCookie, String userAgent) {
     Document dcConRawData = getDcConTabRawData(loginCookie, userAgent);

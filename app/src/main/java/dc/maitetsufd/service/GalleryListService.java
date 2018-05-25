@@ -17,14 +17,14 @@ enum GalleryListService {
   getInstance;
 
   private static final String DCINSIDE_MAIN = "http://m.dcinside.com";
-  private static final String GALLERY_SEARCH_URL = "http://m.dcinside.com/search_keyword.php";
+  private static final String GALLERY_SEARCH_URL = "http://m.dcinside.com/search/index.php";
 
   List<GalleryInfo> searchGallery(String userAgent, String name) throws IOException {
     Document searchRawData = Jsoup.connect(GALLERY_SEARCH_URL)
                                   .userAgent(userAgent)
                                   .header("Origin", DCINSIDE_MAIN)
                                   .referrer(DCINSIDE_MAIN)
-                                  .header("X-Requested-With", "XMLHttpRequest")
+//                                  .header("X-Requested-With", "XMLHttpRequest")
                                   .data("search_gall", name)
                                   .data("search_type", "gall_name")
                                   .get();
@@ -39,7 +39,7 @@ enum GalleryListService {
     Elements h4Elements = searchRawData.select("h4.result_tit");
     for(Element e : h4Elements) {
       String resultType = e.select("span").first().text();
-      if(resultType.contains("갤러리 검색결과") || resultType.contains("마이너 갤러리 검색결과")){
+      if(resultType.contains("갤러리명 검색결과") || resultType.contains("마이너 갤러리 검색결과")){
         elementToGalleryInfo(e.nextElementSibling(), result);
       }
     }
@@ -53,9 +53,12 @@ enum GalleryListService {
   private void elementToGalleryInfo(Element e, List<GalleryInfo> galleryInfos) {
     Elements aElements = e.select("a");
     for(Element ae : aElements) {
+      String[] galleryHref = ae.attr("abs:href").split("=");
+      if (galleryHref.length < 2) continue;
+
       GalleryInfo galleryInfo = new GalleryInfo();
       galleryInfo.setGalleryName(ae.text());
-      galleryInfo.setGalleryCode(ae.attr("abs:href").split("=")[1]);
+      galleryInfo.setGalleryCode(galleryHref[1]);
       galleryInfos.add(galleryInfo);
     }
   }

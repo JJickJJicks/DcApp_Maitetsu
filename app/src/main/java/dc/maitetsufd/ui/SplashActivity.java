@@ -35,7 +35,6 @@ public class SplashActivity extends AppCompatActivity {
     // 로그인
     ServiceProvider.getInstance()
                    .login(this, CurrentData.resetMode);
-//            getIntent().getBooleanExtra("resetMode", false));
   }
 
   // 테마 설정 메소드

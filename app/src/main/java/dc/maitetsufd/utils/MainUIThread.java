@@ -11,9 +11,9 @@ import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -38,7 +38,6 @@ import dc.maitetsufd.ui.fragment.GalleryListFragment;
 import dc.maitetsufd.ui.fragment.MangaViewerFragment;
 import dc.maitetsufd.ui.listener.ImageViewerListener;
 import dc.maitetsufd.ui.viewmodel.*;
-import lombok.val;
 
 import java.io.IOException;
 import java.util.List;
@@ -396,7 +395,6 @@ public class MainUIThread {
                 .load(bytes)
                 .dontTransform()
                 .skipMemoryCache(true)
-                .thumbnail(0.2f)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .listener(new RequestListener<byte[], GlideDrawable>() {
                   @Override
@@ -533,13 +531,14 @@ public class MainUIThread {
 
             // 캡차 입력
             final EditText inputCaptcha = new EditText(activity);
+            inputCaptcha.setSingleLine(true);
             inputCaptcha.setLayoutParams(btnLayout);
             inputCaptcha.setGravity(Gravity.CENTER);
             inputCaptcha.setBackground(activity.getResources().getDrawable(R.drawable.border_gray));
             imageLayout.addView(inputCaptcha);
 
             // 캡차 전송 버튼
-            Button postButton = new Button(activity);
+            final Button postButton = new Button(activity);
             postButton.setLayoutParams(btnLayout);
             postButton.setGravity(Gravity.CENTER);
             postButton.setText("Submit");
@@ -554,6 +553,18 @@ public class MainUIThread {
               }
             });
             imageLayout.addView(postButton);
+
+            // 엔터키로 확인처리
+            inputCaptcha.setOnKeyListener(new View.OnKeyListener() {
+              @Override
+              public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.KEYCODE_ENTER) {
+                  postButton.performClick();
+                }
+                return false;
+              }
+            });
+
 
           } else {
             imageLayout.addView(closeButton);
