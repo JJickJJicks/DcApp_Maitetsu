@@ -25,6 +25,7 @@ public class CurrentData implements Serializable {
   private Map<String, String> maruCookies;
   private List<GalleryInfo> myGalleryList = new ArrayList<>();
   private List<UserInfo> filterUserList = new ArrayList<>();
+  private List<String> blockWordList = new ArrayList<>();
   private List<DcConPackage> dcConPackages = new ArrayList<>();
   private Map<String, Long> recommendList = new HashMap<>();
   private int recommendCount = 0;

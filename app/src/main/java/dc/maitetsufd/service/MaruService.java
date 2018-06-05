@@ -25,6 +25,7 @@ enum MaruService implements IMangaService {
   private static final String MARU_LINK_URL = "http://marumaru.in/b/mangaup/";
   private static final String PASS = "qndxkr";
   private static final String ORIGIN = "http://wasabisyrup.com/";
+  private static String CAPTCHA_NAME = "captcha2";
   private static Map<String, String> cookies = new HashMap<>();
   static Map<String, String> contentCookies = new HashMap<>();
 
@@ -105,11 +106,15 @@ enum MaruService implements IMangaService {
 
     Connection.Response response = Jsoup.connect(url)
                                         .timeout(5000)
+                                        .userAgent(userAgent)
+                                        .header("Host", "wasabisyrup.com")
                                         .header("Origin", ORIGIN)
                                         .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
                                         .header("Accept-Encoding", "gzip, deflate")
-                                        .header("User-Agent", userAgent)
                                         .header("Upgrade-Insecure-Requests", "1")
+                                        .header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6")
+                                        .header("Cache-Control", "no-cache")
+                                        .header("Connection", "keep-alive")
                                         .cookies(contentCookies)
                                         .followRedirects(true)
                                         .method(Connection.Method.GET)
@@ -130,17 +135,23 @@ enum MaruService implements IMangaService {
 
     // Images
     List<String> urls = new ArrayList<>();
-    Element captcha = rawData.select("img[src='/captcha1'").first();
+    Element captcha = rawData.select("img[src*='captcha']").first();
     Elements elements = rawData.select(".lz-lazyload");
 
+
     if (elements.size() == 0 && captcha == null) {
+      CAPTCHA_NAME = captcha.attr("src").replaceAll("\\[0-9]", "");
       Connection.Response res = Jsoup.connect(url)
+                    .header("Host", "wasabisyrup.com")
                     .header("Origin", ORIGIN)
                     .referrer(url)
                     .userAgent(userAgent)
                     .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
                     .header("Accept-Encoding", "gzip, deflate")
                     .header("Upgrade-Insecure-Requests", "1")
+                    .header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6")
+                    .header("Cache-Control", "no-cache")
+                    .header("Connection", "keep-alive")
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .data("pass", PASS)
                     .timeout(5000)
@@ -208,7 +219,7 @@ enum MaruService implements IMangaService {
                                         .header("Upgrade-Insecure-Requests", "1")
                                         .header("Content-Type", "application/x-www-form-urlencoded")
                                         .followRedirects(true)
-                                        .data("captcha1", captcha)
+                                        .data(CAPTCHA_NAME, captcha)
                                         .data("pass", PASS)
                                         .cookies(contentCookies)
                                         .method(Connection.Method.POST)

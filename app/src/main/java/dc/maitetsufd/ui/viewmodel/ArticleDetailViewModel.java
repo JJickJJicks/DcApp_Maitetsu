@@ -237,7 +237,6 @@ public class ArticleDetailViewModel {
         view.setDuplicateParentStateEnabled(true);
 
         final ImageView realImageView = (ImageView) view.findViewById(R.id.article_item_real_img);
-        realImageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         imageViews.add(realImageView);
         realImageView.setDuplicateParentStateEnabled(true);
 

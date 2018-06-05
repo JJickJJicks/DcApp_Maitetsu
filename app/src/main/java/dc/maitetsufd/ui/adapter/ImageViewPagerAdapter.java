@@ -34,7 +34,8 @@ public class ImageViewPagerAdapter extends PagerAdapter {
 
   @Override
   public int getCount() {
-    return imageBytes.size();
+	if (imageBytes == null) return 0;
+	return imageBytes.size();
   }
 
   @Override

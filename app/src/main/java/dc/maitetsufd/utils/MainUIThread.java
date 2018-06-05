@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -168,12 +169,14 @@ public class MainUIThread {
    * @param message the message
    */
   public static void showSnackBar(final View view, final String message) {
+
+    final ForegroundColorSpan whiteSpan = new ForegroundColorSpan(ContextCompat.getColor(view.getContext(), android.R.color.white));
+    final SpannableStringBuilder snackbarText = new SpannableStringBuilder(message);
+    final Context context = view.getContext();
+
     view.post(new Runnable() {
       @Override
       public void run() {
-        final ForegroundColorSpan whiteSpan = new ForegroundColorSpan(ContextCompat.getColor(view.getContext(), android.R.color.white));
-        final SpannableStringBuilder snackbarText = new SpannableStringBuilder(message);
-        final Context context = view.getContext();
         snackbarText.setSpan(whiteSpan, 0, snackbarText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         snackbar = Snackbar.make(view, snackbarText, Snackbar.LENGTH_SHORT);
         setSnackBarAction(context);
@@ -360,6 +363,10 @@ public class MainUIThread {
   static void setImageView(final Activity activity,
                            final ImageView imageView,
                            final byte[] bytes) {
+
+    int screenWidth = (int) (activity.getWindow().getDecorView().getMeasuredWidth() * 0.8);
+    final int width = screenWidth <= 0 ? Target.SIZE_ORIGINAL : screenWidth;
+
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -367,6 +374,7 @@ public class MainUIThread {
         Glide.with(activity.getApplicationContext())
                 .load(bytes)
                 .skipMemoryCache(true)
+                .override(width, Target.SIZE_ORIGINAL)
                 .thumbnail(0.2f)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(imageView);

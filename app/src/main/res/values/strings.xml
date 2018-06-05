@@ -62,6 +62,10 @@
   <string name="save_msg">저장되었습니다.</string>
   <string name="filter_user_list_title">차단된 유저 리스트</string>
   <string name="filter_user_list_setting">차단 유저 관리</string>
+  <string name="block_word_list_title">차단된 단어 리스트</string>
+  <string name="block_word_list_setting">차단 단어 관리</string>
+  <string name="put_block_word">차단 단어 추가</string>
+  <string name="block_word_list_summary">특정 단어가 포함된 글과 댓글을 감춥니다</string>
   <string name="filter_user_list_dialog">이 유저를 차단하시겠습니까?</string>
   <string name="filter_user_list_dialog_success">%1$s가 차단되었습니다.</string>
   <string name="filter_user_list_dialog_failure">유저를 차단하는중 에러가 발생했습니다.</string>
@@ -102,7 +106,7 @@
   <string name="setting_image_check">이미지를 바로 보지 않습니다</string>
   <string name="setting_dccon_check">디시콘을 바로 보지 않습니다</string>
 
-  <string name="setting_filter_category">유저 차단</string>
+  <string name="setting_filter_category">차단</string>
   <string name="setting_telcom_filter">통신사 IP를 차단합니다</string>
   <string name="setting_flow_filter">모든 유동닉을 차단합니다</string>
 

@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -11,10 +12,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import dc.maitetsufd.R;
 import dc.maitetsufd.data.CurrentData;
 import dc.maitetsufd.data.CurrentDataManager;
+import dc.maitetsufd.ui.BlockWordListActivity;
 import dc.maitetsufd.ui.FilterUserListActivity;
 import dc.maitetsufd.ui.MainActivity;
 import dc.maitetsufd.ui.OpenSourceActivity;
@@ -47,10 +50,23 @@ public class SettingFragment extends PreferenceFragmentCompat {
     setOpenSourceButton(this, currentData);
     setFilterUserButton(this);
     setFilterUserListButton(this);
+    setBlockWordListButton(this);
     setDcmysMode(this);
     setVibAndResolutionButtons(this);
     setImageAndDcconTouch(this);
     setMovieIgnore(this);
+
+    // 버전 정보
+    try {
+      fragment.getPreferenceManager()
+              .findPreference("version")
+              .setTitle("현재 버전: " + fragment.getActivity()
+                      .getPackageManager()
+                      .getPackageInfo(fragment.getActivity().getPackageName(), 0).versionName);
+    } catch (PackageManager.NameNotFoundException e) {
+      fragment.getPreferenceManager().findPreference("version").setVisible(false);
+    }
+
   }
 
   private void setMovieIgnore(final SettingFragment fragment) {
@@ -252,6 +268,18 @@ public class SettingFragment extends PreferenceFragmentCompat {
       @Override
       public boolean onPreferenceClick(Preference preference) {
         Intent intent = new Intent(fragment.getContext(), FilterUserListActivity.class);
+        startActivity(intent);
+        return true;
+      }
+    });
+  }
+
+  private void setBlockWordListButton(final SettingFragment fragment) {
+    Preference filterUserListButton = fragment.getPreferenceManager().findPreference("block_word_list");
+    filterUserListButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+      @Override
+      public boolean onPreferenceClick(Preference preference) {
+        Intent intent = new Intent(fragment.getContext(), BlockWordListActivity.class);
         startActivity(intent);
         return true;
       }

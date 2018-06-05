@@ -32,6 +32,7 @@ public class CurrentDataManager {
   private static final String VALUE = "VALUE";
   private static final String IP = "IP";
   private static final String RECOMMEND = "RECOMMEND";
+  private static final String BLOCK_WORD = "BLOCK_WORD_LIST";
 
   private static CurrentData currentData;
 
@@ -66,12 +67,23 @@ public class CurrentDataManager {
     saveFilterUserList(currentData, editor);
     saveDcconPackage(currentData, editor);
     saveRecommendMap(currentData, editor);
+    saveBlockWordList(currentData, editor);
 
     // 로그인 쿠키 저장
     saveLoginCookie(currentData, editor);
     saveMaruCookie(currentData, editor);
 
     editor.apply();
+  }
+
+  private static void saveBlockWordList(CurrentData currentData, SharedPreferences.Editor editor) {
+    int count =0;
+    List<String> blockWordList = currentData.getBlockWordList();
+    for (String word: blockWordList) {
+      editor.putString(BLOCK_WORD + count, word);
+      count++;
+    }
+    editor.putInt(BLOCK_WORD + SIZE, count);
   }
 
   private static void saveRecommendMap(CurrentData currentData, SharedPreferences.Editor editor) {
@@ -228,9 +240,19 @@ public class CurrentDataManager {
     loadFilteruserList(sharedPreferences, loadCurrentData);
     loadDcconPackage(sharedPreferences, loadCurrentData);
     loadRecommendList(sharedPreferences, loadCurrentData);
+    loadBlockWordList(sharedPreferences, loadCurrentData);
     currentData = loadCurrentData;
 
     return loadCurrentData;
+  }
+
+  private static void loadBlockWordList(SharedPreferences sharedPreferences, CurrentData loadCurrentData) {
+    List<String> blockWordList = new ArrayList<>();
+    int count = sharedPreferences.getInt(BLOCK_WORD + SIZE, 0);
+    for (int i=0; i<count; i++) {
+      blockWordList.add(sharedPreferences.getString(BLOCK_WORD + i, ""));
+    }
+    loadCurrentData.setBlockWordList(blockWordList);
   }
 
   private static void loadRecommendList(SharedPreferences sharedPreferences, CurrentData loadCurrentData) {

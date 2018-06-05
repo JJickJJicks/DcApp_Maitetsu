@@ -3,7 +3,6 @@ package dc.maitetsufd.service;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import dc.maitetsufd.R;
@@ -21,7 +20,7 @@ import dc.maitetsufd.ui.viewmodel.ArticleDetailViewModel;
 import dc.maitetsufd.ui.viewmodel.HasViewModelFragment;
 import dc.maitetsufd.utils.MainUIThread;
 import dc.maitetsufd.utils.ThreadPoolManager;
-import dc.maitetsufd.utils.UserFilter;
+import dc.maitetsufd.utils.ContentFilter;
 
 import java.io.File;
 import java.util.List;
@@ -113,7 +112,7 @@ public class ServiceProvider {
                                                 .getArticleDetail(currentData.getLoginCookies()
                                                                 , USER_AGENT, articleUrl);
           articleDetail.setUrl(articleUrl);
-          UserFilter.setComments(currentData, articleDetail.getComments());
+          ContentFilter.setComments(currentData, articleDetail.getComments());
           MainUIThread.openArticleDetail(fragment, articleDetail, articleUrl);
         } catch (Exception e) {
           fragment.getHasAdapterViewModel().stopRefreshing();
@@ -134,7 +133,7 @@ public class ServiceProvider {
           ArticleDetail articleDetail = ArticleDetailService.getInstance
 															.getArticleDetail(currentData.getLoginCookies() , USER_AGENT, articleUrl);
           articleDetail.setUrl(articleUrl);
-          UserFilter.setComments(currentData, articleDetail.getComments());
+          ContentFilter.setComments(currentData, articleDetail.getComments());
           MainUIThread.finishActivity(activity, ResultCodes.NONE);
           MainUIThread.openArticleDetail(activity, articleDetail, articleUrl);
         } catch (Exception e) {
@@ -157,7 +156,7 @@ public class ServiceProvider {
           ArticleDetail articleDetail = ArticleDetailService.getInstance
                   .getArticleDetail(currentData.getLoginCookies()
                                   , USER_AGENT, articleUrl);
-          UserFilter.setComments(currentData, articleDetail.getComments());
+          ContentFilter.setComments(currentData, articleDetail.getComments());
           MainUIThread.refreshComment(activity, viewModel, articleDetail.getComments());
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.comment_reload_failure));
@@ -201,7 +200,7 @@ public class ServiceProvider {
           List<SimpleArticle> simpleArticles = SimpleArticleService.getInstance
                                                 .getSimpleArticles(currentData,
                                                             USER_AGENT, isRecommend, refreshSerPos);
-          UserFilter.setSimpleArticles(currentData, simpleArticles);
+          ContentFilter.setSimpleArticles(currentData, simpleArticles);
 
           if (simpleArticles.size() == 0) {
 

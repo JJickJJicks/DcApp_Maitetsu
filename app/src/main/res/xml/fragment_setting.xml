@@ -47,15 +47,22 @@
 
         <CheckBoxPreference
                 android:key="telcom_filter"
-                android:summary="댓글에만 적용됩니다"
+                android:summary="글/댓글에 적용됩니다."
                 android:title="@string/setting_telcom_filter"/>
 
         <CheckBoxPreference
                 android:key="flow_filter"
                 android:dependency="telcom_filter"
                 android:title="@string/setting_flow_filter"/>
+
         <Preference android:title="@string/filter_user_list_setting"
                     android:key="filter_user_list"/>
+
+        <Preference android:title="@string/block_word_list_setting"
+                    android:summary="@string/block_word_list_summary"
+                    android:key="block_word_list"/>
+
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/fast_login">
@@ -97,17 +104,10 @@
                     android:key="@string/setting_restart"/>
     </PreferenceCategory>
 
-    <!--
-        <PreferenceCategory
-        android:title="@string/use_opensource">
-        <Preference android:summary="SwipeBackLayout 1.0"/>
-        <Preference android:summary="Glide 3.7.0"/>
-        <Preference android:summary="Apache common-io 2.5"/>
-        <Preference android:summary="Lombok 1.16.16"/>
-        <Preference android:summary="Jsoup 1.10.2"/>
-        <Preference android:summary="Google json-simple 1.1.1"/>
-        </PreferenceCategory>
-    -->
+
+    <PreferenceCategory>
+        <Preference android:key="version"/>
+    </PreferenceCategory>
 
 
 </PreferenceScreen>
