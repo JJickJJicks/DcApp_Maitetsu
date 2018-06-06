@@ -1,5 +1,7 @@
 package dc.maitetsufd.ui;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -7,7 +9,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,6 +35,7 @@ public class BlockWordListActivity extends AppCompatActivity {
   @BindView(R.id.block_word_list_view) ListView blockWordListView;
   CurrentData currentData;
   BlockWordListAdapter blockWordListAdapter;
+  Activity self;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,7 @@ public class BlockWordListActivity extends AppCompatActivity {
     setContentView(R.layout.activity_block_word_list);
     ButterKnife.bind(this);
 
+    self = this;
     blockWordListAdapter = new BlockWordListAdapter();
     blockWordListAdapter.addAllBlockWords(currentData.getBlockWordList());
     blockWordListView.setAdapter(blockWordListAdapter);
@@ -84,20 +90,34 @@ public class BlockWordListActivity extends AppCompatActivity {
     builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int which) {
+        hideKeyboard();
         String word = input.getText().toString().toUpperCase();
-        if (!word.isEmpty()) {
+        if (word.isEmpty()) return;
+        if (blockWordListAdapter.getBlockWords().contains(word)) {
+          MainUIThread.showToast(self, getResources().getString(R.string.put_block_word_contain));
+        } else {
           blockWordListAdapter.addBlockWord(word);
           blockWordListAdapter.notifyDataSetChanged();
+          MainUIThread.showToast(self, word + getResources().getString(R.string.put_block_word_ok));
         }
       }
     });
     builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int which) {
+        hideKeyboard();
         dialog.cancel();
       }
     });
     builder.show();
+  }
+
+  private void hideKeyboard() {
+    View view = this.getCurrentFocus();
+    if (view != null) {
+      InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
   }
 
 }

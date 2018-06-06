@@ -102,6 +102,11 @@ enum SimpleArticleService {
 
     for (Element e : elements) {
       Elements span = e.select("span.info span").not("[style]"); // 검색 결과의 색상 span 제외
+
+      String gallogId = e.select(".info .block_info").first().text()
+                        .replaceAll("id\\|", "");
+      if (gallogId.contains("ip|")) gallogId = "";
+
       int spanSize = span.size();
 
       SimpleArticle simpleArticle = new SimpleArticle();
@@ -110,6 +115,7 @@ enum SimpleArticleService {
       simpleArticle.setCommentCount(getCommentCount(e));
       simpleArticle.setArticleType(getArticleType(e));
       simpleArticle.setUserInfo(new UserInfo(e.select(".info .name").first().text(),
+                                            gallogId,
                                             CommonService.getUserType(e),
                                             span.get(1).text()));
 

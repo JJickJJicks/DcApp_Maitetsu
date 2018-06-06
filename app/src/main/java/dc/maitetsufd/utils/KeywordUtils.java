@@ -6,6 +6,7 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @since 2017-04-28
@@ -21,7 +22,7 @@ public class KeywordUtils {
   }
 
   public static SpannableStringBuilder getBuilder(String str, String keyword, SpannableStringBuilder builder) {
-    String[] splitStr = str.split(keyword);
+    String[] splitStr = str.split(Pattern.quote(keyword));
     if (builder == null) builder = new SpannableStringBuilder();
     if (splitStr.length > 1) {
       SpannableString colorKeyword = new SpannableString(keyword);

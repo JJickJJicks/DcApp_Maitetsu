@@ -55,8 +55,13 @@ public class FilterUserListAdapter extends BaseAdapter{
     ImageView userType = (ImageView) view.findViewById(R.id.filter_user_list_item_userType);
     UserTypeManager.set(res, userInfo, userType);
 
+    String gallogId = userInfo.getGallogId();
+    if (!gallogId.isEmpty()) {
+      gallogId = "(" + gallogId + ")";
+    }
+
     TextView nickname = (TextView) view.findViewById(R.id.maru_list_item_title);
-    nickname.setText(userInfo.getNickname());
+    nickname.setText(userInfo.getNickname() + gallogId);
 
     // 삭제버튼
     ImageView delButton = (ImageView) view.findViewById(R.id.maru_list_item_thumb);

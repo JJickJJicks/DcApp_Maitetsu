@@ -65,12 +65,14 @@ public enum ArticleDetailService {
   private void setUserInfoAndDate(ArticleDetail article, Elements userElements) {
     if(userElements.size() > 2) {
       UserInfo userInfo = new UserInfo(userElements.first().text(),
+              "",
               CommonService.getUserType(userElements.get(1)),
               "");
       article.setUserInfo(userInfo);
       article.setDate(userElements.get(2).text());
     } else {
-      UserInfo userInfo = new UserInfo(userElements.first().text()
+      UserInfo userInfo = new UserInfo(userElements.first().text(),
+                            ""
                             + "(" + userElements.parents().next().select(".ip").text() + ")",
                               UserInfo.UserType.FLOW,
                               "");
@@ -316,6 +318,7 @@ public enum ArticleDetailService {
     List<Comment> comments = new ArrayList<>();
 
     for (Element e : innerBestSpan) {
+      String gallogId = e.select("a[href*='g_id']").first().attr("href").split("g_id=")[1];
       String ipAddr = e.select(".ip").text().trim();
       String userIpAddr = "";
       String[] userIpAddrSplit = ipAddr.split("\\.");
@@ -327,6 +330,7 @@ public enum ArticleDetailService {
               new UserInfo(e.select(".id").text()
                             .replace("[", "")
                             .replace("]", "").trim(),
+                            gallogId,
                             CommonService.getUserType(e.select("a span").first()),
                             userIpAddr),
               ipAddr,

@@ -26,6 +26,7 @@ public class CurrentDataManager {
   private static final String SRC = "SRC";
   private static final String DETAIL = "DETAIL";
   private static final String NICKNAME = "NICKNAME";
+  private static final String GALLOG_ID = "GALLOG_ID";
   private static final String SIZE = "SIZE";
   private static final String USERTYPE = "USERTYPE";
   private static final String KEY = "KEY";
@@ -120,7 +121,10 @@ public class CurrentDataManager {
       String nickname = currentData.getFilterUserList().get(i).getNickname();
       String ip = currentData.getFilterUserList().get(i).getIpAdd();
       String userType = currentData.getFilterUserList().get(i).getUserType().toString();
+      String gallogId = currentData.getFilterUserList().get(i).getGallogId();
+
       editor.putString(FILTER_USER_LIST + i + NICKNAME, nickname);
+      editor.putString(FILTER_USER_LIST + i + GALLOG_ID, gallogId);
       editor.putString(FILTER_USER_LIST + i + USERTYPE, userType);
       editor.putString(FILTER_USER_LIST + i + IP, ip);
     }
@@ -306,9 +310,11 @@ public class CurrentDataManager {
     int filterUserListSize = sharedPreferences.getInt("filter_user_list_size", 0);
     for (int i = 0; i < filterUserListSize; i++) {
       String nickname = sharedPreferences.getString(FILTER_USER_LIST + i + NICKNAME, "");
+      String gallogId = sharedPreferences.getString(FILTER_USER_LIST + i + GALLOG_ID, "");
       String ip = sharedPreferences.getString(FILTER_USER_LIST + i + IP, "");
       String userType = sharedPreferences.getString(FILTER_USER_LIST + i + USERTYPE, "");
       currentData.getFilterUserList().add(new UserInfo(nickname,
+                                                        gallogId,
                                                         UserInfo.UserType.valueOf(userType),
                                                         ip));
     }
