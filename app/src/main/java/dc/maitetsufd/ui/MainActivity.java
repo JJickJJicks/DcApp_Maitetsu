@@ -54,19 +54,19 @@ public class MainActivity extends AppCompatActivity {
 
     CurrentData currentData = CurrentDataManager.load(this);
 
-    if (!isLoaded) { // 멀티 윈도우 모드에서 비정상적인 스플래시 호출을 방지
-      callSplashActivity();
-      isLoaded = true;
-    }
-
     setTheme(currentData);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
 
+    if (!isLoaded) { // 멀티 윈도우 모드에서 비정상적인 스플래시 호출을 방지
+      callSplashActivity();
 
-    // 페이저와 탭 설정
-    setupPagerAdaper(currentData);
-    setSearchToolsColor();
+      // 페이저와 탭 설정
+      setupPagerAdaper(currentData);
+      setSearchToolsColor();
+
+      isLoaded = true;
+    }
   }
 
   private void setupPagerAdaper(CurrentData currentData){

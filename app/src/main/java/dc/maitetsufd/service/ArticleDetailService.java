@@ -1,6 +1,7 @@
 package dc.maitetsufd.service;
 
 
+import android.util.Log;
 import dc.maitetsufd.models.ArticleDetail;
 import dc.maitetsufd.models.Comment;
 import dc.maitetsufd.models.UserInfo;
@@ -73,7 +74,7 @@ public enum ArticleDetailService {
     } else {
       String[] ipArr = userElements.parents().next()
                                             .select(".ip").text()
-                                            .split(".");
+                                            .split("\\.");
       String ipAddr = ipArr.length > 1 ? "(" + ipArr[0] + "." + ipArr[1] + ")" : "";
 
       UserInfo userInfo = new UserInfo(userElements.first().text() + ipAddr,

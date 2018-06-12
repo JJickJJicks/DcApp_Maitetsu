@@ -14,8 +14,8 @@ android {
         applicationId "dcmys.maitetsufd"
         minSdkVersion 18
         targetSdkVersion 21
-        versionCode 1608
-        versionName "1.6.8"
+        versionCode 1609
+        versionName "1.6.9"
         multiDexEnabled true
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
