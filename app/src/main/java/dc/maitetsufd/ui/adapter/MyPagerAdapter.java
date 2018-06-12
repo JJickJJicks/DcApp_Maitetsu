@@ -15,8 +15,9 @@ import java.util.List;
  */
 public class MyPagerAdapter extends FragmentPagerAdapter {
   private List<Fragment> fragmentList = new ArrayList<>();
+  private static MyPagerAdapter self = null;
 
-  public MyPagerAdapter(FragmentManager fm) {
+  private MyPagerAdapter(FragmentManager fm) {
     super(fm);
 
     fragmentList.add(GalleryListFragment.instance());
@@ -24,7 +25,14 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     fragmentList.add(RecommendArticleListFragment.instance());
     fragmentList.add(MangaViewerFragment.instance());
     fragmentList.add(SettingFragment.instance());
+  }
 
+  public static MyPagerAdapter getInstance(FragmentManager fm) {
+    if (self == null) {
+      self = new MyPagerAdapter(fm);
+    }
+
+    return self;
   }
 
   @Override

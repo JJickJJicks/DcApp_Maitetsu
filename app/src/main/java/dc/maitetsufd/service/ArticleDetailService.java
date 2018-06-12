@@ -71,11 +71,15 @@ public enum ArticleDetailService {
       article.setUserInfo(userInfo);
       article.setDate(userElements.get(2).text());
     } else {
-      UserInfo userInfo = new UserInfo(userElements.first().text(),
-                            ""
-                            + "(" + userElements.parents().next().select(".ip").text() + ")",
+      String[] ipArr = userElements.parents().next()
+                                            .select(".ip").text()
+                                            .split(".");
+      String ipAddr = ipArr.length > 1 ? "(" + ipArr[0] + "." + ipArr[1] + ")" : "";
+
+      UserInfo userInfo = new UserInfo(userElements.first().text() + ipAddr,
+                            "",
                               UserInfo.UserType.FLOW,
-                              "");
+                              ipAddr);
       article.setUserInfo(userInfo);
       article.setDate(userElements.get(1).text());
     }
@@ -318,7 +322,11 @@ public enum ArticleDetailService {
     List<Comment> comments = new ArrayList<>();
 
     for (Element e : innerBestSpan) {
-      String gallogId = e.select("a[href*='g_id']").first().attr("href").split("g_id=")[1];
+      String gallogId = "";
+      Element gallogIdElement = e.select("a[href*='g_id']").first();
+      if (gallogIdElement != null && !gallogIdElement.attr("href").isEmpty())
+        gallogId = gallogIdElement.attr("href").split("g_id=")[1];
+
       String ipAddr = e.select(".ip").text().trim();
       String userIpAddr = "";
       String[] userIpAddrSplit = ipAddr.split("\\.");

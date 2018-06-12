@@ -19,8 +19,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColorPrimary">@color/colorBlack</item>
-        <item name="android:textColorSecondary">@color/colorGray</item>
+        <item name="android:textColorPrimary">@color/colorDarkPurple</item>
+        <item name="android:textColorSecondary">@color/colorDarkGray</item>
         <item name="android:textColor">@color/colorBlack</item>
         <item name="colorButtonNormal">@color/colorPrimaryLight</item>
         <item name="actionBarSize">40dp</item>

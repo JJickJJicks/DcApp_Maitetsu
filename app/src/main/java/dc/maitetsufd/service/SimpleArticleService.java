@@ -102,12 +102,17 @@ enum SimpleArticleService {
 
     for (Element e : elements) {
       Elements span = e.select("span.info span").not("[style]"); // 검색 결과의 색상 span 제외
+      int spanSize = span.size();
 
       String gallogId = e.select(".info .block_info").first().text()
                         .replaceAll("id\\|", "");
       if (gallogId.contains("ip|")) gallogId = "";
 
-      int spanSize = span.size();
+      String userIp = "";
+      Element userIpElement = e.select(".info .userip").first();
+      if (userIpElement != null)
+        userIp = userIpElement.text().replaceAll("[()]", "");
+
 
       SimpleArticle simpleArticle = new SimpleArticle();
       simpleArticle.setTitle(e.select(".title .txt").first().text());
@@ -117,7 +122,7 @@ enum SimpleArticleService {
       simpleArticle.setUserInfo(new UserInfo(e.select(".info .name").first().text(),
                                             gallogId,
                                             CommonService.getUserType(e),
-                                            span.get(1).text()));
+                                            userIp));
 
       if (simpleArticle.getUserInfo().getUserType() == UserInfo.UserType.FLOW){
         simpleArticle.getUserInfo().setNickname(

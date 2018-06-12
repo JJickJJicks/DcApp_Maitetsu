@@ -46,13 +46,18 @@ public class MainActivity extends AppCompatActivity {
   @BindColor(R.color.colorWhite) int whiteColor;
   TabLayoutViewModel tabLayoutViewModel;
   MyPagerAdapter myPagerAdapter;
+  private static boolean isLoaded = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     CurrentData currentData = CurrentDataManager.load(this);
-    callSplashActivity();
+
+    if (!isLoaded) { // 멀티 윈도우 모드에서 비정상적인 스플래시 호출을 방지
+      callSplashActivity();
+      isLoaded = true;
+    }
 
     setTheme(currentData);
     setContentView(R.layout.activity_main);
@@ -65,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void setupPagerAdaper(CurrentData currentData){
-      this.myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+      this.myPagerAdapter = MyPagerAdapter.getInstance(getSupportFragmentManager());
       viewPager.setAdapter(myPagerAdapter);
       viewPager.setOffscreenPageLimit(5);
       tabLayout.setupWithViewPager(viewPager);

@@ -139,8 +139,7 @@ enum MaruService implements IMangaService {
     Elements elements = rawData.select(".lz-lazyload");
 
 
-    if (elements.size() == 0 && captcha == null) {
-      CAPTCHA_NAME = captcha.attr("src").replaceAll("\\[0-9]", "");
+    if (elements.size() == 0) {
       Connection.Response res = Jsoup.connect(url)
                     .header("Host", "wasabisyrup.com")
                     .header("Origin", ORIGIN)
@@ -167,6 +166,7 @@ enum MaruService implements IMangaService {
 
     // 캡차가 필요하면
     if (captcha != null) {
+      CAPTCHA_NAME = rawData.select("input[name*='captcha']").first().attr("name");
       String captchaUrl = captcha.attr("abs:src");
       no = "CAPTCHA";
       urls.add(captchaUrl);
@@ -209,6 +209,7 @@ enum MaruService implements IMangaService {
 
 
   public void postCaptcha(String userAgent, String url, String captcha) throws IOException {
+    Log.e("err", CAPTCHA_NAME + " " +captcha);
     Connection.Response response = Jsoup.connect(url)
                                         .header("Origin", ORIGIN)
                                         .referrer(url)

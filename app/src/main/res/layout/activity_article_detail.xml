@@ -211,7 +211,7 @@
                        android:layout_marginBottom="40dp"
                        android:layout_gravity="center"
                        android:adjustViewBounds="true"
-                       android:tint="?attr/editTextColor"
+                       android:tint="?android:textColorPrimary"
                        android:scaleType="fitXY"
                        android:visibility="gone"
                        android:id="@+id/article_read_image_all"

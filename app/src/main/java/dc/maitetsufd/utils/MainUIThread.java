@@ -371,6 +371,8 @@ public class MainUIThread {
       @Override
       public void run() {
 
+
+
         Glide.with(activity.getApplicationContext())
                 .load(bytes)
                 .skipMemoryCache(true)

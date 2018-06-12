@@ -12,7 +12,7 @@
                android:layout_height="50dp"
                android:layout_gravity="center"
                android:adjustViewBounds="true"
-               android:tint="?attr/editTextColor"
+               android:tint="?android:textColorPrimary"
                android:scaleType="fitXY"
                android:id="@+id/article_item_prev_img"
                android:src="@drawable/image"/>

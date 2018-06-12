@@ -1,5 +1,6 @@
 package dc.maitetsufd.utils;
 
+import android.util.Log;
 import dc.maitetsufd.data.CurrentData;
 import dc.maitetsufd.models.Comment;
 import dc.maitetsufd.models.SimpleArticle;
