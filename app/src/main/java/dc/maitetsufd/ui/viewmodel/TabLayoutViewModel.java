@@ -33,9 +33,9 @@ public class TabLayoutViewModel {
   @BindColor(R.color.colorGray) int grayColor;
   @BindColor(R.color.darkThemeGray) int darkThemeGrayColor;
   @BindColor(R.color.darkThemeTabBackground) int darkThemeTabBackground;
+  private static TabLayoutViewModel self;
 
-
-  public TabLayoutViewModel(MainActivity activity, MyPagerAdapter myPagerAdapter) {
+  private TabLayoutViewModel(MainActivity activity, MyPagerAdapter myPagerAdapter) {
     CurrentData currentData = CurrentDataManager.getInstance(activity);
     this.activity = activity;
     this.myPagerAdapter = myPagerAdapter;
@@ -49,8 +49,12 @@ public class TabLayoutViewModel {
     attachTabEvent(activity, myPagerAdapter);
   }
 
-  public void attachTabEvent(MainActivity activity, MyPagerAdapter myPagerAdapter) {
-    new TabEventListener(activity, myPagerAdapter);
+  public static void invoke(MainActivity activity, MyPagerAdapter myPagerAdapter) {
+   self = new TabLayoutViewModel(activity, myPagerAdapter);
+  }
+
+  private void attachTabEvent(MainActivity activity, MyPagerAdapter myPagerAdapter) {
+    TabEventListener.invoke(activity, myPagerAdapter);
   }
 
 

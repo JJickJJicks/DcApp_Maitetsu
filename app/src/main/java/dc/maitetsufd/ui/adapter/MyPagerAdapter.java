@@ -11,28 +11,17 @@ import java.util.List;
 
 /**
  * 각 탭의 프래그먼트를 처리하는 메소드
- *
  */
 public class MyPagerAdapter extends FragmentPagerAdapter {
   private List<Fragment> fragmentList = new ArrayList<>();
-  private static MyPagerAdapter self = null;
 
-  private MyPagerAdapter(FragmentManager fm) {
+  public MyPagerAdapter(FragmentManager fm) {
     super(fm);
-
     fragmentList.add(GalleryListFragment.instance());
     fragmentList.add(SimpleArticleListFragment.instance());
     fragmentList.add(RecommendArticleListFragment.instance());
     fragmentList.add(MangaViewerFragment.instance());
     fragmentList.add(SettingFragment.instance());
-  }
-
-  public static MyPagerAdapter getInstance(FragmentManager fm) {
-    if (self == null) {
-      self = new MyPagerAdapter(fm);
-    }
-
-    return self;
   }
 
   @Override
@@ -57,18 +46,19 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
 
   @Override
   public void destroyItem(ViewGroup container, int position, Object object) {
-    container.removeView(fragmentList.get(position).getView());
+//    container.removeView(fragmentList.get(position).getView());
   }
 
-  public SimpleArticleListFragment getSimpleArticleListFragment(){
+
+  public SimpleArticleListFragment getSimpleArticleListFragment() {
     return SimpleArticleListFragment.instance();
   }
 
-  public RecommendArticleListFragment getRecommendArticleListFragment(){
+  public RecommendArticleListFragment getRecommendArticleListFragment() {
     return RecommendArticleListFragment.instance();
   }
 
-  public MangaViewerFragment getDcmysDcMysFragment() {
+  public MangaViewerFragment getMangaViewerFragment() {
     return MangaViewerFragment.instance();
   }
 

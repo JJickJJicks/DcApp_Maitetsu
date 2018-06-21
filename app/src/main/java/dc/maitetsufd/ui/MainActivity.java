@@ -4,10 +4,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,58 +31,63 @@ import dc.maitetsufd.utils.SelectViewPage;
 
 /**
  * 앱의 메인 액티비티.
- *
+ * <p>
  * 툴바와 페이저를 만들고 설정한다.
- *
  */
 public class MainActivity extends AppCompatActivity {
   private long backKeyPressed = 0L;
 
-  @BindView(R.id.tabs) TabLayout tabLayout;
-  @BindView(R.id.view_pager) ViewPager viewPager;
-  @BindView(R.id.toolbar_title) TextView toolbarTitle;
-  @BindView(R.id.toolbar_search_edit) EditText searchEdit;
-  @BindView(R.id.toolbar_search_close) ImageView searchClose;
-  @BindView(R.id.toolbar_search_btn) ImageView searchOpen;
-  @BindColor(R.color.colorWhite) int whiteColor;
-  TabLayoutViewModel tabLayoutViewModel;
-  MyPagerAdapter myPagerAdapter;
+  @BindView(R.id.tabs)
+  TabLayout tabLayout;
+  @BindView(R.id.view_pager)
+  ViewPager viewPager;
+  @BindView(R.id.toolbar_title)
+  TextView toolbarTitle;
+  @BindView(R.id.toolbar_search_edit)
+  EditText searchEdit;
+  @BindView(R.id.toolbar_search_close)
+  ImageView searchClose;
+  @BindView(R.id.toolbar_search_btn)
+  ImageView searchOpen;
+  @BindColor(R.color.colorWhite)
+  int whiteColor;
   private static boolean isLoaded = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     CurrentData currentData = CurrentDataManager.load(this);
-
     setTheme(currentData);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
 
     if (!isLoaded) { // 멀티 윈도우 모드에서 비정상적인 스플래시 호출을 방지
       callSplashActivity();
-
-      // 페이저와 탭 설정
-      setupPagerAdaper(currentData);
-      setSearchToolsColor();
-
       isLoaded = true;
     }
+
+    // 페이저와 탭 설정
+    setupPagerAdapter(currentData);
+    setSearchToolsColor();
   }
 
-  private void setupPagerAdaper(CurrentData currentData){
-      this.myPagerAdapter = MyPagerAdapter.getInstance(getSupportFragmentManager());
-      viewPager.setAdapter(myPagerAdapter);
-      viewPager.setOffscreenPageLimit(5);
-      tabLayout.setupWithViewPager(viewPager);
-      tabLayout.setTabMode(TabLayout.MODE_FIXED);
-      tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+  private void setupPagerAdapter(CurrentData currentData) {
 
-      // 만화 뷰어 기능 비활성화 처리
-      if (!currentData.isMaruViewer()) { removeTab(myPagerAdapter, 3); }
+    MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+    viewPager.setAdapter(myPagerAdapter);
+    viewPager.setOffscreenPageLimit(5);
+    tabLayout.setupWithViewPager(viewPager);
+    tabLayout.setTabMode(TabLayout.MODE_FIXED);
+    tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-      // 탭 모델뷰 설정
-      this.tabLayoutViewModel = new TabLayoutViewModel(this, myPagerAdapter);
+    // 만화 뷰어 기능 비활성화 처리
+    if (!currentData.isMaruViewer()) {
+      removeTab(myPagerAdapter, 3);
+    }
+
+    // 탭 모델뷰 설정
+    TabLayoutViewModel.invoke(this, myPagerAdapter);
+
   }
 
 
@@ -136,14 +142,14 @@ public class MainActivity extends AppCompatActivity {
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if(requestCode == RequestCodes.LOGIN.ordinal()) {
-      if(resultCode == ResultCodes.LOGIN_SUCCESS.ordinal())
+    if (requestCode == RequestCodes.LOGIN.ordinal()) {
+      if (resultCode == ResultCodes.LOGIN_SUCCESS.ordinal())
         SelectViewPage.select(this, 1);
-      else if(requestCode == ResultCodes.LOGIN_FAIL.ordinal())
+      else if (requestCode == ResultCodes.LOGIN_FAIL.ordinal())
         SelectViewPage.select(this, viewPager.getChildCount() - 1);
 
-    }else if(requestCode == RequestCodes.ARTICLE.ordinal()) {
-      if(resultCode == ResultCodes.ARTICLE_REFRESH.ordinal()) {
+    } else if (requestCode == RequestCodes.ARTICLE.ordinal()) {
+      if (resultCode == ResultCodes.ARTICLE_REFRESH.ordinal()) {
         SelectViewPage.select(this, 1);
       }
     }

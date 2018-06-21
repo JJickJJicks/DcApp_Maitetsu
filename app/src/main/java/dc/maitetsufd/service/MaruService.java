@@ -58,14 +58,14 @@ enum MaruService implements IMangaService {
     String pageKeyword = "&sort=gid&p=" + page;
 
     Connection.Response res = Jsoup.connect(MARU_URL + category + searchKeyword + pageKeyword)
-                                  .userAgent(userAgent)
-                                  .timeout(5000)
-                                  .header("Origin", MARU_URL)
-                                  .header("Referer", MARU_URL)
-                                  .cookies(cookies)
-                                  .method(Connection.Method.GET)
-                                  .followRedirects(true)
-                                  .execute();
+            .userAgent(userAgent)
+            .timeout(5000)
+            .header("Origin", MARU_URL)
+            .header("Referer", MARU_URL)
+            .cookies(cookies)
+            .method(Connection.Method.GET)
+            .followRedirects(true)
+            .execute();
     cookies.putAll(res.cookies());
 
 //    sendIncapsula(res.body(), userAgent);
@@ -75,23 +75,35 @@ enum MaruService implements IMangaService {
 
   private String getWasabiUrl(String userAgent, String no) throws IOException {
     Connection.Response response = Jsoup.connect(MARU_LINK_URL + no.substring(1))
-                        .userAgent(userAgent)
-                        .timeout(5000)
-                        .header("Origin", "http://marumaru.in/")
-                        .header("Referer", MARU_URL)
-                        .cookies(cookies)
-                        .followRedirects(true)
-                        .method(Connection.Method.GET)
-                        .execute();
+            .userAgent(userAgent)
+            .timeout(5000)
+            .header("Origin", "http://marumaru.in/")
+            .header("Referer", MARU_URL)
+            .cookies(cookies)
+            .followRedirects(true)
+            .method(Connection.Method.GET)
+            .execute();
 
     cookies.putAll(response.cookies());
 
-    Elements els = response.parse().select("#vContent a");
-    for (Element e : els) {
-      String url = e.attr("abs:href");
-      if (url.contains("archives")) return url;
-    }
-    return "";
+    Element e = response.parse().select("#vContent a").first();
+    String url = e.attr("abs:href");
+
+    // 기본 링크 처리
+    if (url.contains("archives")) return url;
+
+    // bitly 링크 처리
+    Document checkShortURL = Jsoup.connect("http://checkshorturl.com/expand.php")
+                                  .userAgent(userAgent)
+                                  .ignoreHttpErrors(true)
+                                  .ignoreContentType(true)
+                                  .header("Content-Type", "application/x-www-form-urlencoded")
+                                  .data("u", url)
+                                  .post();
+
+    return checkShortURL.select("td a[href*='archives']")
+                        .first()
+                        .attr("href");
   }
 
 
@@ -105,20 +117,20 @@ enum MaruService implements IMangaService {
       url = getWasabiUrl(userAgent, no);
 
     Connection.Response response = Jsoup.connect(url)
-                                        .timeout(5000)
-                                        .userAgent(userAgent)
-                                        .header("Host", "wasabisyrup.com")
-                                        .header("Origin", ORIGIN)
-                                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-                                        .header("Accept-Encoding", "gzip, deflate")
-                                        .header("Upgrade-Insecure-Requests", "1")
-                                        .header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6")
-                                        .header("Cache-Control", "no-cache")
-                                        .header("Connection", "keep-alive")
-                                        .cookies(contentCookies)
-                                        .followRedirects(true)
-                                        .method(Connection.Method.GET)
-                                        .execute();
+            .timeout(5000)
+            .userAgent(userAgent)
+            .header("Host", "wasabisyrup.com")
+            .header("Origin", ORIGIN)
+            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+            .header("Accept-Encoding", "gzip, deflate")
+            .header("Upgrade-Insecure-Requests", "1")
+            .header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6")
+            .header("Cache-Control", "no-cache")
+            .header("Connection", "keep-alive")
+            .cookies(contentCookies)
+            .followRedirects(true)
+            .method(Connection.Method.GET)
+            .execute();
 
     Document rawData = response.parse();
     contentCookies.putAll(response.cookies());
@@ -141,23 +153,23 @@ enum MaruService implements IMangaService {
 
     if (elements.size() == 0) {
       Connection.Response res = Jsoup.connect(url)
-                    .header("Host", "wasabisyrup.com")
-                    .header("Origin", ORIGIN)
-                    .referrer(url)
-                    .userAgent(userAgent)
-                    .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-                    .header("Accept-Encoding", "gzip, deflate")
-                    .header("Upgrade-Insecure-Requests", "1")
-                    .header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6")
-                    .header("Cache-Control", "no-cache")
-                    .header("Connection", "keep-alive")
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .data("pass", PASS)
-                    .timeout(5000)
-                    .followRedirects(true)
-                    .cookies(contentCookies)
-                    .method(Connection.Method.POST)
-                    .execute();
+              .header("Host", "wasabisyrup.com")
+              .header("Origin", ORIGIN)
+              .referrer(url)
+              .userAgent(userAgent)
+              .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+              .header("Accept-Encoding", "gzip, deflate")
+              .header("Upgrade-Insecure-Requests", "1")
+              .header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6")
+              .header("Cache-Control", "no-cache")
+              .header("Connection", "keep-alive")
+              .header("Content-Type", "application/x-www-form-urlencoded")
+              .data("pass", PASS)
+              .timeout(5000)
+              .followRedirects(true)
+              .cookies(contentCookies)
+              .method(Connection.Method.POST)
+              .execute();
 
       contentCookies.putAll(res.cookies());
       rawData = res.parse();
@@ -209,22 +221,22 @@ enum MaruService implements IMangaService {
 
 
   public void postCaptcha(String userAgent, String url, String captcha) throws IOException {
-    Log.e("err", CAPTCHA_NAME + " " +captcha);
+    Log.e("err", CAPTCHA_NAME + " " + captcha);
     Connection.Response response = Jsoup.connect(url)
-                                        .header("Origin", ORIGIN)
-                                        .referrer(url)
-                                        .userAgent(userAgent)
-                                        .timeout(5000)
-                                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-                                        .header("Accept-Encoding", "gzip, deflate")
-                                        .header("Upgrade-Insecure-Requests", "1")
-                                        .header("Content-Type", "application/x-www-form-urlencoded")
-                                        .followRedirects(true)
-                                        .data(CAPTCHA_NAME, captcha)
-                                        .data("pass", PASS)
-                                        .cookies(contentCookies)
-                                        .method(Connection.Method.POST)
-                                        .execute();
+            .header("Origin", ORIGIN)
+            .referrer(url)
+            .userAgent(userAgent)
+            .timeout(5000)
+            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+            .header("Accept-Encoding", "gzip, deflate")
+            .header("Upgrade-Insecure-Requests", "1")
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .followRedirects(true)
+            .data(CAPTCHA_NAME, captcha)
+            .data("pass", PASS)
+            .cookies(contentCookies)
+            .method(Connection.Method.POST)
+            .execute();
 
     contentCookies.putAll(response.cookies());
   }

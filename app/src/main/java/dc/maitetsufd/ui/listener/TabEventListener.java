@@ -1,5 +1,9 @@
 package dc.maitetsufd.ui.listener;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -16,8 +20,8 @@ import dc.maitetsufd.R;
 import dc.maitetsufd.data.CurrentData;
 import dc.maitetsufd.data.CurrentDataManager;
 import dc.maitetsufd.ui.MainActivity;
-import dc.maitetsufd.utils.MainUIThread;
 import dc.maitetsufd.ui.adapter.MyPagerAdapter;
+import dc.maitetsufd.utils.MainUIThread;
 import dc.maitetsufd.utils.ThreadPoolManager;
 
 /**
@@ -41,18 +45,21 @@ public class TabEventListener {
   private MainActivity activity;
   private MyPagerAdapter pagerAdapter;
   private CurrentData currentData;
+  private static TabEventListener self;
 
 
-  public TabEventListener(final MainActivity activity, final MyPagerAdapter pagerAdapter){
+  private TabEventListener(final MainActivity activity, final MyPagerAdapter pagerAdapter){
     this.activity = activity;
     this.pagerAdapter = pagerAdapter;
     this.currentData = CurrentDataManager.getInstance(activity);
     ButterKnife.bind(this, activity);
 
     tabLayout.addOnTabSelectedListener(get());
-
   }
 
+  public static void invoke(final MainActivity activity, final MyPagerAdapter pagerAdapter) {
+    self = new TabEventListener(activity, pagerAdapter);
+  }
 
   // 뷰페이저 리스너를 리턴하는 메소드
   private TabLayout.ViewPagerOnTabSelectedListener get() {
@@ -104,7 +111,7 @@ public class TabEventListener {
       MainUIThread.refreshArticleListView(pagerAdapter.getSimpleArticleListFragment(), true);
 
     }else if((int) tab.getTag() == R.string.maru_viewer_title) { // 실험실
-      MainUIThread.refreshMaruListView(pagerAdapter.getDcmysDcMysFragment(), true);
+      MainUIThread.refreshMaruListView(pagerAdapter.getMangaViewerFragment(), true);
 
     } else if ((int) tab.getTag() == R.string.title_recommend_article_title_bar) { // 개념글
       MainUIThread.refreshArticleListView(pagerAdapter.getRecommendArticleListFragment(), true);
@@ -118,6 +125,8 @@ public class TabEventListener {
 
   // 탭과 색상을 입력받아 탭의 색상을 변경함
   private void changeTabColor(TabLayout.Tab tab, int darkThemeColor, int basicThemeColor) {
+    if (tab == null || tab.getIcon() == null) return;
+
     if (currentData.isDarkTheme()) {
       tab.getIcon().setColorFilter(darkThemeColor, PorterDuff.Mode.SRC_IN);
     } else {
