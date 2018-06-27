@@ -92,16 +92,16 @@ enum MaruService implements IMangaService {
     // 기본 링크 처리
     if (url.contains("archives")) return url;
 
-    // bitly 링크 처리
-    Document checkShortURL = Jsoup.connect("http://checkshorturl.com/expand.php")
+    // 리다이렉트 링크 처리
+    Document checkShortURL = Jsoup.connect("http://urlex.org/")
                                   .userAgent(userAgent)
                                   .ignoreHttpErrors(true)
                                   .ignoreContentType(true)
                                   .header("Content-Type", "application/x-www-form-urlencoded")
-                                  .data("u", url)
+                                  .data("s", url)
                                   .post();
 
-    return checkShortURL.select("td a[href*='archives']")
+    return checkShortURL.select("a[href*='wasabisyrup']")
                         .first()
                         .attr("href");
   }
