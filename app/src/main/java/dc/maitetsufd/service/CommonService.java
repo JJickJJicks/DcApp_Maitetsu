@@ -12,11 +12,11 @@ class CommonService {
   static UserInfo.UserType getUserType(Element e) {
     if(e == null) return UserInfo.UserType.FLOW;
 
-    Element userFlow = e.select(".nick_comm,.nick_mnr_comm").first();
+    Element userFlow = e.select("span.sp-nick").first();
     if(userFlow == null) return UserInfo.UserType.FLOW;
-    else if (userFlow.hasClass("flow")
-              || userFlow.hasClass("ic_gc_m") // 매니저
-              || userFlow.hasClass("ic_sc_m")) // 부매니저
+    else if (userFlow.hasClass("gonick")
+              || userFlow.hasClass("m-gonick") // 매니저
+              || userFlow.hasClass("sub-gonick")) // 부매니저
       return UserInfo.UserType.FIX_GALLOG;
     else
       return UserInfo.UserType.FLOW_GALLOG;

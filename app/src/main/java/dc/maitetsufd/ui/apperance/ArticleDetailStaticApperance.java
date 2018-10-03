@@ -55,6 +55,7 @@ public class ArticleDetailStaticApperance {
     setDate(articleDetailActivity, articleDetail);
     setViewAndRecommend(articleDetailActivity, articleDetail);
     setRecommendIconAndText(articleDetailActivity, articleDetail);
+    setNoRecommendIconAndText(articleDetailActivity, articleDetail);
     setCloseAndDeleteButton(articleDetailActivity, articleDetail);
     setCommentSubmitAndDcconButton(articleDetailActivity, articleDetail, articleUrl);
     setCommentTextClick(articleDetailActivity);
@@ -154,6 +155,34 @@ public class ArticleDetailStaticApperance {
     });
   }
 
+  // 비추천 버튼과 추천 수 핸들링 메소드
+  private void setNoRecommendIconAndText(final Activity activity, final ArticleDetail articleDetail) {
+
+    // 게시물의 추천 수와 추천 버튼을 핸들링
+    final ImageView noRecommendIcon = (ImageView) activity.findViewById(R.id.article_read_norecommend_icon);
+    final TextView noRecommendIconCount = (TextView) activity.findViewById(R.id.article_read_norecommend_icon_count);
+    noRecommendIconCount.setText(String.format(res.getString(R.string.comment), articleDetail.getNoRecommendCount()));
+    long timeOut = 1000 * 60 * 60 * 24; // 1일
+    Long time = currentData.getNoRecommendList().get(articleDetail.getArticleDeleteData().getNo());
+
+    if(time != null && time + timeOut > System.currentTimeMillis()) {
+      // 추천 할 수 없으면 이미 눌린 색상으로 설정함
+      noRecommendIcon.setColorFilter(ContextCompat.getColor(activity.getApplicationContext(), R.color.colorAccentYellow),
+              PorterDuff.Mode.SRC_IN);
+      return;
+    }
+
+    (activity.findViewById(R.id.article_read_norecommend_icon)).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        ServiceProvider.getInstance().noRecommendArticle(articleDetail, activity);
+        noRecommendIcon.setColorFilter(ContextCompat.getColor(activity.getApplicationContext(), R.color.colorAccentYellow),
+                PorterDuff.Mode.SRC_IN);
+        noRecommendIconCount.setText(String.format(res.getString(R.string.comment), articleDetail.getNoRecommendCount() + 1));
+      }
+    });
+  }
+
   // 닫기 버튼과 삭제 버튼 핸들링 메소드
   private void setCloseAndDeleteButton(final ArticleDetailActivity activity, final ArticleDetail articleDetail) {
     // 닫기 버튼. 액티비티를 종료한다
@@ -225,12 +254,12 @@ public class ArticleDetailStaticApperance {
               commentSubmit.performClick();
               return true;
 
-            case 59: // SHIFT
+            /*case 59: // SHIFT
               if(presenter.commentText.length() == 0) {
                 articleDetailActivity.focusScrollView();
                 MainUIThread.hideKeyboard(view);
               }
-              return true;
+              return true;*/
           }
         }
 

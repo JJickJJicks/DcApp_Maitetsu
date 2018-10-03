@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 public class Comment implements Serializable {
+  private boolean addComment;
   private UserInfo userInfo;
   private String ip;
   private String content;

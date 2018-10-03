@@ -28,6 +28,7 @@ public class CurrentData implements Serializable {
   private List<String> blockWordList = new ArrayList<>();
   private List<DcConPackage> dcConPackages = new ArrayList<>();
   private Map<String, Long> recommendList = new HashMap<>();
+  private Map<String, Long> noRecommendList = new HashMap<>();
   private int recommendCount = 0;
   private int page = 1;
   private String searchWord = "";

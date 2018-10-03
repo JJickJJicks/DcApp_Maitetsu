@@ -13,20 +13,20 @@ import java.util.List;
 /**
  * @since 2017-04-22
  */
-enum GalleryListService {
+public enum GalleryListService {
   getInstance;
 
   private static final String DCINSIDE_MAIN = "http://m.dcinside.com";
-  private static final String GALLERY_SEARCH_URL = "http://m.dcinside.com/search/index.php";
+  private static final String GALLERY_SEARCH_URL = "http://m.dcinside.com/search_g";
 
-  List<GalleryInfo> searchGallery(String userAgent, String name) throws IOException {
+  public List<GalleryInfo> searchGallery(String userAgent, String name) throws IOException {
     Document searchRawData = Jsoup.connect(GALLERY_SEARCH_URL)
                                   .userAgent(userAgent)
+                                  .header("Host", "m.dcinside.com")
                                   .header("Origin", DCINSIDE_MAIN)
                                   .referrer(DCINSIDE_MAIN)
-//                                  .header("X-Requested-With", "XMLHttpRequest")
-                                  .data("search_gall", name)
-                                  .data("search_type", "gall_name")
+                                  .header("X-Requested-With", "XMLHttpRequest")
+                                  .data("keyword", name)
                                   .get();
 
     return getGalleryInfoFromRawData(searchRawData);
@@ -36,34 +36,23 @@ enum GalleryListService {
   private List<GalleryInfo> getGalleryInfoFromRawData(Document searchRawData) {
     List<GalleryInfo> result = new ArrayList<>();
 
-    Elements h4Elements = searchRawData.select("h4.result_tit");
-    for(Element e : h4Elements) {
-      String resultType = e.select("span").first().text();
-      if(resultType.contains("갤러리명 검색결과") || resultType.contains("마이너 갤러리 검색결과")){
-        elementToGalleryInfo(e.nextElementSibling(), result);
-      }
+    Elements liElements = searchRawData.select("ul.gall-lst li");
+    for (Element liElement : liElements) {
+      String href = liElement.select("a").first().attr("abs:href");
+      String name = liElement.text();
+
+      if (href.contains("http://wiki.dcinside.com/"))
+        continue;
+
+      String[] urls = href.split("/");
+
+      GalleryInfo info = new GalleryInfo();
+      info.setGalleryName(name);
+      info.setGalleryCode(urls[urls.length-1]);
+      result.add(info);
     }
 
-      return result;
+    return result;
   }
-
-
-
-  // li Element를 GalleryInfo 객체로 바꾸는 메소드
-  private void elementToGalleryInfo(Element e, List<GalleryInfo> galleryInfos) {
-    Elements aElements = e.select("a");
-    for(Element ae : aElements) {
-      String[] galleryHref = ae.attr("abs:href").split("=");
-      if (galleryHref.length < 2) continue;
-
-      GalleryInfo galleryInfo = new GalleryInfo();
-      galleryInfo.setGalleryName(ae.text());
-      galleryInfo.setGalleryCode(galleryHref[1]);
-      galleryInfos.add(galleryInfo);
-    }
-  }
-
-
-
 
 }

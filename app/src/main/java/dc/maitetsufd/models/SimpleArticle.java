@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class SimpleArticle implements Serializable{
 
   private String title;
+  private String type;
   private String date;
   private int commentCount;
   private int viewCount;

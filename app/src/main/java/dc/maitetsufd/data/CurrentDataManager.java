@@ -33,6 +33,7 @@ public class CurrentDataManager {
   private static final String VALUE = "VALUE";
   private static final String IP = "IP";
   private static final String RECOMMEND = "RECOMMEND";
+  private static final String NORECOMMEND = "NORECOMMEND";
   private static final String BLOCK_WORD = "BLOCK_WORD_LIST";
 
   private static CurrentData currentData;
@@ -68,6 +69,7 @@ public class CurrentDataManager {
     saveFilterUserList(currentData, editor);
     saveDcconPackage(currentData, editor);
     saveRecommendMap(currentData, editor);
+    saveNoRecommendMap(currentData, editor);
     saveBlockWordList(currentData, editor);
 
     // 로그인 쿠키 저장
@@ -87,6 +89,7 @@ public class CurrentDataManager {
     editor.putInt(BLOCK_WORD + SIZE, count);
   }
 
+  // 개념글 추천 글 목록
   private static void saveRecommendMap(CurrentData currentData, SharedPreferences.Editor editor) {
     int count = 0;
     Map<String, Long> recommendList = currentData.getRecommendList();
@@ -103,6 +106,23 @@ public class CurrentDataManager {
       }
     }
     editor.putInt(RECOMMEND + SIZE, count);
+  }
+  // 비추천 글 목록
+  private static void saveNoRecommendMap(CurrentData currentData, SharedPreferences.Editor editor) {
+    int count = 0;
+    Map<String, Long> norecommendList = currentData.getNoRecommendList();
+    Set<String> keySet = norecommendList.keySet();
+    long timeOut = 1000 * 60 * 60 * 24; // 1일
+
+    for(String key : keySet) {
+      Long time = norecommendList.get(key);
+      if(time != null && time + timeOut > System.currentTimeMillis()) {
+        editor.putString(NORECOMMEND + KEY + count, key);
+        editor.putLong(NORECOMMEND + VALUE + count, time);
+        count++;
+      }
+    }
+    editor.putInt(NORECOMMEND + SIZE, count);
   }
 
   // 방문한 갤러리 리스트 저장
@@ -244,6 +264,7 @@ public class CurrentDataManager {
     loadFilteruserList(sharedPreferences, loadCurrentData);
     loadDcconPackage(sharedPreferences, loadCurrentData);
     loadRecommendList(sharedPreferences, loadCurrentData);
+    loadNoRecommendList(sharedPreferences, loadCurrentData);
     loadBlockWordList(sharedPreferences, loadCurrentData);
     currentData = loadCurrentData;
 
@@ -259,8 +280,8 @@ public class CurrentDataManager {
     loadCurrentData.setBlockWordList(blockWordList);
   }
 
+  // 개념글 추천 목록 로드
   private static void loadRecommendList(SharedPreferences sharedPreferences, CurrentData loadCurrentData) {
-
     Map<String, Long> recommendList = new HashMap<>();
     int count = sharedPreferences.getInt(RECOMMEND + SIZE, 0);
 
@@ -271,6 +292,20 @@ public class CurrentDataManager {
     }
 
     loadCurrentData.setRecommendList(recommendList);
+  }
+
+  // 비추천 목록 로드
+  private static void loadNoRecommendList(SharedPreferences sharedPreferences, CurrentData loadCurrentData) {
+    Map<String, Long> noRecommendList = new HashMap<>();
+    int count = sharedPreferences.getInt(NORECOMMEND + SIZE, 0);
+
+    for(int i=0; i<count; i++) {
+      String key = sharedPreferences.getString(NORECOMMEND + KEY + i, "");
+      Long value = sharedPreferences.getLong(NORECOMMEND + VALUE + i, 0);
+      noRecommendList.put(key, value);
+    }
+
+    loadCurrentData.setNoRecommendList(noRecommendList);
   }
 
 

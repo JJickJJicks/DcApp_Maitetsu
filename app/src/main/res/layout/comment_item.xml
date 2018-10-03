@@ -1,42 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+              android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:padding="12dp">
+
+  <ImageView android:layout_width="10dp"
+             android:layout_height="match_parent"
+             android:layout_marginTop="5dp"
+             android:layout_marginRight="7dp"
+             android:adjustViewBounds="true"
+             android:scaleType="fitStart"
+             android:id="@+id/comment_is_add"
+             android:gravity="top"
+             android:src="@drawable/add_arrow"
+             android:tint="?attr/editTextColor"
+             android:background="@android:color/transparent"
+             android:visibility="gone"/>
+
+
+  <LinearLayout android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
 
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:orientation="horizontal"
-                      android:layout_height="wrap_content"
-                      android:layout_toStartOf="@+id/comment_item_ip">
-
-            <TextView
-                    android:layout_width="wrap_content"
+      <LinearLayout android:layout_width="match_parent"
+                    android:orientation="horizontal"
                     android:layout_height="wrap_content"
-                    android:text="nickname"
-                    android:textColor="?android:attr/textColor"
-                    android:id="@+id/comment_item_nickname"
-                    android:textAppearance="@style/List.subText" />
+                    android:layout_toStartOf="@+id/comment_item_ip">
 
-            <ImageView
-                    android:layout_width="13dp"
-                    android:layout_height="13dp"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:tint="@color/colorAccentYellow"
-                    android:id="@+id/comment_item_user_type"/>
-        </LinearLayout>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="nickname"
+                android:textColor="?android:attr/textColor"
+                android:id="@+id/comment_item_nickname"
+                android:textAppearance="@style/List.subText"/>
 
-        <TextView android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignParentEnd="true"
-                  android:id="@+id/comment_item_ip"
-                  android:textColor="@color/colorGray"
-                  android:textAppearance="@style/List.subText"
-                  android:text="ip"/>
+        <ImageView
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center_vertical"
+                android:tint="@color/colorAccentYellow"
+                android:id="@+id/comment_item_user_type"/>
+      </LinearLayout>
+
+      <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/comment_item_ip"
+                android:textColor="@color/colorGray"
+                android:textAppearance="@style/List.subText"
+                android:text="ip"/>
 
 
     </RelativeLayout>
@@ -47,66 +67,65 @@
                     android:layout_marginBottom="3dp"
                     android:gravity="center">
 
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="content"
-                android:textColor="?android:attr/textColor"
-                android:autoLink="web"
-                android:id="@+id/comment_item_content"
-                android:textAppearance="@style/List.SmallTitleText"
-                android:layout_toStartOf="@+id/comment_item_delete"
-                android:paddingRight="4dp"
+      <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text="content"
+              android:textColor="?android:attr/textColor"
+              android:autoLink="web"
+              android:id="@+id/comment_item_content"
+              android:textAppearance="@style/List.SmallTitleText"
+              android:layout_toStartOf="@+id/comment_item_delete"
+              android:paddingRight="4dp"
+              android:gravity="center_vertical"
+              android:layout_alignParentLeft="true"/>
+
+      <LinearLayout android:layout_width="match_parent"
+                    android:id="@+id/comment_item_dccon_layout"
+                    android:layout_alignParentLeft="true"
+                    android:gravity="left|center_vertical"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_toStartOf="@+id/comment_item_delete"
+                    android:layout_height="wrap_content">
+
+        <ImageButton
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:id="@+id/comment_item_dccon_prev"
+                android:src="@drawable/dccon"
+                android:tint="?attr/editTextColor"
+                android:background="@android:color/transparent"
+                android:visibility="gone"/>
+
+        <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:id="@+id/comment_item_dccon"
                 android:gravity="center_vertical"
-                android:layout_alignParentLeft="true"/>
+                android:background="@android:color/transparent"
+                android:visibility="gone"/>
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:id="@+id/comment_item_dccon_layout"
-                      android:layout_alignParentLeft="true"
-                      android:gravity="left|center_vertical"
-                      android:layout_marginTop="3dp"
-                      android:layout_marginBottom="3dp"
-                      android:layout_toStartOf="@+id/comment_item_delete"
-                      android:layout_height="wrap_content">
-
-            <ImageButton
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    android:id="@+id/comment_item_dccon_prev"
-                    android:src="@drawable/dccon"
-                    android:tint="?attr/editTextColor"
-                    android:background="@android:color/transparent"
-                    android:visibility="gone"/>
-
-            <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    android:id="@+id/comment_item_dccon"
-                    android:gravity="center_vertical"
-                    android:background="@android:color/transparent"
-                    android:visibility="gone"/>
-
-        </LinearLayout>
+      </LinearLayout>
 
 
-        <ImageView android:layout_gravity="right|top"
-                     android:gravity="center"
-                     android:id="@+id/comment_item_delete"
-                     android:padding="1dp"
-                     android:src="@drawable/delete_button"
-                     android:background="@android:color/transparent"
-                     android:layout_width="24dp"
-                     android:layout_height="24dp"
-                     android:tint="@color/colorDarkGray"
-                     android:layout_alignParentTop="true"
-                     android:layout_alignParentEnd="true"/>
+      <ImageView android:layout_gravity="right|top"
+                 android:gravity="center"
+                 android:id="@+id/comment_item_delete"
+                 android:padding="1dp"
+                 android:src="@drawable/delete_button"
+                 android:background="@android:color/transparent"
+                 android:layout_width="24dp"
+                 android:layout_height="24dp"
+                 android:tint="@color/colorDarkGray"
+                 android:layout_alignParentTop="true"
+                 android:layout_alignParentEnd="true"/>
 
     </RelativeLayout>
-
 
     <TextView
             android:layout_width="match_parent"
@@ -115,6 +134,8 @@
             android:id="@+id/comment_item_date"
             android:textAppearance="@style/List.subText"
             android:textColor="?android:textColorSecondary"/>
+
+  </LinearLayout>
 
 
 </LinearLayout>

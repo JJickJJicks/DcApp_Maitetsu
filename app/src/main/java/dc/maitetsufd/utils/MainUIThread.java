@@ -84,6 +84,7 @@ public class MainUIThread {
     final CurrentData currentData = CurrentDataManager.getInstance(((Fragment) fragment).getContext());
     currentData.setPage(1);
     currentData.setSerPos(0);
+    currentData.setNextSerPos(0);
     if (resetSearchKeyword) currentData.setSearchWord("");
 
     if(fragment.getActivity() != null)
@@ -92,7 +93,7 @@ public class MainUIThread {
         public void run() {
           viewModel.clearItem();
           viewModel.startRefreshing();
-          ServiceProvider.getInstance().getSimpleArticles(fragment,  false);
+          ServiceProvider.getInstance().getSimpleArticles(fragment);
         }
       });
   }
@@ -109,6 +110,7 @@ public class MainUIThread {
     final CurrentData currentData = CurrentDataManager.getInstance((fragment).getContext());
     currentData.setPage(1);
     currentData.setSerPos(0);
+    currentData.setNextSerPos(0);
     if (resetSearchKeyword) currentData.setSearchWord("");
 //    CurrentDataManager.save(currentData, fragment.getContext());
     fragment.getActivity().runOnUiThread(new Runnable() {
@@ -364,21 +366,32 @@ public class MainUIThread {
                            final ImageView imageView,
                            final byte[] bytes) {
 
-    int screenWidth = (int) (activity.getWindow().getDecorView().getMeasuredWidth() * 0.8);
-    final int width = screenWidth <= 0 ? Target.SIZE_ORIGINAL : screenWidth;
+    final int screenWidth = activity.getWindow().getDecorView().getMeasuredWidth();
 
     activity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-
-
-
         Glide.with(activity.getApplicationContext())
                 .load(bytes)
-                .skipMemoryCache(true)
-                .override(width, Target.SIZE_ORIGINAL)
-                .thumbnail(0.2f)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .listener(new RequestListener<byte[], GlideDrawable>() {
+                  @Override
+                  public boolean onException(Exception e, byte[] bytes, Target<GlideDrawable> target, boolean b) {
+                    return false;
+                  }
+                  @Override
+                  public boolean onResourceReady(GlideDrawable glideDrawable, byte[] bytes, Target<GlideDrawable> target, boolean b, boolean b1) {
+                    int width = glideDrawable.getIntrinsicWidth();
+                    int height = glideDrawable.getIntrinsicHeight();
+                    int th = screenWidth / 10 * 6;
+
+                    if (th <= width || th <= height) { // 이미지가 화면 너비의 70%를 차지하는 경우
+                      imageView.setAdjustViewBounds(true); // 크기를 맞춘다
+                    }
+                    return false;
+                  }
+                })
                 .into(imageView);
       }
     });
@@ -404,14 +417,12 @@ public class MainUIThread {
         Glide.with(activity.getApplicationContext())
                 .load(bytes)
                 .dontTransform()
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .listener(new RequestListener<byte[], GlideDrawable>() {
                   @Override
                   public boolean onException(Exception e, byte[] model, Target<GlideDrawable> target, boolean isFirstResource) {
                     return false;
                   }
-
                   @Override
                   public boolean onResourceReady(GlideDrawable resource, byte[] model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                     photoViewAttacher.setScaleType(scaleType);

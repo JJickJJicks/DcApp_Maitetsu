@@ -17,10 +17,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * @since 2017-04-21
  */
-enum SimpleArticleService {
+public enum SimpleArticleService {
   getInstance;
 
-  private static final String GALLERY_URL = "http://m.dcinside.com/list.php";
+  private static final String GALLERY_URL = "http://m.dcinside.com/board/";
 
   /**
    * 글 제목과 유저 정보를 담고있는 SimpleArticle을 구해내는 메소드
@@ -29,37 +29,36 @@ enum SimpleArticleService {
    * @return SimpleArticle 리스트
    * @throws InterruptedException the io exception
    */
-  List<SimpleArticle> getSimpleArticles(CurrentData currentData, String userAgent,
-                                        boolean isRecommend,
-                                        boolean refreshSerPos) throws InterruptedException {
+  public List<SimpleArticle> getSimpleArticles(CurrentData currentData, String userAgent,
+                                        boolean isRecommend) throws InterruptedException {
 
-    Document pageRawData = getRawData(currentData, userAgent, isRecommend, refreshSerPos);
-    return getListData(pageRawData.select(".list_best li span a"));
+    Document pageRawData = getRawData(currentData, userAgent, isRecommend);
+    return getListData(pageRawData.select("div.gall-detail-lnktb"));
   }
 
   // 갤러리에 접속해 Document를 얻어오는 메소드
-  private Document getRawData(CurrentData currentData, String userAgent, boolean isRecommend,
-                              boolean refreshSerPos) throws InterruptedException {
+  private Document getRawData(CurrentData currentData, String userAgent, boolean isRecommend) throws InterruptedException {
 
 
     final Map<String, String> loginCookie = currentData.getLoginCookies();
     final String galleryCode = currentData.getGalleryInfo().getGalleryCode();
     final int pageNumber = currentData.getPage();
     final String searchWord = currentData.getSearchWord();
+    currentData.setSerPos(currentData.getNextSerPos());
     String recommendStr = ""; if(isRecommend) recommendStr = "&recommend=1";
-    if(refreshSerPos) currentData.setSerPos(currentData.getNextSerPos());
-    String page = "&page=" + pageNumber + "&ser_pos=" + currentData.getSerPos();
+    String page = "&page=" + pageNumber
+                          + "&s_pos=" + currentData.getSerPos();
 
     String search = "";
     if(!searchWord.trim().isEmpty()){
-      search = "&s_type=all&serVal=" + searchWord;
+      search = "&s_type=all&serval=" + searchWord;
     }
 
-    try {
-      Document pageRawData = Jsoup.connect(GALLERY_URL + "?id=" + galleryCode + page + search + recommendStr)
+    try { // ?s_type=all&serval=ㅁ&page=2
+      Document pageRawData = Jsoup.connect(GALLERY_URL + galleryCode + "?" + search + page  + recommendStr)
                                   .userAgent(userAgent)
                                   .header("Origin", "http://m.dcinside.com")
-                                  .referrer("http://m.dcinside.com/login.php?r_url=m.dcinside.com%2Findex.php")
+                                  .referrer("http://m.dcinside.com/")
                                   .header("Content-Type", "application/x-www-form-urlencoded")
                                   .cookies(loginCookie)
                                   .timeout(4000)
@@ -69,8 +68,9 @@ enum SimpleArticleService {
       return pageRawData;
 
     } catch (Exception e) {
+      System.out.println(e.getMessage());
       TimeUnit.MILLISECONDS.sleep(300);
-      return getRawData(currentData, userAgent, isRecommend, refreshSerPos);
+      return getRawData(currentData, userAgent, isRecommend);
 
     }
   }
@@ -78,16 +78,20 @@ enum SimpleArticleService {
   // 다음 serpos값을 저장하는 메소드
   private void setNextSerPosValue(CurrentData currentData, Document pageRawData) {
       int nextSerPos = getNextSerPosValue(pageRawData);
-      currentData.setNextSerPos(nextSerPos);
+      if (nextSerPos != 0) {
+        currentData.setNextSerPos(nextSerPos);
+      }
   }
 
   // document에서 serpos값을 얻어오는 메소드
   private int getNextSerPosValue(Document pageRawData) {
-    Elements a = pageRawData.select(".new-paging.type1").select("a");
-    if(a.size() > 0){
+    Element a = pageRawData.select("div#pagination_div")
+                          .select("a.next")
+                          .first();
+    if(a != null){
       try {
-        String url = a.last().attr("abs:href");
-        String serPosStr = url.split("ser_pos=")[1].split("&")[0];
+        String url = a.attr("abs:href");
+        String serPosStr = url.split("s_pos=")[1].split("&")[0];
         return Integer.parseInt(serPosStr);
       } catch(Exception e){ return 0; }
     }
@@ -96,43 +100,38 @@ enum SimpleArticleService {
 
 
   // Element를 SimpleArticle 객체의 리스트로 변경하는 메소드
-  private List<SimpleArticle> getListData(Elements elements) {
+  public List<SimpleArticle> getListData(Elements elements) {
 
     List<SimpleArticle> simpleArticles = new ArrayList<>();
 
     for (Element e : elements) {
-      Elements span = e.select("span.info span").not("[style]"); // 검색 결과의 색상 span 제외
-      int spanSize = span.size();
 
-      String gallogId = e.select(".info .block_info").first().text()
-                        .replaceAll("id\\|", "");
-      if (gallogId.contains("ip|")) gallogId = "";
-
-      String userIp = "";
-      Element userIpElement = e.select(".info .userip").first();
-      if (userIpElement != null)
-        userIp = userIpElement.text().replaceAll("[()]", "");
-
-
+      String[] user = e.nextElementSibling().ownText().split("\\|");
+      Elements li = e.select("ul.ginfo > li");
       SimpleArticle simpleArticle = new SimpleArticle();
-      simpleArticle.setTitle(e.select(".title .txt").first().text());
-      simpleArticle.setUrl(e.attr("abs:href"));
-      simpleArticle.setCommentCount(getCommentCount(e));
-      simpleArticle.setArticleType(getArticleType(e));
-      simpleArticle.setUserInfo(new UserInfo(e.select(".info .name").first().text(),
-                                            gallogId,
-                                            CommonService.getUserType(e),
-                                            userIp));
-
-      if (simpleArticle.getUserInfo().getUserType() == UserInfo.UserType.FLOW){
-        simpleArticle.getUserInfo().setNickname(
-          simpleArticle.getUserInfo().getNickname() + span.get(1).text()
-        );
+      if (li.size() == 5) {
+        simpleArticle.setType(li.get(0).text());
+        li.remove(0);
       }
 
-      simpleArticle.setDate(span.get(2).text());
-      simpleArticle.setRecommendCount(Integer.parseInt(span.get(spanSize - 1).html()));
-      simpleArticle.setViewCount(Integer.parseInt(span.get(spanSize - 4).html()));
+
+      simpleArticle.setArticleType(getArticleType(e));
+
+      // 검색어 처리
+      Element subject = e.select("span.subject").first();
+      subject.select("span.sp-lst").remove();
+      simpleArticle.setTitle(subject.text());
+
+      simpleArticle.setUrl(e.select("a.lt").attr("abs:href"));
+      simpleArticle.setCommentCount(getCommentCount(e));
+      simpleArticle.setUserInfo(new UserInfo(li.get(0).text(),
+                                            user[1],
+                                            CommonService.getUserType(li.get(0)),
+                                            user[1]));
+
+      simpleArticle.setDate(li.get(1).text());
+      simpleArticle.setViewCount(Integer.parseInt(li.get(2).text().replace("조회 ", "")));
+      simpleArticle.setRecommendCount(Integer.parseInt(li.get(3).text().replace("추천 ", "")));
 
       simpleArticles.add(simpleArticle);
     }
@@ -142,9 +141,7 @@ enum SimpleArticleService {
 
   // 댓글 수 읽어내는 메소드
   private int getCommentCount(Element e) {
-    String commentCount = e.select(".title .txt_num").first().text()
-            .split("/")[0]
-            .replaceAll("\\D+", "");
+    String commentCount = e.select("span.ct").first().text();
     int result = 0;
     if (!commentCount.isEmpty())
       result = Integer.parseInt(commentCount);
@@ -154,19 +151,20 @@ enum SimpleArticleService {
 
   // 글 타입 읽어내는 메소드
   private SimpleArticle.ArticleType getArticleType(Element e) {
-    Elements icoPic = e.select(".ico_pic");
+    Elements icoPic = e.select("span.sp-lst");
 
-    if (icoPic.hasClass("ico_p_y"))
+    if (icoPic.hasClass("sp-lst-img"))
       return SimpleArticle.ArticleType.IMG;
 
-    else if (icoPic.hasClass("ico_t"))
+    else if (icoPic.hasClass("sp-lst-txt"))
       return SimpleArticle.ArticleType.NO_IMG;
 
-    else if (icoPic.hasClass("ico_mv"))
-      return SimpleArticle.ArticleType.MOV;
+    else if (icoPic.hasClass("sp-lst-recoimg") || icoPic.hasClass("sp-lst-recotxt"))
+      return SimpleArticle.ArticleType.RECOMMAND;
 
     else
-      return SimpleArticle.ArticleType.RECOMMAND;
+      return SimpleArticle.ArticleType.MOV;
+
   }
 
 

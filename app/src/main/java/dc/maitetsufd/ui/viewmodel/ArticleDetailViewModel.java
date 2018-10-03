@@ -244,8 +244,8 @@ public class ArticleDetailViewModel {
 
         // 이미지 뷰어 클릭 리스너
         realImageView.setOnClickListener(ImageViewerListener.get(activity,
-                articleDetail.getCommentWriteData().getNo(),
-                imagePosition, imageBytes, false));
+                                        articleDetail.getCommentWriteData().getNo(),
+                                        imagePosition, imageBytes, false));
 
         final ImageView prevImage = (ImageView) view.findViewById(R.id.article_item_prev_img);
         prevImage.setDuplicateParentStateEnabled(true);
@@ -257,11 +257,13 @@ public class ArticleDetailViewModel {
               prevBtns.remove(prevImage);
               checkAllImageViewButton(articleDetailActivity);
               prevImage.setVisibility(View.GONE);
+              realImageView.setVisibility(View.VISIBLE);
               ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePosition, imageBytes, imageUrl, articleDetail.getUrl(), realImageView, currentData);
             }
           });
         } else {
           prevImage.setVisibility(View.GONE);
+          realImageView.setVisibility(View.VISIBLE);
           ContentUtils.loadBitmapFromUrl(articleDetailActivity, imagePosition, imageBytes, imageUrl, articleDetail.getUrl(), realImageView, currentData);
         }
 
@@ -504,6 +506,12 @@ public class ArticleDetailViewModel {
 
         // 하단 댓글 구분선
         final View yellowLine = inflater.inflate(R.layout.yellow_separator_line, null);
+
+        // 대댓글이면 표시
+        if (comment.isAddComment()) {
+          ImageView commentIsAdd = (ImageView) view.findViewById(R.id.comment_is_add);
+          commentIsAdd.setVisibility(View.VISIBLE);
+        }
 
         activity.runOnUiThread(new Runnable() {
           @Override

@@ -15,12 +15,12 @@ import java.util.Map;
 /**
  * @since 2017-04-22
  */
-enum DcConService {
+public enum DcConService {
   getInstance;
 
   private static final String DCINSIDE_MAIN = "http://m.dcinside.com";
-  private static final String DCCON_LIST_URL = "http://m.dcinside.com/dccon/dccon_box_tpl.php";
-  private static final String DCCON_DETAIL_URL = "http://m.dcinside.com/dccon/dccon_tpl.php";
+  private static final String DCCON_LIST_URL = "http://m.dcinside.com/dccon/getDccon";
+  private static final String DCCON_DETAIL_URL = "http://m.dcinside.com/dccon/getDccon_tab";
 
   /**
    * 사용가능한 디씨콘 리스트를 얻어오는 메소드
@@ -29,14 +29,14 @@ enum DcConService {
    * @param userAgent   모바일 기기 UserAgent
    * @return 디씨콘 리스트
    */
-  List<DcConPackage> getDcConList(Map<String, String> loginCookie, String userAgent) {
+  public List<DcConPackage> getDcConList(Map<String, String> loginCookie, String userAgent) {
     Document dcConRawData = getDcConTabRawData(loginCookie, userAgent);
-    List<DcConPackage> dcConPackages = getDcConPackage(dcConRawData.select(".dccon-tab img"));
+    List<DcConPackage> dcConPackages = getDcConPackage(dcConRawData.select(".dccon-tab-icon"));
 
     for(int i=0; i<dcConPackages.size(); i++){
       Document dcConDetailRawData = getDcConRawData(loginCookie, userAgent, i);
       setDcConPackageDetail(dcConPackages, i, dcConDetailRawData
-                                              .select("button.dccon-icon-btn"));
+                                              .select("a.sm-img"));
     }
 
     return dcConPackages;
@@ -58,6 +58,7 @@ enum DcConService {
                       .cookies(loginCookie)
                       .method(Connection.Method.POST)
                       .execute();
+
       loginCookie.putAll(response.cookies());
       return response.parse();
 
@@ -76,6 +77,7 @@ enum DcConService {
                                           .header("Host", "m.dcinside.com")
                                           .header("Origin", DCINSIDE_MAIN)
                                           .referrer(DCINSIDE_MAIN)
+                                          .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
                                           .header("X-Requested-With", "XMLHttpRequest")
                                           .ignoreContentType(true)
                                           .ignoreHttpErrors(true)
@@ -84,6 +86,7 @@ enum DcConService {
                                           .method(Connection.Method.POST)
                                           .execute();
 
+      loginCookie.putAll(response.cookies());
       return response.parse();
     } catch (Exception e) {
       return getDcConRawData(loginCookie, userAgent, i);
@@ -116,7 +119,7 @@ enum DcConService {
       String dccon_package = e.attr("data-dccon-package");
       dcCon.setDccon_package(dccon_package);
       dcCon.setDccon_detail(e.attr("data-dccon-detail"));
-      dcCon.setDccon_src(e.attr("data-dccon-src"));
+      dcCon.setDccon_src(e.select("img").attr("abs:src"));
 
 
       if(dcConPackages.get(i).getDccon_package() != null

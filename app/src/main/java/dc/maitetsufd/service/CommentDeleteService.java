@@ -1,6 +1,8 @@
 package dc.maitetsufd.service;
 
 import dc.maitetsufd.models.ArticleDetail;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,27 +14,30 @@ import java.util.Map;
 /**
  * @since 2017-04-21
  */
-enum CommentDeleteService {
+public enum CommentDeleteService {
   getInstance;
 
-  private static final String COMMENT_WRITE_URL = "http://m.dcinside.com/_option_write.php";
+  private static final String COMMENT_WRITE_URL = "http://m.dcinside.com/del/comment";
+  private static final JSONParser jsonParser = new JSONParser();
 
 
-  boolean delete(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail, String deleteCode) {
+  public boolean delete(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail, String deleteNo) {
     try {
       Document result = Jsoup.connect(COMMENT_WRITE_URL).cookies(loginCookie)
                               .userAgent(userAgent)
+                              .header("Host", "m.dcinside.com")
                               .header("Origin", "http://m.dcinside.com")
                               .referrer(articleDetail.getUrl())
                               .header("X-Requested-With", "XMLHttpRequest")
+                              .header("X-CSRF-TOKEN", articleDetail.getCommentDeleteData().getCsrfToken())
                               .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-                              .data(cddSerialize(articleDetail.getCommentDeleteData(), deleteCode))
+                              .data(cddSerialize(articleDetail.getCommentDeleteData(), deleteNo, userAgent, loginCookie))
                               .ignoreContentType(true)
                               .timeout(10000)
                               .post();
 
-      String msg = result.body().text().trim();
-      return msg.equals("1");
+      JSONObject msg = (JSONObject) jsonParser.parse(result.body().text());
+      return msg.get("result").equals(true);
 
     } catch (Exception e) {
       return true;
@@ -41,17 +46,16 @@ enum CommentDeleteService {
   }
 
 
-  private Map<String, String> cddSerialize(ArticleDetail.CommentDeleteData cdd, String deleteCode) throws IOException, ParseException {
+  private Map<String, String> cddSerialize(ArticleDetail.CommentDeleteData cdd, String deleteNo,
+                                           String userAgent, Map<String, String> loginCookie)  {
     Map<String, String> result = new HashMap<>();
+    result.put("comment_no", deleteNo);
     result.put("id", cdd.getId());
     result.put("no", cdd.getNo());
-    result.put("iNo", deleteCode);
-    result.put("user_no", cdd.getUser_no());
+    result.put("best_chk", "");
     result.put("board_id", cdd.getBoard_id());
-    result.put("best_chk", cdd.getBest_chk());
-//    result.put("best_comno", cdd.getBest_comno());
-//    result.put("best_comid", cdd.getBest_comid());
-    result.put("mode", cdd.getMode());
+    result.put("con_key", AccessTokenService.getInstance.getAccessToken("com_submitDel", "",
+            cdd.getCsrfToken(), userAgent, loginCookie));
 
     return result;
   }

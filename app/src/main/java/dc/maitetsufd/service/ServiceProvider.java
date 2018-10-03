@@ -3,6 +3,7 @@ package dc.maitetsufd.service;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import dc.maitetsufd.R;
@@ -67,7 +68,7 @@ public class ServiceProvider {
 
         // 빠른 로그인 사용시 이전 정보를 그대로 사용함
         if (!resetMode && currentData.isFastLogin()
-                && currentData.getLoginCookies().get("mc_enc") != null) {
+                && currentData.getLoginCookies().get("sso_token_dcinside") != null) {
 
           if (isLoginCookieUseable(currentData)) {
             MainUIThread.setSplashText(activity, activity.getString(R.string.splash_login_keep));
@@ -116,6 +117,7 @@ public class ServiceProvider {
           MainUIThread.openArticleDetail(fragment, articleDetail, articleUrl);
         } catch (Exception e) {
           fragment.getHasAdapterViewModel().stopRefreshing();
+          Log.e("err", e.getMessage());
           MainUIThread.showToast(fragment.getActivity(),
                   fragment.getActivity().getString(R.string.article_load_failure));
         }
@@ -186,8 +188,7 @@ public class ServiceProvider {
    *
    * @param fragment the fragment
    */
-  public void getSimpleArticles(final HasViewModelFragment fragment,
-                                final boolean refreshSerPos) {
+  public void getSimpleArticles(final HasViewModelFragment fragment) {
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
       public void run() {
@@ -199,12 +200,11 @@ public class ServiceProvider {
           boolean showSnackBar = true;
           List<SimpleArticle> simpleArticles = SimpleArticleService.getInstance
                                                 .getSimpleArticles(currentData,
-                                                            USER_AGENT, isRecommend, refreshSerPos);
+                                                            USER_AGENT, isRecommend);
           ContentFilter.setSimpleArticles(currentData, simpleArticles);
 
           if (simpleArticles.size() == 0) {
-
-            if (currentData.getLoginCookies().get("mc_enc") == null ||
+            if (currentData.getLoginCookies().get("sso_token_dcinside") == null ||
                     !isLoginCookieUseable(currentData)) {
               restartApplication(fragment);
               return;
@@ -273,13 +273,33 @@ public class ServiceProvider {
         CurrentData currentData = getCurrentData(activity.getApplicationContext());
 
         try {
-          if (RecommendService.getInstance.recommend(currentData.getLoginCookies(), articleDetail, USER_AGENT)) {
+          if (RecommendService.getInstance.recommend(currentData.getLoginCookies(), USER_AGENT, articleDetail)) {
             MainUIThread.showToast(activity, activity.getString(R.string.article_read_recommend_success));
             currentData.getRecommendList().put(articleDetail.getArticleDeleteData().getNo(), System.currentTimeMillis());
             CurrentDataManager.save(activity);
           } else throw new Exception();
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.article_read_recommend_failure));
+        }
+      }
+    });
+  }
+
+  public void noRecommendArticle(final ArticleDetail articleDetail,
+                               final Activity activity) {
+    ThreadPoolManager.getServiceEc().submit(new Runnable() {
+      @Override
+      public void run() {
+        CurrentData currentData = getCurrentData(activity.getApplicationContext());
+
+        try {
+          if (RecommendService.getInstance.norecommend(currentData.getLoginCookies(), USER_AGENT, articleDetail)) {
+            MainUIThread.showToast(activity, activity.getString(R.string.article_read_norecommend_success));
+            currentData.getNoRecommendList().put(articleDetail.getArticleDeleteData().getNo(), System.currentTimeMillis());
+            CurrentDataManager.save(activity);
+          } else throw new Exception();
+        } catch (Exception e) {
+          MainUIThread.showToast(activity, activity.getString(R.string.article_read_norecommend_failure));
         }
       }
     });
@@ -312,7 +332,7 @@ public class ServiceProvider {
   public void deleteComment(final ArticleDetail articleDetail,
                             final ArticleDetailViewModel viewModel,
                             final String articleUrl,
-                            final String deleteCode,
+                            final String deleteNo,
                             final Activity activity) {
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
       @Override
@@ -320,7 +340,7 @@ public class ServiceProvider {
         CurrentData currentData = getCurrentData(activity.getApplicationContext());
         try {
           if (CommentDeleteService.getInstance
-                  .delete(currentData.getLoginCookies(), USER_AGENT, articleDetail, deleteCode)) {
+                  .delete(currentData.getLoginCookies(), USER_AGENT, articleDetail, deleteNo)) {
             MainUIThread.showToast(activity, activity.getString(R.string.comment_delete_success));
             refreshComment(activity, viewModel, articleUrl);
           } else throw new Exception();
@@ -354,8 +374,7 @@ public class ServiceProvider {
         CurrentData currentData = getCurrentData(activity.getApplicationContext());
         try {
           if (CommentWriteService.getInstance
-                  .write(currentData.getLoginCookies(), USER_AGENT, articleDetail,
-                          articleUrl, comment)) {
+                  .write(currentData.getLoginCookies(), USER_AGENT, articleDetail, comment, "")) {
             MainUIThread.showToast(activity, activity.getString(R.string.comment_submit_success));
             refreshComment(activity, viewModel, articleUrl);
           } else throw new Exception();
@@ -382,7 +401,7 @@ public class ServiceProvider {
         CurrentData currentData = getCurrentData(activity.getApplicationContext());
         try {
           if (CommentWriteService.getInstance
-                  .writeDcCon(currentData.getLoginCookies(), USER_AGENT, articleDetail, articleUrl, dcCon)) {
+                  .writeDcCon(currentData.getLoginCookies(), USER_AGENT, articleDetail, dcCon)) {
             MainUIThread.showToast(activity, activity.getString(R.string.comment_dccon_submit_success));
             refreshComment(activity, viewModel, articleUrl);
           } else throw new Exception();

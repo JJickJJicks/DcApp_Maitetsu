@@ -1,7 +1,6 @@
 package dc.maitetsufd.service;
 
 
-import android.util.Log;
 import dc.maitetsufd.models.ArticleDetail;
 import dc.maitetsufd.models.Comment;
 import dc.maitetsufd.models.UserInfo;
@@ -23,6 +22,8 @@ import java.util.Map;
 public enum ArticleDetailService {
   getInstance;
 
+  private static final String MODIFY_URL = "http://m.dcinside.com/write/lovegame/modify/";
+
   /**
    * 게시물의 상세 정보를 얻어내는 메소드
    *
@@ -32,84 +33,79 @@ public enum ArticleDetailService {
    * @return 게시물 상세 정보
    * @throws IOException the io exception
    */
-  ArticleDetail getArticleDetail(Map<String, String> loginCookie, String userAgent, String articleUrl) throws IOException {
+  public ArticleDetail getArticleDetail(Map<String, String> loginCookie, String userAgent, String articleUrl) throws IOException {
     Document articleRawData = getArticleRawData(loginCookie, userAgent, articleUrl);
     ArticleDetail article = new ArticleDetail();
 
-    article.setTitle(articleRawData.select(".tit_view").first().text());
-    Elements userEles = articleRawData.select("span.info_edit > span").first().children();
-    setUserInfoAndDate(article, userEles);
+    String articleNumber = articleRawData.select("input#no").first().val();
+    article.setNo(articleNumber);
+
+    article.setBoardId(articleRawData.select("input#id").first().val());
+
+    article.setTitle(articleRawData.select("div.gallview-tit-box span.tit").first().text());
+    setUserInfoAndDate(article, articleRawData.select("div.gallview-tit-box ul.ginfo2").first());
 
     article.setUrl(articleUrl);
-    article.setViewCount(Integer.parseInt(articleRawData.select(".txt_info .num").first().text()));
-    article.setRecommendCount(Integer.parseInt(articleRawData.select("#recomm_btn").html()));
+
+    // 조회수/추천수
+    Elements thumbTags = articleRawData.select("div.gall-thum-btm-inner ul.ginfo2 li");
+    article.setViewCount(Integer.parseInt(thumbTags.get(0).text().replace("조회수 ", "")));
+    article.setRecommendCount(Integer.parseInt(thumbTags.get(1).text().replace("추천 ", "")));
+    article.setNoRecommendCount(Integer.parseInt(articleRawData.select("li.reco-down span#nonrecomm_btn").text()));
+
+    // 본문
     article.setContentDataList(getContentData(articleRawData));
-    article.setComments(getComments(articleRawData.select(".inner_best")));
+
+    // 댓글들
+    article.setComments(getComments(articleRawData.select("ul.all-comment-lst li")));
+
     article.setCommentWriteData(getCommentWriteData(articleRawData));
     article.setCommentDeleteData(getCommentDeleteData(articleRawData));
-    article.setArticleDeleteData(getArticleDeleteData(articleRawData.select("#board_del").first()));
-    article.setRecommendData(getRecommendData(articleRawData.getElementsByTag("script")));
+    article.setArticleDeleteData(getArticleDeleteData(articleRawData));
+//    article.setRecommendData(getRecommendData(articleRawData.getElementsByTag("script")));
 
     // 수정가능하면
-    Element editButton = articleRawData.select("button.edit").first();
-    if(editButton != null) {
-      String modifyUrl = editButton.attr("onClick")
-                                    .replaceAll("'", "")
-                                    .replace("location.href=", "");
-      article.setModifyUrl(modifyUrl);
+    Elements editButtons = articleRawData.select("div.btn-justify-area button");
+    if(editButtons.size() >= 3) {
+      article.setModifyUrl(MODIFY_URL + articleNumber);
     }
 
 
     return article;
   }
 
-  private void setUserInfoAndDate(ArticleDetail article, Elements userElements) {
-    if(userElements.size() > 2) {
-      UserInfo userInfo = new UserInfo(userElements.first().text(),
-              "",
-              CommonService.getUserType(userElements.get(1)),
-              "");
-      article.setUserInfo(userInfo);
-      article.setDate(userElements.get(2).text());
-    } else {
-      String[] ipArr = userElements.parents().next()
-                                            .select(".ip").text()
-                                            .split("\\.");
-      String ipAddr = ipArr.length > 1 ? "(" + ipArr[0] + "." + ipArr[1] + ")" : "";
+  // 유저명/작성시간
+  private void setUserInfoAndDate(ArticleDetail article, Element e) {
+    Elements li = e.select("li");
 
-      UserInfo userInfo = new UserInfo(userElements.first().text() + ipAddr,
-                            "",
-                              UserInfo.UserType.FLOW,
-                              ipAddr);
-      article.setUserInfo(userInfo);
-      article.setDate(userElements.get(1).text());
+    // 유저정보
+    String userUrl = "";
+    Element nextElement = e.nextElementSibling();
+    if (nextElement != null) {
+      String[] urls = nextElement.select("div.rt > a")
+                      .first().attr("abs:href").split("/");
+      userUrl = urls[urls.length-1];
     }
+
+    UserInfo userInfo = new UserInfo(li.get(0).ownText(),
+                                    userUrl,
+                                    CommonService.getUserType(li.get(0)),
+                                    "");
+
+    article.setUserInfo(userInfo);
+    article.setDate(li.get(1).ownText());
+
   }
 
   // 새로운 내용 파서. 순서를 유지한다.
   public List<ArticleDetail.ContentData> getContentData(Document articleRawData) throws IOException {
     List<ArticleDetail.ContentData> list = new ArrayList<>();
 
-    // 무조건 맨 위에 나오는 이미지들
-    Element contentImgs = articleRawData.select("p.contents_img").first();
-    for (Element content : contentImgs.children()) {
-      if(!content.nodeName().equals("a")) continue;
+    Element contentTd = articleRawData.select("div.thum-txtin").first();
 
-      String imageUrl = content.select("a > img").attr("abs:src");
-      String onClickUrl = content.select("a").attr("onclick");
+    // 의미없는 태그 제거
+    contentTd.select("div + br").remove();
 
-
-      ArticleDetail.ContentData contentData = new ArticleDetail.ContentData();
-      contentData.setImageUrl(imageUrl);
-      if(!onClickUrl.isEmpty()) { // 스케일링 되지않은 큰 이미지 주소
-        String linkUrl = onClickUrl.split("\'")[1];
-        String imageLinkUrl = imageUrl + linkUrl.split("\\?")[1];
-        contentData.setLinkUrl(imageLinkUrl);
-      }
-      list.add(contentData);
-    }
-
-    Element contentTd = articleRawData.select("div#memo_img > table > tbody > tr > td").first();
 
     ArticleDetail.ContentData contentData = new ArticleDetail.ContentData();
     for (Node node : contentTd.childNodes()) {
@@ -149,15 +145,15 @@ public enum ArticleDetailService {
       list.add(contentData);
       return new ArticleDetail.ContentData();
 
-    } else if(node.nodeName().equals("iframe")) {
-      list.add(contentData);
-      contentData = new ArticleDetail.ContentData();
-      contentData.getText().append("iframe");
-      contentData.setLinkUrl(node.attr("abs:src"));
-      list.add(contentData);
-      return new ArticleDetail.ContentData();
+//    } else if(node.nodeName().equals("iframe")) {
+//      list.add(contentData);
+//      contentData = new ArticleDetail.ContentData();
+//      contentData.getText().append("iframe");
+//      contentData.setLinkUrl(node.attr("abs:src"));
+//      list.add(contentData);
+//      return new ArticleDetail.ContentData();
 
-    } else if (node.nodeName().equals("embed")) {
+    } else if (node.nodeName().equals("embed") || node.nodeName().equals("iframe")) {
       list.add(contentData);
       contentData = new ArticleDetail.ContentData();
       contentData.setEmbedUrl(node.attr("abs:src"));
@@ -174,6 +170,7 @@ public enum ArticleDetailService {
           contentData.getText().append(" "); // blankText
           list.add(contentData);
           return new ArticleDetail.ContentData();
+
         }
 
         for(Node childNode : node.childNodes()) {
@@ -219,37 +216,6 @@ public enum ArticleDetailService {
       return contentData;
   }
 
-  // 개념글 추천 데이터를 얻어내는 메소드
-  private ArticleDetail.RecommendData getRecommendData(Elements scripts) {
-    ArticleDetail.RecommendData recommendData = new ArticleDetail.RecommendData();
-
-    for (Element script : scripts) {
-      for (DataNode dataNode : script.dataNodes()) {
-        String wholeData = dataNode.getWholeData();
-        String[] arr = wholeData.split(";");
-        for (String s : arr) {
-          if (s.contains("&gno="))
-            recommendData.setGno(s.split("gno=")[1].split("\"")[0].trim());
-          else if (s.contains("&ip="))
-            recommendData.setIp(s.split("ip=")[1].split("\"")[0].trim());
-          else if (s.contains("&gserver="))
-            recommendData.setGserver(s.split("gserver=")[1].split("\"")[0].trim());
-          else if (s.contains("&category_no="))
-            recommendData.setCategory_no(s.split("category_no=")[1].split("\"")[0].trim());
-          else if (s.contains("&ko_name="))
-            recommendData.setKo_name(s.split("ko_name=")[1].split("\"")[0].trim());
-          else if (s.contains("&gall_id="))
-            recommendData.setGall_id(s.split("gall_id=")[1].split("\"")[0].trim());
-          else if (s.contains("no=")) {
-            recommendData.setNo(s.split("no=")[1].split("\"")[0].trim());
-          }
-        }
-      }
-    }
-
-    return recommendData;
-  }
-
 
   // 게시물의 rawData를 얻어오는 메소드
   private Document getArticleRawData(Map<String, String> loginCookie, String userAgent, String articleUrl) throws IOException {
@@ -273,9 +239,6 @@ public enum ArticleDetailService {
     ArticleDetail.ArticleDeleteData articleDeleteData = new ArticleDetail.ArticleDeleteData();
     articleDeleteData.setNo(element.select("#no").val());
     articleDeleteData.setId(element.select("#id").val());
-    articleDeleteData.setMode(element.select("#mode").val());
-    articleDeleteData.setPage(element.select("#page").val());
-    articleDeleteData.setUser_no(element.select("#user_no").val());
     return articleDeleteData;
   }
 
@@ -288,10 +251,7 @@ public enum ArticleDetailService {
     delData.setNo(doc.select("#no").attr("value"));
     delData.setBoard_id(doc.select("#board_id").attr("value"));
     delData.setBest_chk(doc.select("#best_chk").attr("value"));
-    delData.setBest_comno(doc.select("#best_comno").attr("value"));
-    delData.setBest_comid(doc.select("#best_comid").attr("value"));
-    delData.setUser_no(doc.select("#user_no").attr("value"));
-    delData.setMode("comment_del");
+    delData.setCsrfToken(doc.select("meta[name=csrf-token]").attr("content"));
 
     return delData;
   }
@@ -300,71 +260,79 @@ public enum ArticleDetailService {
   private ArticleDetail.CommentWriteData getCommentWriteData(Document doc) {
     ArticleDetail.CommentWriteData cwd = new ArticleDetail.CommentWriteData();
 
-    cwd.setMode(doc.select("#mode").attr("value"));
-    cwd.setVoice_file(doc.select("#voice_file").attr("value"));
-    cwd.setNo(doc.select("#no").attr("value"));
+    cwd.setMode("com_write");
     cwd.setId(doc.select("#id").attr("value"));
-    cwd.setBoard_id(doc.select("#board_id").attr("value"));
-    cwd.setUser_no(doc.select("#user_no").attr("value"));
-    cwd.setKo_name(doc.select("#ko_name").attr("value"));
-    cwd.setSubject(doc.select("#subject").attr("value"));
-    cwd.setBoard_name(doc.select("#board_name").attr("value"));
-    cwd.setDate_time(doc.select("#date_time").attr("value"));
-    cwd.setIp(doc.select("#ip").attr("value"));
+    cwd.setNo(doc.select("#no").attr("value"));
     cwd.setBest_chk(doc.select("#best_chk").attr("value"));
-    cwd.setUserToken(doc.select("#userToken").attr("value"));
-
+    cwd.setBoard_id(doc.select("#board_id").attr("value"));
+    cwd.setCpage(doc.select("#cpage").attr("value"));
+    cwd.setSubject(doc.select("div.gallview-tit-box span.tit").first().text());
+    cwd.setCsrfToken(doc.select("meta[name=csrf-token]").attr("content"));
     return cwd;
   }
 
 
   // 댓글들을 읽어오는 메소드
-  private List<Comment> getComments(Elements innerBestSpan) {
+  private List<Comment> getComments(Elements commentElements) {
     List<Comment> comments = new ArrayList<>();
 
-    for (Element e : innerBestSpan) {
-      String gallogId = "";
-      Element gallogIdElement = e.select("a[href*='g_id']").first();
-      if (gallogIdElement != null && !gallogIdElement.attr("href").isEmpty())
-        gallogId = gallogIdElement.attr("href").split("g_id=")[1];
+    for (Element e : commentElements) {
+      try {
+        if (e.hasClass("paging")) { // 다음 페이지 버튼
+          continue;
 
-      String ipAddr = e.select(".ip").text().trim();
-      String userIpAddr = "";
-      String[] userIpAddrSplit = ipAddr.split("\\.");
-      if(!ipAddr.isEmpty() && userIpAddrSplit.length > 1) {
-        userIpAddr = userIpAddrSplit[0] + "." + userIpAddrSplit[1];
+        }else if (e.select("div.delted").first() != null) { // 삭제된 댓글
+          Comment comment = new Comment(
+                  false,
+                  new UserInfo("", "", UserInfo.UserType.EMPTY, ""),
+                  "",
+                  e.select("div.delted").first().text(),
+                  "",
+                  "",
+                  ""
+          );
+          comments.add(comment);
+          continue;
+        }
+
+        // 닉네임 및 아이피 감지
+        String nickname = e.select("a.nick").first().ownText();
+        String gallogId = "", userIp = "";
+        Element gallog = e.select("span.blockCommentId").first();
+        if (gallog != null) {
+          gallogId = gallog.ownText();
+        }
+        Element user = e.select("span.blockCommentIp").first();
+        if (user != null) {
+          userIp = user.ownText();
+        }
+
+        // 삭제 가능한 댓글만 표시
+        String deleteCode = e.attr("no");
+        if (e.select("div.comment-del").first() == null) {
+          deleteCode = "";
+        }
+
+        Comment comment = new Comment(
+                e.hasClass("comment-add"),
+                new UserInfo(nickname,
+                        gallogId,
+                        CommonService.getUserType(e.select("a.nick").first()),
+                        userIp),
+                userIp,
+                e.select("p.txt").text().trim(),
+                e.select("span.date").text(),
+                e.select("p.txt img").attr("abs:src"),
+                deleteCode
+        );
+        comments.add(comment);
+      } catch (Exception e2) {
+        // 읽을 수 없는 댓글은 무시
       }
-
-      Comment comment = new Comment(
-              new UserInfo(e.select(".id").text()
-                            .replace("[", "")
-                            .replace("]", "").trim(),
-                            gallogId,
-                            CommonService.getUserType(e.select("a span").first()),
-                            userIpAddr),
-              ipAddr,
-              e.select(".title .txt").text().trim(),
-              e.select(".info .date").text(),
-              e.select(".title .txt img").attr("abs:src"),
-              getCommentDeleteUrl(e.select(".btn_delete").first())
-      );
-
-      comments.add(comment);
     }
 
 
     return comments;
-  }
-
-  // 댓글의 삭제 url을 읽는 메소드
-  private String getCommentDeleteUrl(Element delBtn) {
-    if(delBtn == null) return "";
-
-    String value = delBtn.attr("href");
-    if (value.isEmpty()) return "";
-    String[] s = value.split("'");
-    if (s.length > 0) return s[1];
-    else return "";
   }
 
 }

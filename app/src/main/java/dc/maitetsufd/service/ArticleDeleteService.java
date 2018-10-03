@@ -17,7 +17,7 @@ import java.util.Map;
 enum ArticleDeleteService {
   getInstance;
 
-  private static final String ARTICLE_DELETE_URL = "http://m.dcinside.com/_option_write.php";
+  private static final String ARTICLE_DELETE_URL = "http://m.dcinside.com/del/board";
   private static final JSONParser jsonParser = new JSONParser();
 
   /**
@@ -35,17 +35,17 @@ enum ArticleDeleteService {
                               .userAgent(userAgent)
                               .header("Origin", "http://m.dcinside.com")
                               .referrer(articleDetail.getUrl())
+                              .header("X-CSRF-TOKEN", articleDetail.getCommentWriteData().getCsrfToken())
                               .header("X-Requested-With", "XMLHttpRequest")
                               .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-                              .data(adSerialize(articleDetail.getArticleDeleteData()))
+                              .data(adSerialize(articleDetail, userAgent, loginCookie))
                               .ignoreContentType(true)
                               .post();
 
       try {
         JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
-        String msg = (String) jsonObject.get("msg");
-        if (msg.equals("23")) throw new IllegalAccessException((String) jsonObject.get("data"));
-        return msg.equals("1");
+        if (jsonObject.get("result").equals(false)) throw new IllegalAccessException((String) jsonObject.get("data"));
+        return jsonObject.get("result").equals(true);
 
       } catch (ParseException pe) {
         throw new IllegalAccessException();
@@ -57,13 +57,13 @@ enum ArticleDeleteService {
   }
 
 
-  private Map<String, String> adSerialize(ArticleDetail.ArticleDeleteData articleDeleteData) {
+  private Map<String, String> adSerialize(ArticleDetail articleDetail, String userAgent, Map<String, String> loginCookie) {
     Map<String, String> data = new HashMap<>();
-    data.put("mode", articleDeleteData.getMode());
+    ArticleDetail.ArticleDeleteData articleDeleteData = articleDetail.getArticleDeleteData();
     data.put("no", articleDeleteData.getNo());
-    data.put("user_no", articleDeleteData.getUser_no());
     data.put("id", articleDeleteData.getId());
-    data.put("page", articleDeleteData.getPage());
+    data.put("con_key", AccessTokenService.getInstance.getAccessToken("board_Del", "",
+            userAgent, articleDetail.getCommentDeleteData().getCsrfToken(), loginCookie));
     return data;
   }
 

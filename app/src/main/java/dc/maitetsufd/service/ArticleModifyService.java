@@ -15,11 +15,8 @@ import java.util.Map;
 /**
  * @since 2017-05-07
  */
-enum ArticleModifyService {
+public enum ArticleModifyService {
   getInstance;
-
-
-
 
   /**
    * 수정 페이지에 들어가 기본 정보를 얻어오는 메소드
@@ -33,30 +30,36 @@ enum ArticleModifyService {
   public ArticleModify getArticleModifyData(String userAgent, ArticleDetail articleDetail, Map<String, String> loginCookie) {
     Document doc = getArticleModifyRawData(userAgent, articleDetail, loginCookie);
     ArticleModify articleModify = new ArticleModify();
-    Map<String, String> articleWriteData = ArticleWriteService.getArticleWriteFormData(doc);
+
+    final String csrfToken = doc.select("meta[name=csrf-token]").attr("content");
+
+    Map<String, String> articleWriteData = ArticleWriteService.getArticleWriteFormData(doc, csrfToken, userAgent, loginCookie);
     articleWriteData.put("no", doc.select("input[name=no]").attr("value"));
 
     List<ArticleModify.AttachFile> attachFileList = getArticleAttachFiles(doc);
     articleModify.setArticleWriteDataList(articleWriteData);
     articleModify.setAttachFileList(attachFileList);
     articleModify.setTitle(doc.select("input#subject").val());
-    articleModify.setContent(doc.select("textarea#memo").text());
+    articleModify.setContent(htmlToText(doc.select("div#textBox").html()));
     return articleModify;
   }
 
   // 기존 첨부된 파일 목록을 얻어오는 메소드
   private List<ArticleModify.AttachFile> getArticleAttachFiles(Document doc) {
     List<ArticleModify.AttachFile> list = new ArrayList<>();
-    Elements fileElements = doc.select("div[name=upload_preview[]] > li > a");
+    String[] mData = doc.select("input#mData").attr("value").split("\\^@\\^");
 
-    for(Element element : fileElements) {
+    for(int i=0; i<mData.length; i++) {
+      String[] data = mData[i].split("\\^%\\^");
       ArticleModify.AttachFile attachFile = new ArticleModify.AttachFile();
-      String[] href = element.attr("href").split("'");
-      attachFile.setFno(href[1]);
-      attachFile.setOrder(href[3]);
-      attachFile.setName(fileElements.next("span.route").first().text());
+      attachFile.setFno(data[0].replace("img", ""));
+      attachFile.setName(data[0]);
+      attachFile.setSrc(data[1]);
+      if (attachFile.getFno().isEmpty()) continue;
+
       list.add(attachFile);
     }
+
     return list;
   }
 
@@ -73,6 +76,11 @@ enum ArticleModifyService {
       return getArticleModifyRawData(userAgent, articleDetail, loginCookie);
 
     }
+  }
+
+  private String htmlToText(String html) {
+    return html.replace("<br>", "")
+               .replaceAll("<br>", "\n");
   }
 
 

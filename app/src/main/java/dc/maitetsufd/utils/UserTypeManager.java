@@ -1,6 +1,7 @@
 package dc.maitetsufd.utils;
 
 import android.content.res.Resources;
+import android.view.View;
 import android.widget.ImageView;
 import dc.maitetsufd.R;
 import dc.maitetsufd.models.UserInfo;
@@ -17,7 +18,10 @@ public class UserTypeManager {
       imageView.setImageDrawable(res.getDrawable(R.drawable.fix_gallog));
     }else if(userInfo.getUserType() == UserInfo.UserType.FLOW_GALLOG) {
       imageView.setImageDrawable(res.getDrawable(R.drawable.flow_gallog));
-    }else
+    }else if (userInfo.getUserType() == UserInfo.UserType.FLOW) {
       imageView.setImageDrawable(res.getDrawable(R.drawable.flow));
+    } else {
+      imageView.setVisibility(View.GONE);
+    }
   }
 }

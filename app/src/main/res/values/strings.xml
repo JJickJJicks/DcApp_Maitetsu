@@ -81,6 +81,9 @@
   <string name="article_read_recommend_success">글을 추천했습니다.</string>
   <string name="article_read_recommend_failure">글 추천에 실패했습니다.</string>
 
+  <string name="article_read_norecommend_success">글을 비추천했습니다.</string>
+  <string name="article_read_norecommend_failure">글 비추천에 실패했습니다.</string>
+
   <string name="article_read_delete_success">글을 삭제했습니다.</string>
   <string name="article_read_delete_failure">글 삭제에 실패했습니다.</string>
   <string name="comment_delete_success">댓글을 삭제했습니다.</string>

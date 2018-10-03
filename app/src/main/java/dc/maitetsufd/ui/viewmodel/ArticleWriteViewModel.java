@@ -25,6 +25,7 @@ import java.util.List;
  * @since 2017-04-23
  */
 public class ArticleWriteViewModel {
+  private static final String IMAGE_PREFIX = "http://dcimg6.dcinside.co.kr/viewimageM.php?no=";
   private CurrentData currentData;
   private ArticleModify articleModify;
 
@@ -40,6 +41,7 @@ public class ArticleWriteViewModel {
   GridLayout attachFileLayout;
   @BindView(R.id.article_write_file_add)
   Button attachButton;
+
 
 
   public ArticleWriteViewModel(ArticleWriteActivity activity, ArticleModify articleModify, CurrentData currentData) {
@@ -108,18 +110,33 @@ public class ArticleWriteViewModel {
       for(final ArticleModify.AttachFile file : articleModify.getAttachFileList()) {
         if(articleModify.getDeleteFileList().contains(file.getFno())) continue;
 
-        final TextView textView = new TextView(activity);
-        textView.setText(file.getName());
-        textView.setTextAppearance(activity, R.style.List_subText);
-        textView.setGravity(Gravity.CENTER);
-        textView.setOnClickListener(new View.OnClickListener() {
+//        final TextView textView = new TextView(activity);
+//        textView.setText(file.getName());
+//        textView.setTextAppearance(activity, R.style.List_subText);
+//        textView.setGravity(Gravity.CENTER);
+//        textView.setOnClickListener(new View.OnClickListener() {
+//          @Override
+//          public void onClick(View view) {
+//            attachFileLayout.removeView(textView);
+//            articleModify.getDeleteFileList().add(file.getFno());
+//          }
+//        });
+//        attachFileLayout.addView(textView, dp80, dp80);
+
+        final ImageButton attachImg = new ImageButton(activity);
+        ContentUtils.loadBitmapFromUrlWithLocalCheck(activity, IMAGE_PREFIX + file.getSrc(), attachImg, currentData);
+        attachImg.setAdjustViewBounds(true);
+        attachImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        attachImg.setBackgroundColor(android.R.color.transparent);
+        attachImg.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View view) {
-            attachFileLayout.removeView(textView);
+            attachFileLayout.removeView(attachImg);
             articleModify.getDeleteFileList().add(file.getFno());
           }
         });
-        attachFileLayout.addView(textView, dp80, dp80);
+        attachFileLayout.addView(attachImg, dp80, dp80);
+
       }
     }
 

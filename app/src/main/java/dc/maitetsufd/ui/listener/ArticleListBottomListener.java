@@ -43,6 +43,6 @@ public class ArticleListBottomListener {
       currentData.setPage(currentData.getPage() + 1);
     } else
       currentData.setPage(1);
-    ServiceProvider.getInstance().getSimpleArticles(fragment, refreshSerPos);
+    ServiceProvider.getInstance().getSimpleArticles(fragment);
   }
 }

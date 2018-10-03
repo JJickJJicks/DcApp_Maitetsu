@@ -1,9 +1,6 @@
 package dc.maitetsufd.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -12,6 +9,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 public class UserInfo implements Serializable {
 
@@ -21,7 +19,7 @@ public class UserInfo implements Serializable {
   private String ipAdd;
 
   public enum UserType {
-    FIX_GALLOG, FLOW_GALLOG, FLOW
+    FIX_GALLOG, FLOW_GALLOG, FLOW, EMPTY
   }
 
   @Override

@@ -14,44 +14,57 @@ import java.util.Map;
 /**
  * @since 2017-04-22
  */
-enum RecommendService {
+public enum RecommendService {
   getInstance;
-  private static final String DCINSIDE_MAIN = "http://m.dcinside.com";
-  private static final String RECOMMEND_URL = "http://m.dcinside.com/_recommend_join.php";
+  private static final String RECOMMEND_URL = "http://m.dcinside.com/ajax/recommend";
+  private static final String NORECOMMEND_URL = "http://m.dcinside.com/ajax/nonrecommend";
   private static final JSONParser jsonParser = new JSONParser();
 
   // 게시물 개념글 추천하는 메소드
-  boolean recommend(Map<String, String> loginCookie, ArticleDetail articleDetail, String userAgent) throws IOException, ParseException {
-    ArticleDetail.RecommendData recommendData = articleDetail.getRecommendData();
-    Map<String, String> recommendCookie = new HashMap<>(loginCookie);
-    recommendCookie.put(recommendData.getGall_id() + "_recomPrev_" + recommendData.getNo(), "done");
+  public boolean recommend(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail) throws IOException, ParseException {
 
     Document result = Jsoup.connect(RECOMMEND_URL)
                           .userAgent(userAgent)
-                          .cookies(recommendCookie)
-                          .header("Origin", DCINSIDE_MAIN)
+                          .cookies(loginCookie)
+                          .header("Host", "m.dcinside.com")
+                          .header("Origin", "http://m.dcinside.com")
+                          .header("X-Requested-With", "XMLHttpRequest")
+                          .header("X-CSRF-TOKEN", articleDetail.getCommentWriteData().getCsrfToken())
                           .referrer(articleDetail.getUrl())
-                          .data(recommendDataSerialize(recommendData))
+                          .data(dataSerialize(articleDetail, "recommend_join"))
                           .ignoreContentType(true)
                           .post();
 
     JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
-    String msg = (String) jsonObject.get("msg");
-    return msg.equals("1");
+    return jsonObject.get("result").equals(true);
   }
 
-
-  private Map<String, String> recommendDataSerialize(ArticleDetail.RecommendData recommendData) {
+  private Map<String, String> dataSerialize(ArticleDetail articleDetail, String type) {
     Map<String, String> data = new HashMap<>();
-    data.put("no", recommendData.getNo());
-    data.put("gall_id", recommendData.getGall_id());
-    data.put("ko_name", recommendData.getKo_name());
-    data.put("category_no", recommendData.getCategory_no());
-    data.put("gserver", recommendData.getGserver());
-    data.put("ip", recommendData.getIp());
-    data.put("gno", recommendData.getGno());
+    data.put("type", type);
+    data.put("id", articleDetail.getBoardId());
+    data.put("no", articleDetail.getNo());
     return data;
   }
 
+
+  // 게시물 비추천하는 메소드
+  public boolean norecommend(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail) throws IOException, ParseException {
+
+    Document result = Jsoup.connect(NORECOMMEND_URL)
+                          .userAgent(userAgent)
+                          .cookies(loginCookie)
+                          .header("Host", "m.dcinside.com")
+                          .header("Origin", "http://m.dcinside.com")
+                          .header("X-Requested-With", "XMLHttpRequest")
+                          .header("X-CSRF-TOKEN", articleDetail.getCommentWriteData().getCsrfToken())
+                          .referrer(articleDetail.getUrl())
+                          .data(dataSerialize(articleDetail, "nonrecommend_join"))
+                          .ignoreContentType(true)
+                          .post();
+
+    JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
+    return jsonObject.get("result").equals(true);
+  }
 
 }

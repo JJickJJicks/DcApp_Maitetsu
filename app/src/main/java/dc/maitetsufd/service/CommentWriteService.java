@@ -16,58 +16,70 @@ import java.util.Map;
 /**
  * @since 2017-04-21
  */
-enum CommentWriteService {
+public enum CommentWriteService {
   getInstance;
 
-  private static final String COMMENT_WRITE_URL = "http://m.dcinside.com/_option_write.php";
-  private static final String COMMENT_ACCESS_TOKEN_URL = "http://m.dcinside.com/_access_token.php";
+  private static final String COMMENT_WRITE_URL = "http://m.dcinside.com/ajax/comment-write";
+  private static final String GET_DCCON_URL = "http://m.dcinside.com/dccon/dccon_chk";
   private static final JSONParser jsonParser = new JSONParser();
 
   // 댓글
-  boolean write(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail, String articleUrl, String comment) throws IOException, ParseException, IllegalAccessException {
+  public boolean write(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail, String comment, String detailIdx) throws IOException, ParseException, IllegalAccessException {
 
     Document result = Jsoup.connect(COMMENT_WRITE_URL).cookies(loginCookie)
                       .userAgent(userAgent)
                       .header("Origin", "http://m.dcinside.com")
-                      .referrer(articleUrl)
+                      .referrer(articleDetail.getUrl())
+                      .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
                       .header("X-Requested-With", "XMLHttpRequest")
-                      .data(cwdSerailize(articleDetail.getCommentWriteData(), comment, articleUrl, userAgent))
+                      .header("X-CSRF-TOKEN", articleDetail.getCommentWriteData().getCsrfToken())
+                      .data(cwdSerailize(articleDetail.getCommentWriteData(), detailIdx, comment, userAgent, loginCookie))
                       .timeout(10000)
                       .ignoreContentType(true)
                       .post();
+					  
+	String responseText = result.body().text();
+	
+	if (responseText.trim().isEmpty()) // 비정상 응답인 경우 재시도
+		return write (loginCookie, userAgent, articleDetail, comment, detailIdx);
 
-    JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
-    String msg = (String) jsonObject.get("msg");
-    if(msg.equals("44")) throw new IllegalAccessException((String) jsonObject.get("data"));
-    return msg.equals("1");
+    JSONObject jsonObject = (JSONObject) jsonParser.parse(responseText);
+    if(jsonObject.get("result").equals(false)) throw new IllegalAccessException((String) jsonObject.get("data"));
+    return jsonObject.get("result").equals(true);
   }
 
   // 디시콘 댓글
-  boolean writeDcCon(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail,
-                     String articleUrl,
-                     DcConPackage.DcCon dcCon) throws IOException, ParseException, IllegalAccessException {
-    String comment = "[[dccon:" + dcCon.getDccon_package() + "|" + dcCon.getDccon_detail() + "]]";
-
-      Map<String, String> cwdData = cwdSerailize(articleDetail.getCommentWriteData(), comment, articleDetail.getUrl(), userAgent);
-      cwdData.put("click_dccon", "1");
-      cwdData.put("comment_memo2", "");
-
+  public boolean writeDcCon(Map<String, String> loginCookie, String userAgent, ArticleDetail articleDetail,
+                     DcConPackage.DcCon dcCon) throws IllegalAccessException {
       try {
-        Document result = Jsoup.connect(COMMENT_WRITE_URL)
+        Document result = Jsoup.connect(GET_DCCON_URL)
                               .cookies(loginCookie)
                               .userAgent(userAgent)
+                              .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                              .header("Host", "m.dcinside.com")
                               .header("Origin", "http://m.dcinside.com")
-                              .referrer(articleUrl)
+                              .referrer(articleDetail.getUrl())
                               .header("X-Requested-With", "XMLHttpRequest")
-                              .data(cwdData)
+                              .header("X-CSRF-TOKEN", articleDetail.getCommentWriteData().getCsrfToken())
+                              .data("detail_idx", dcCon.getDccon_detail())
+                              .data("package_idx", dcCon.getDccon_package())
                               .timeout(10000)
                               .ignoreContentType(true)
                               .post();
 
-        JSONObject jsonObject = (JSONObject) jsonParser.parse(result.body().text());
-        String msg = (String) jsonObject.get("msg");
-        if (msg.equals("44")) throw new IllegalAccessException((String) jsonObject.get("data"));
-        return msg.equals("1");
+		String responseText = result.body().text();
+	
+		if (responseText.trim().isEmpty()) // 비정상 응답인 경우 재시도
+			return writeDcCon(loginCookie, userAgent, articleDetail, dcCon);
+					  
+							  
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(responseText);
+        if (!jsonObject.get("result").equals("ok")) return false;
+
+        String src = jsonObject.get("img_src").toString();
+        String alt = jsonObject.get("alt").toString();
+        String tag = "<img src='" + src + "' class='written_dccon' alt='" + alt + "' conalt='" + alt + "' title='" + alt + "'>";
+        return write(loginCookie, userAgent, articleDetail, tag, dcCon.getDccon_detail());
 
       } catch (IllegalAccessException ie) {
         throw ie;
@@ -75,48 +87,29 @@ enum CommentWriteService {
       } catch(Exception e) {
         return true;
       }
+
   }
 
 
-
-
-
-  private Map<String, String> cwdSerailize(ArticleDetail.CommentWriteData cwd, String comment, String articleUrl, String userAgent) throws IOException, ParseException {
+  private Map<String, String> cwdSerailize(ArticleDetail.CommentWriteData cwd, String detailIdx, String comment, String userAgent, Map<String, String> cookies) throws IOException, ParseException {
     Map<String, String> data = new HashMap<>();
     data.put("comment_memo", comment);
-    data.put("mode", "comment");// cwd.getMode());
-    data.put("voice_file",cwd.getVoice_file());
+    data.put("comment_nick", "");
+    data.put("comment_pw", "");
+    data.put("mode", "com_write");
+    data.put("comment_no", "");
     data.put("no", cwd.getNo());
     data.put("id", cwd.getId());
     data.put("board_id", cwd.getBoard_id());
-    data.put("user_no", cwd.getUser_no());
-    data.put("ko_name", cwd.getKo_name());
+    data.put("reple_id", "");
     data.put("subject", cwd.getSubject());
-    data.put("board_name", cwd.getBoard_name());
-    data.put("date_time", URLEncoder.encode(cwd.getDate_time(), "UTF-8"));
-    data.put("ip", cwd.getIp());
     data.put("best_chk", "");
-    data.put("userToken", cwd.getUserToken());
-    data.put("rand_code", "");
-    data.put("con_key", getAccessToken(articleUrl, userAgent));
+    data.put("cpage", cwd.getCpage());
+    if (!detailIdx.isEmpty()) {
+      data.put("detail_idx", detailIdx);
+    }
+    data.put("con_key", AccessTokenService.getInstance.getAccessToken("com_submit", "", cwd.getCsrfToken(), userAgent, cookies));
     return data;
-  }
-
-
-  // 댓글을 쓰기 위한 access token을 얻어오는 메소드.
-  private String getAccessToken(String articleUrl, String userAgent) throws IOException, ParseException {
-    Document doc = Jsoup.connect(COMMENT_ACCESS_TOKEN_URL)
-                        .userAgent(userAgent)
-                        .referrer(articleUrl)
-                        .header("Origin", "http://m.dcinside.com")
-                        .header("X-Requested-With", "XMLHttpRequest")
-                        .data("token_verify", "com_submit")
-                        .timeout(10000)
-                        .ignoreContentType(true)
-                        .post();
-
-    JSONObject jsonObject = (JSONObject) jsonParser.parse(doc.body().text());
-    return (String) jsonObject.get("data");
   }
 
 }

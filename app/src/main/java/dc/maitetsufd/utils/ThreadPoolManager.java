@@ -92,9 +92,9 @@ public class ThreadPoolManager {
       contentEc.shutdownNow();
       imageViewEc.shutdownNow();
 
-      serviceEc.awaitTermination(500, TimeUnit.MILLISECONDS);
-      contentEc.awaitTermination(500, TimeUnit.MILLISECONDS);
-      imageViewEc.awaitTermination(500, TimeUnit.MILLISECONDS);
+//      serviceEc.awaitTermination(500, TimeUnit.MILLISECONDS);
+//      contentEc.awaitTermination(500, TimeUnit.MILLISECONDS);
+//      imageViewEc.awaitTermination(500, TimeUnit.MILLISECONDS);
     } catch (Exception e) {}
   }
 

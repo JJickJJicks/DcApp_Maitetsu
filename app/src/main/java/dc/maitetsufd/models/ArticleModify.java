@@ -23,5 +23,6 @@ public class ArticleModify implements Serializable{
     private String fno;
     private String order;
     private String name;
+    private String src;
   }
 }

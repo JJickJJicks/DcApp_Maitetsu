@@ -17,8 +17,11 @@ public class ArticleDetail implements Serializable{
   private UserInfo userInfo;
   private String date;
   private int recommendCount;
+  private int noRecommendCount;
   private int viewCount;
   private String url;
+  private String boardId;
+  private String no;
   private String modifyUrl;
 
   private List<Comment> comments = new ArrayList<>();
@@ -48,14 +51,13 @@ public class ArticleDetail implements Serializable{
    */
   @Data
   public static class CommentDeleteData implements Serializable {
+    private String comment_no;
     private String id;
     private String no;
-    private String board_id;
     private String best_chk;
-    private String best_comno;
-    private String best_comid;
-    private String user_no;
-    private String mode;
+    private String board_id;
+    private String con_key;
+    private String csrfToken;
   }
 
   /**
@@ -64,19 +66,19 @@ public class ArticleDetail implements Serializable{
   @Data
   public static class CommentWriteData implements Serializable {
     private String comment_memo;
-    private String mode;
-    private String voice_file;
-    private String no;
+    private String comment_nick;
+    private String comment_pw;
+    private String mode = "com_write";
+    private String comment_no;
     private String id;
-    private String board_id;
-    private String board_name;
-    private String user_no;
-    private String ko_name;
-    private String subject;
-    private String date_time;
-    private String ip;
+    private String no;
     private String best_chk;
-    private String userToken;
+    private String subject;
+    private String board_id;
+    private String reple_id;
+    private String cpage;
+    private String con_key;
+    private String csrfToken;
   }
 
   /**
@@ -102,9 +104,7 @@ public class ArticleDetail implements Serializable{
 
     private String no;
     private String id;
-    private String mode;
-    private String page;
-    private String user_no;
+    private String con_key;
 
   }
 }
