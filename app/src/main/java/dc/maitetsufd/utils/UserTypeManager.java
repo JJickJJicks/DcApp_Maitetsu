@@ -14,7 +14,7 @@ import dc.maitetsufd.models.UserInfo;
 public class UserTypeManager {
 
   public static void set(Resources res, UserInfo userInfo, ImageView imageView){
-    if(userInfo.getUserType() == UserInfo.UserType.FIX_GALLOG) {
+    if(userInfo.getUserType().ordinal() <= UserInfo.UserType.FIX_GALLOG.ordinal()) {
       imageView.setImageDrawable(res.getDrawable(R.drawable.fix_gallog));
     }else if(userInfo.getUserType() == UserInfo.UserType.FLOW_GALLOG) {
       imageView.setImageDrawable(res.getDrawable(R.drawable.flow_gallog));

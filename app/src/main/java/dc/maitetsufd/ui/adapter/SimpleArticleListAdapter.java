@@ -2,6 +2,7 @@ package dc.maitetsufd.ui.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
@@ -18,7 +19,9 @@ import dc.maitetsufd.models.SimpleArticle;
 import dc.maitetsufd.ui.listener.FilterUserLongClickListener;
 import dc.maitetsufd.ui.listener.SimpleArticleClickListener;
 import dc.maitetsufd.ui.viewmodel.HasViewModelFragment;
+import dc.maitetsufd.utils.DipUtils;
 import dc.maitetsufd.utils.KeywordUtils;
+import dc.maitetsufd.utils.NickNameHighLight;
 import dc.maitetsufd.utils.UserTypeManager;
 
 import java.util.ArrayList;
@@ -117,8 +120,10 @@ public class SimpleArticleListAdapter extends BaseAdapter {
     // 글 제목을 롱클릭해서 유저 차단 여부를 묻는 이벤트 핸들링
     convertView.setOnLongClickListener(FilterUserLongClickListener.get(fragment.getActivity(),
                                                                       simpleArticle.getUserInfo()));
-
     setThemeColor(convertView, currentData);
+
+    // 닉네임 하이라이팅
+    NickNameHighLight.set(simpleArticle.getUserInfo(), nickname, 250);
 
     return convertView;
   }

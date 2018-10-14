@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import dc.maitetsufd.R;
 import dc.maitetsufd.data.CurrentData;
 import dc.maitetsufd.data.CurrentDataManager;
@@ -232,7 +233,8 @@ public class ServiceProvider {
   }
 
   public void writeArticle(final ArticleWriteActivity activity,
-                           final Button writeButton, final String title,
+                           final Button writeButton,
+                           final String title,
                            final String content,
                            final List<File> files,
                            final ArticleModify articleModify) {
@@ -365,6 +367,7 @@ public class ServiceProvider {
                            final ArticleDetailViewModel viewModel,
                            final String articleUrl,
                            final String comment,
+                           final EditText commentEditText,
                            final View button,
                            final Activity activity) {
     ThreadPoolManager.getServiceEc().submit(new Runnable() {
@@ -375,13 +378,25 @@ public class ServiceProvider {
         try {
           if (CommentWriteService.getInstance
                   .write(currentData.getLoginCookies(), USER_AGENT, articleDetail, comment, "")) {
+
             MainUIThread.showToast(activity, activity.getString(R.string.comment_submit_success));
             refreshComment(activity, viewModel, articleUrl);
+
           } else throw new Exception();
         } catch (IllegalAccessException ie) {
           MainUIThread.showToast(activity, ie.getMessage());
+          commentEditText.setText(comment);
+
         } catch (Exception e) {
           MainUIThread.showToast(activity, activity.getString(R.string.comment_submit_failure));
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              commentEditText.setText(comment);
+
+            }
+          });
+
         }
         MainUIThread.setViewState(activity, button, true);
       }

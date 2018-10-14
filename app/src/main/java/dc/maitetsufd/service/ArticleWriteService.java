@@ -25,6 +25,7 @@ public enum ArticleWriteService {
   getInstance;
 
   private static final String ARTICLE_WRITE_FORM_URL = "http://m.dcinside.com/write/";
+  private static final String ARTICLE_MODIFY_FORM_URL = "http://m.dcinside.com/modify/";
   private static final String ARTICLE_WRITE_IMAGE_UPLOAD_URL = "http://upload.dcinside.com/upload_img.php";
   private static final String ARTICLE_WFILTER_URL = "http://m.dcinside.com/ajax/w_filter";
   private static final String ARTICLE_WRITE_URL = "http://upload.dcinside.com/write_new.php";
@@ -40,6 +41,7 @@ public enum ArticleWriteService {
       String iData = "";
       String contentOrder = "";
       final String csrfToken = writeFormRawData.select("meta[name=csrf-token]").attr("content");
+      String referrer = ARTICLE_WRITE_FORM_URL + galleryCode;
 
       if (articleModify == null) {
         writeFormData = getArticleWriteFormData(writeFormRawData, csrfToken, userAgent, loginCookie);
@@ -49,7 +51,9 @@ public enum ArticleWriteService {
 
       } else {
         writeFormData = articleModify.getArticleWriteDataList();
+        writeFormData.put("Block_key", AccessTokenService.getInstance.getAccessToken("dc_check2", "", csrfToken, userAgent, loginCookie));
         writeFormData.put("mode", "modify");
+        referrer = ARTICLE_MODIFY_FORM_URL + writeFormData.get("no");
 
         for (String d : articleModify.getDeleteFileList()) {
           ArticleModify.AttachFile attachFile = null;
@@ -75,6 +79,8 @@ public enum ArticleWriteService {
           iData += attachFile.getName() + "|" + attachFile.getSrc();
           contentOrder += attachFile.getName() + ";";
         }
+
+        writeFormData.put("delcheck", delcheck);
       }
 
 
@@ -95,11 +101,11 @@ public enum ArticleWriteService {
       }
 
       writeFormData.put("id", galleryCode);
+      writeFormData.put("headtext", "0");
       writeFormData.put("subject", title);
       writeFormData.put("memo", content);
       writeFormData.put("iData", iData);
       writeFormData.put("contentOrder", contentOrder + "order_memo");
-      writeFormData.put("delcheck", delcheck);
 
       try {
         // wfilter 체크
@@ -110,7 +116,7 @@ public enum ArticleWriteService {
                                                   .header("Origin", "http://m.dcinside.com")
                                                   .header("X-CSRF-TOKEN", csrfToken)
                                                   .header("X-Requested-With", "XMLHttpRequest")
-                                                  .referrer(ARTICLE_WRITE_FORM_URL + "/" + galleryCode)
+                                                  .referrer(referrer)
                                                   .ignoreHttpErrors(true)
                                                   .ignoreContentType(true)
                                                   .data("subject", writeFormData.get("subject"))
@@ -131,7 +137,8 @@ public enum ArticleWriteService {
                                 .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
                                 .header("Host", "upload.dcinside.com")
                                 .header("Origin", "http://m.dcinside.com")
-                                .referrer(ARTICLE_WRITE_FORM_URL + galleryCode)
+                                .referrer(referrer)
+                                .timeout(10000)
                                 .ignoreHttpErrors(true)
                                 .ignoreContentType(true)
                                 .data(writeFormData)
@@ -181,7 +188,10 @@ public enum ArticleWriteService {
         String[] rawData = scriptText.split("insertChagneThum\\(");
         rawData = rawData[1].replace("'", "")
                            .split(",0\\);")[0].split(",");
-        result.append(rawData[0] + (size + i) + "|" + rawData[1] + "^@^");
+        if (i > 0) {
+          result.append("^@^");
+        }
+        result.append(rawData[0] + (size + i) + "|" + rawData[1]);
       }
       return result.toString();
 

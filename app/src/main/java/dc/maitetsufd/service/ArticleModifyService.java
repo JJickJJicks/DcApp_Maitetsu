@@ -2,6 +2,7 @@ package dc.maitetsufd.service;
 
 import dc.maitetsufd.models.ArticleDetail;
 import dc.maitetsufd.models.ArticleModify;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -66,12 +67,16 @@ public enum ArticleModifyService {
   // 수정 페이지의 rawData를 얻어오는 메소드
   private Document getArticleModifyRawData(String userAgent, ArticleDetail articleDetail, Map<String, String> loginCookie) {
     try {
-      return Jsoup.connect(articleDetail.getModifyUrl())
-                  .userAgent(userAgent)
-                  .cookies(loginCookie)
-                  .header("Origin", "http://m.dcinside.com")
-                  .referrer(articleDetail.getUrl())
-                  .get();
+      Connection.Response response =  Jsoup.connect(articleDetail.getModifyUrl())
+                                          .userAgent(userAgent)
+                                          .cookies(loginCookie)
+                                          .header("Origin", "http://m.dcinside.com")
+                                          .referrer(articleDetail.getUrl())
+                                          .method(Connection.Method.GET)
+                                          .execute();
+
+      loginCookie.putAll(response.cookies());
+      return response.parse();
     } catch (Exception e) {
       return getArticleModifyRawData(userAgent, articleDetail, loginCookie);
 

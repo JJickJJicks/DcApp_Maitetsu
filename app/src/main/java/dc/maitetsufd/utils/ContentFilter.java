@@ -25,7 +25,8 @@ public class ContentFilter {
       else if (currentData.isTelcomFilter() // 유동 차단
               && currentData.isFlowFilter()
               && userInfo.getUserType() == UserInfo.UserType.FLOW) deleteList.add(simpleArticle);
-      else if (currentData.isTelcomFilter() && TelcomIp.get().contains(userInfo.getIpAdd())) // 통신사 아이피 차단
+      else if (currentData.isTelcomFilter() && TelcomIp.get().contains(userInfo.getIpAdd()
+                                                            .replace("[\\(\\)]", ""))) // 통신사 아이피 차단
         deleteList.add(simpleArticle);
       else if (checkBlockWord(currentData.getBlockWordList(), simpleArticle.getTitle().toUpperCase())) // 단어 차단
         deleteList.add(simpleArticle);
@@ -51,7 +52,7 @@ public class ContentFilter {
               && currentData.isFlowFilter()
               && userInfo.getUserType() == UserInfo.UserType.FLOW) deleteList.add(comment);
       else if (currentData.isTelcomFilter() // 통신사 아이피 차단
-              && TelcomIp.get().contains(ip)) deleteList.add(comment);
+              && TelcomIp.get().contains(ip.replace("[\\(\\)]", ""))) deleteList.add(comment);
       else if (checkBlockWord(currentData.getBlockWordList(), comment.getContent().toUpperCase())) // 단어차단
         deleteList.add(comment);
     }

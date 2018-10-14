@@ -3,6 +3,7 @@ package dc.maitetsufd.utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -13,12 +14,12 @@ import android.webkit.WebViewClient;
  */
 public class ContentWebView {
 
-  public static WebView get(Activity activity, String url) {
+  public static WebView get(final Activity activity, String url) {
 
-    WebView webview = new WebView(activity);
+    final WebView webview = new WebView(activity);
     webview.setBackgroundColor(android.R.color.transparent);
     webview.setPadding(2, 2, 2, 2);
-    String frameUrl = checkUrl(url);
+    final String frameUrl = checkUrl(url);
     String frame = "<html><body><iframe width=\"100%\" height=\"100%\" src=\""
                     + frameUrl
                     + "\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
@@ -33,6 +34,16 @@ public class ContentWebView {
         } else {
           return false;
         }
+      }
+    });
+    // 꾹 누르면 브라우저로 띄우기
+    webview.setOnLongClickListener(new View.OnLongClickListener() {
+      @Override
+      public boolean onLongClick(View view) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(frameUrl));
+        activity.startActivity(i);
+        return false;
       }
     });
 

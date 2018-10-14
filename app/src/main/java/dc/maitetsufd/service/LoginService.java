@@ -42,10 +42,11 @@ public enum LoginService {
     val loginData = getLoginData(id, pw, userAgent, cookies);
     Connection.Response response = Jsoup.connect(MOBILE_LOGIN_URL)
                                         .data(loginData)
-                                        .followRedirects(false)
+                                        .followRedirects(true)
                                         .ignoreContentType(true)
                                         .ignoreHttpErrors(true)
                                         .userAgent(userAgent)
+                                        .header("Connection", "keep-alive")
                                         .header("Host", "dcid.dcinside.com")
                                         .header("Origin", "http://m.dcinside.com")
                                         .header("Content-Type", "application/x-www-form-urlencoded")
@@ -61,24 +62,39 @@ public enum LoginService {
     }
 
     // SSO 로그인
-    Connection.Response ssoResponse = Jsoup.connect(response.header("location"))
-                                          .data(loginData)
-                                          .followRedirects(false)
-                                          .ignoreContentType(true)
-                                          .ignoreHttpErrors(true)
-                                          .userAgent(userAgent)
-                                          .header("Host", "sso.dcinside.com")
-                                          .header("Origin", "null")
-                                          .header("Content-Type", "application/x-www-form-urlencoded")
-                                          .referrer(MOBILE_LOGIN_FORM_URL)
-                                          .cookies(cookies)
-                                          .method(Connection.Method.POST)
-                                          .execute();
-    cookies.putAll(ssoResponse.cookies());
+//    Connection.Response ssoResponse = Jsoup.connect(response.header("location"))
+//                                          .followRedirects(true)
+//                                          .ignoreContentType(true)
+//                                          .ignoreHttpErrors(true)
+//                                          .userAgent(userAgent)
+//                                          .header("Host", ".dcinside.com")
+//                                          .header("Origin", ".dcinside.com")
+//                                          .referrer(MOBILE_LOGIN_FORM_URL)
+//                                          .cookies(cookies)
+//                                          .method(Connection.Method.GET)
+//                                          .execute();
+//    cookies.putAll(ssoResponse.cookies());
 
+
+    // 2차 로그인
+    Connection.Response response2 = Jsoup.connect(MOBILE_LOGIN_URL)
+                                        .data(loginData)
+                                        .followRedirects(true)
+                                        .ignoreContentType(true)
+                                        .ignoreHttpErrors(true)
+                                        .userAgent(userAgent)
+                                        .header("Connection", "keep-alive")
+                                        .header("Host", "dcid.dcinside.com")
+                                        .header("Origin", "http://m.dcinside.com")
+                                        .header("Content-Type", "application/x-www-form-urlencoded")
+                                        .referrer(MOBILE_LOGIN_FORM_URL)
+                                        .cookies(cookies)
+                                        .method(Connection.Method.POST)
+                                        .execute();
+    cookies.putAll(response2.cookies());
+
+    // user agent 삽입
     cookies.put("userAgent", userAgent);
-
-
 
     return cookies;
   }
@@ -148,27 +164,6 @@ public enum LoginService {
 
     loginData.put("con_key", accessToken);
     return loginData;
-  }
-
-  private String loginRedirect(String URL, String userAgent, Map<String, String> cookies, String previousURL) throws IOException {
-    URL = URLDecoder.decode(URL, "UTF-8");
-
-    try {
-      val response = Jsoup.connect(URL)
-                          .userAgent(userAgent)
-                          .followRedirects(false)
-                          .ignoreContentType(true)
-                          .ignoreHttpErrors(true)
-                          .referrer(previousURL)
-                          .timeout(3000)
-                          .execute();
-      cookies.putAll(response.cookies());
-      return response.header("location");
-
-    } catch (Exception e) {
-      return loginRedirect(URL, userAgent, cookies, previousURL);
-
-    }
   }
 
 }

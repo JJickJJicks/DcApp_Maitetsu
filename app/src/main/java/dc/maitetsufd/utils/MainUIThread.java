@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -21,6 +24,7 @@ import android.widget.*;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
@@ -40,7 +44,7 @@ import dc.maitetsufd.ui.fragment.MangaViewerFragment;
 import dc.maitetsufd.ui.listener.ImageViewerListener;
 import dc.maitetsufd.ui.viewmodel.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -179,11 +183,13 @@ public class MainUIThread {
     view.post(new Runnable() {
       @Override
       public void run() {
-        snackbarText.setSpan(whiteSpan, 0, snackbarText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        snackbar = Snackbar.make(view, snackbarText, Snackbar.LENGTH_SHORT);
-        setSnackBarAction(context);
-        snackbar.show();
-        hideKeyboard(view);
+		  try {
+			snackbarText.setSpan(whiteSpan, 0, snackbarText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+			snackbar = Snackbar.make(view, snackbarText, Snackbar.LENGTH_SHORT);
+			setSnackBarAction(context);
+			snackbar.show();
+			hideKeyboard(view);
+		  } catch (Exception e) {}
       }
     });
   }
@@ -373,22 +379,24 @@ public class MainUIThread {
       public void run() {
         Glide.with(activity.getApplicationContext())
                 .load(bytes)
-                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                .override(Target.SIZE_ORIGINAL, 16000)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .listener(new RequestListener<byte[], GlideDrawable>() {
                   @Override
-                  public boolean onException(Exception e, byte[] bytes, Target<GlideDrawable> target, boolean b) {
+                  public boolean onException(Exception e, byte[] model, Target<GlideDrawable> target, boolean isFirstResource) {
                     return false;
                   }
+
                   @Override
-                  public boolean onResourceReady(GlideDrawable glideDrawable, byte[] bytes, Target<GlideDrawable> target, boolean b, boolean b1) {
-                    int width = glideDrawable.getIntrinsicWidth();
-                    int height = glideDrawable.getIntrinsicHeight();
+                  public boolean onResourceReady(GlideDrawable resource, byte[] model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    int width = resource.getIntrinsicWidth();
+                    int height = resource.getIntrinsicHeight();
                     int th = screenWidth / 10 * 6;
 
                     if (th <= width || th <= height) { // 이미지가 화면 너비의 70%를 차지하는 경우
                       imageView.setAdjustViewBounds(true); // 크기를 맞춘다
                     }
+
                     return false;
                   }
                 })
@@ -416,7 +424,7 @@ public class MainUIThread {
       public void run() {
         Glide.with(activity.getApplicationContext())
                 .load(bytes)
-                .dontTransform()
+                .override(Target.SIZE_ORIGINAL, 16000)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .listener(new RequestListener<byte[], GlideDrawable>() {
                   @Override
@@ -433,8 +441,6 @@ public class MainUIThread {
       }
     });
   }
-
-
 
   /**
    * activity를 종료하는 메소드

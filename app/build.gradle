@@ -14,13 +14,14 @@ android {
         applicationId "dcmys.maitetsufd"
         minSdkVersion 18
         targetSdkVersion 21
-        versionCode 1715
-        versionName "1.7.15"
+        versionCode 1725
+        versionName "1.7.25"
         multiDexEnabled true
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     packagingOptions {
         exclude 'README.md'
+        exclude 'META-INF/LICENSE'
     }
     buildTypes {
         release {
@@ -47,7 +48,7 @@ dependencies {
     compile 'com.android.support:preference-v7:25.3.1'
     compile 'com.jakewharton:butterknife:8.5.1'
     compile 'me.imid.swipebacklayout.lib:library:1.0.0'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.github.bumptech.glide:glide:3.8.0'
     compile 'commons-io:commons-io:2.5'
     compile 'org.projectlombok:lombok:1.16.16'
     compile 'org.jsoup:jsoup:1.10.2'

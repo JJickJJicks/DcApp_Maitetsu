@@ -19,7 +19,7 @@ public class UserInfo implements Serializable {
   private String ipAdd;
 
   public enum UserType {
-    FIX_GALLOG, FLOW_GALLOG, FLOW, EMPTY
+    SUBMANAGER_GALLOG, MANAGER_GALLOG, FIX_GALLOG, FLOW_GALLOG, FLOW, EMPTY
   }
 
   @Override

@@ -458,6 +458,10 @@ public class ArticleDetailViewModel {
         // 닉네임
         TextView nickName = (TextView) view.findViewById(R.id.comment_item_nickname);
         nickName.setText(comment.getUserInfo().getNickname());
+
+        // 닉네임 하이라이팅
+        NickNameHighLight.set(comment.getUserInfo(), nickName, 250);
+
         // 유저 타입
         ImageView userType = (ImageView) view.findViewById(R.id.comment_item_user_type);
         UserTypeManager.set(res, comment.getUserInfo(), userType);

@@ -16,9 +16,13 @@ public class FilterUserLongClickListener {
     return new View.OnLongClickListener() {
       @Override
       public boolean onLongClick(View view) {
-        FilterUserDialogFragment.newInstance(userInfo)
-                .show(activity.getFragmentManager(), "filterUserDialog");
-        return true;
+		  try {
+			FilterUserDialogFragment.newInstance(userInfo)
+									.show(activity.getFragmentManager(), "filterUserDialog");
+			return true;
+		  } catch (Exception e) {
+			  return false;
+		  }
       }
     };
   }

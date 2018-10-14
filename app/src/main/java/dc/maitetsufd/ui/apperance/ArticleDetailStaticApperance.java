@@ -3,6 +3,7 @@ package dc.maitetsufd.ui.apperance;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
@@ -16,11 +17,9 @@ import dc.maitetsufd.models.ArticleDetail;
 import dc.maitetsufd.models.UserInfo;
 import dc.maitetsufd.service.ServiceProvider;
 import dc.maitetsufd.ui.ArticleDetailActivity;
-import dc.maitetsufd.utils.MainUIThread;
+import dc.maitetsufd.utils.*;
 import dc.maitetsufd.ui.fragment.ArticleDeleteDialogFragment;
 import dc.maitetsufd.ui.viewmodel.ArticleDetailViewModel;
-import dc.maitetsufd.utils.KeywordUtils;
-import dc.maitetsufd.utils.UserTypeManager;
 
 /**
  * @since 2017-04-25
@@ -85,10 +84,6 @@ public class ArticleDetailStaticApperance {
     });
   }
 
-  private void clearCommentText() {
-    presenter.commentText.setText("");
-  }
-
   // 상단 바 타이틀 핸들링
   private void setTitleAndTitleBar(Activity activity) {
     TextView title = (TextView) activity.findViewById(R.id.article_read_title);
@@ -110,6 +105,8 @@ public class ArticleDetailStaticApperance {
     ImageView userType = (ImageView) activity.findViewById(R.id.article_read_user_type);
     nickname.setText(userInfo.getNickname());
     UserTypeManager.set(res, userInfo, userType);
+    // 닉네임 하이라이팅
+    NickNameHighLight.set(userInfo, nickname, 180);
 
   }
 
@@ -235,9 +232,12 @@ public class ArticleDetailStaticApperance {
         String comment = presenter.commentText.getText().toString();
         if(!comment.trim().isEmpty()) {
           ServiceProvider.getInstance().writeComment(articleDetail, presenter, articleUrl, comment,
-                                                      commentSubmit, articleDetailActivity);
-          clearCommentText();
+                                                      presenter.commentText,
+                                                      commentSubmit,
+                                                      articleDetailActivity);
+          presenter.commentText.setText("");
           MainUIThread.hideKeyboard(view);
+
         }else{
           MainUIThread.showToast(activity, activity.getString(R.string.comment_submit_length));
         }

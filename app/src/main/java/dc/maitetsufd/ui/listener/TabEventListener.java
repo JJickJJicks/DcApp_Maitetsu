@@ -103,6 +103,8 @@ public class TabEventListener {
     // 이전 작업 셧다운
     ThreadPoolManager.shutdownAllEc();
 
+    searchBtn.setOnClickListener(null);
+
     if ((int) tab.getTag() == R.string.title_article_list) { // 일반글
       searchLayout.setVisibility(View.VISIBLE);
       searchBtn.setVisibility(View.VISIBLE);
@@ -114,6 +116,10 @@ public class TabEventListener {
       MainUIThread.refreshMaruListView(pagerAdapter.getMangaViewerFragment(), true);
 
     } else if ((int) tab.getTag() == R.string.title_recommend_article_title_bar) { // 개념글
+      searchLayout.setVisibility(View.VISIBLE);
+      searchBtn.setVisibility(View.VISIBLE);
+      searchBtn.setOnClickListener(SearchBtnListener.get(pagerAdapter.getRecommendArticleListFragment(),
+              searchClose, searchBtn, searchEditText));
       MainUIThread.refreshArticleListView(pagerAdapter.getRecommendArticleListFragment(), true);
     }
   }

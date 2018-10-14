@@ -64,6 +64,7 @@ public class SimpleArticleListViewModel implements HasAdapterViewModel<SimpleArt
     searchContinueBtn = (FloatingActionButton) view.findViewById(R.id.search_article_continue);
     searchContinueBtn.setColorFilter(ContextCompat.getColor(view.getContext(), R.color.colorWhite));
     setSearchContinueButton(searchContinueBtn);
+    hideSearchContinueBtn();
 
     setWriteButton(currentData);
     listView.setOnScrollListener(ArticleListBottomListener.newInstance(fragment, swipeRefreshLayout));
