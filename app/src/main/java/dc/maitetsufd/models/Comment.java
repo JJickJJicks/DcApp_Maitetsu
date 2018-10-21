@@ -18,5 +18,6 @@ public class Comment implements Serializable {
   private String content;
   private String date;
   private String imgUrl;
+  private String voiceUrl;
   private String deleteCode;
 }

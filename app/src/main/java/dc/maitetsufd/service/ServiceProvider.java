@@ -384,7 +384,7 @@ public class ServiceProvider {
 
           } else throw new Exception();
         } catch (IllegalAccessException ie) {
-          MainUIThread.showToast(activity, ie.getMessage());
+          MainUIThread.showToast(activity, activity.getString(R.string.comment_submit_failure) + " " + ie.getMessage());
           commentEditText.setText(comment);
 
         } catch (Exception e) {

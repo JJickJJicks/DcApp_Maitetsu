@@ -19,6 +19,7 @@ import dc.maitetsufd.data.CurrentDataManager;
 import dc.maitetsufd.models.ArticleDetail;
 import dc.maitetsufd.models.Comment;
 import dc.maitetsufd.models.DcConPackage;
+import dc.maitetsufd.models.UserInfo;
 import dc.maitetsufd.service.ServiceProvider;
 import dc.maitetsufd.ui.ArticleDetailActivity;
 import dc.maitetsufd.ui.apperance.ArticleDetailStaticApperance;
@@ -47,6 +48,7 @@ public class ArticleDetailViewModel {
   private List<ImageView> imageViews;
   private boolean isImageCheck = false;
   private static final int CONTENT_LOAD_IMAGE_COUNT = 15;
+  private static String VOICE_IFRAME_URL = "http://m.dcinside.com/voice/player?vr=";
 
   public ArticleDetailViewModel(ArticleDetailActivity articleDetailActivity,
                                 ArticleDetail articleDetail, String articleUrl) {
@@ -453,8 +455,9 @@ public class ArticleDetailViewModel {
       @Override
       public void run() {
         LayoutInflater inflater = (LayoutInflater) commentLayout.getContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                          .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.comment_item, null);
+
         // 닉네임
         TextView nickName = (TextView) view.findViewById(R.id.comment_item_nickname);
         nickName.setText(comment.getUserInfo().getNickname());
@@ -490,8 +493,14 @@ public class ArticleDetailViewModel {
           commentDeleteButton.setVisibility(View.GONE);
 
         // 댓글 내용
-        TextView content = (TextView) view.findViewById(R.id.comment_item_content);
+        final TextView content = (TextView) view.findViewById(R.id.comment_item_content);
         content.setText(comment.getContent());
+
+        // 닉네임이 비었으면 경고 메시지이므로 중앙정렬
+        if (comment.getUserInfo().getUserType() == UserInfo.UserType.EMPTY) {
+          content.setGravity(Gravity.CENTER);
+        }
+
         if (Build.VERSION.SDK_INT > 18) {
           content.setTextIsSelectable(true);
         }
@@ -520,6 +529,21 @@ public class ArticleDetailViewModel {
         activity.runOnUiThread(new Runnable() {
           @Override
           public void run() {
+
+
+            // 보이스 댓글은 웹뷰를 직접 생성해야 하므로 activity 쓰레드에서 처리
+            if (comment.getVoiceUrl() != null && comment.getVoiceUrl().length() > 0) {
+              content.setVisibility(View.GONE);
+
+              final String url = VOICE_IFRAME_URL + comment.getVoiceUrl();
+              final WebView webView = ContentWebView.get(activity, url);
+              final LinearLayout dcconLayout = (LinearLayout) view.findViewById(R.id.comment_item_dccon_layout);
+              final LinearLayout.LayoutParams webViewParams = new LinearLayout.LayoutParams(
+                      LinearLayout.LayoutParams.MATCH_PARENT, DipUtils.getDp(activity.getResources(), 70));
+              webView.setLayoutParams(webViewParams);
+              dcconLayout.addView(webView);
+            }
+
             commentLayout.addView(view, layoutParams);
             commentLayout.addView(yellowLine, lineParams);
 

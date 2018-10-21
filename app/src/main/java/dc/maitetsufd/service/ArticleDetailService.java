@@ -289,6 +289,7 @@ public enum ArticleDetailService {
                   e.select("div.delted").first().text(),
                   "",
                   "",
+                  "",
                   ""
           );
           comments.add(comment);
@@ -313,6 +314,9 @@ public enum ArticleDetailService {
           deleteCode = "";
         }
 
+        // 보이스 댓글 URL
+        String voiceUrl = e.select(".voice-box").attr("vr_copy");
+
         Comment comment = new Comment(
                 e.hasClass("comment-add"),
                 new UserInfo(nickname,
@@ -323,6 +327,7 @@ public enum ArticleDetailService {
                 e.select("p.txt").text().trim(),
                 e.select("span.date").text(),
                 e.select("p.txt img").attr("abs:src"),
+                voiceUrl,
                 deleteCode
         );
         comments.add(comment);

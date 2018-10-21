@@ -424,7 +424,7 @@ public class MainUIThread {
       public void run() {
         Glide.with(activity.getApplicationContext())
                 .load(bytes)
-                .override(Target.SIZE_ORIGINAL, 16000)
+                .override(Target.SIZE_ORIGINAL, 12000)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .listener(new RequestListener<byte[], GlideDrawable>() {
                   @Override

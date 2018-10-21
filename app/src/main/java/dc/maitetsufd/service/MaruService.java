@@ -164,7 +164,7 @@ enum MaruService implements IMangaService {
               .header("Cache-Control", "no-cache")
               .header("Connection", "keep-alive")
               .header("Content-Type", "application/x-www-form-urlencoded")
-              .data("pass", PASS)
+              .data("pass", PASS) // TODO GOOGLE recaptcha 처리
               .timeout(5000)
               .followRedirects(true)
               .cookies(contentCookies)

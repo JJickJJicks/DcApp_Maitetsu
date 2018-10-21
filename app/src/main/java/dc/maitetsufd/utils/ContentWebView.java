@@ -13,15 +13,15 @@ import android.webkit.WebViewClient;
  * @since 2017-05-02
  */
 public class ContentWebView {
+	private static final String MOBILE_YOUTUBE = "https://m.youtube.com/watch?v=";
 
-  public static WebView get(final Activity activity, String url) {
+  public static WebView get(final Activity activity, final String url) {
 
     final WebView webview = new WebView(activity);
-    webview.setBackgroundColor(android.R.color.transparent);
+    webview.setBackgroundColor(activity.getResources().getColor(android.R.color.transparent));
     webview.setPadding(2, 2, 2, 2);
-    final String frameUrl = checkUrl(url);
     String frame = "<html><body><iframe width=\"100%\" height=\"100%\" src=\""
-                    + frameUrl
+                    + url
                     + "\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
 
     webview.setWebViewClient(new WebViewClient() {
@@ -40,8 +40,18 @@ public class ContentWebView {
     webview.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
       public boolean onLongClick(View view) {
+        if (url == null) return false;
+
+        String code = "";
+        String splitUrl[] = url.split("embed/");
+        if (splitUrl.length > 0) {
+          code = splitUrl[1];
+        } else {
+          return false;
+        }
+		
         Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(frameUrl));
+        i.setData(Uri.parse(MOBILE_YOUTUBE + code));
         activity.startActivity(i);
         return false;
       }
@@ -56,25 +66,4 @@ public class ContentWebView {
     return webview;
   }
 
-
-  private static String checkUrl(String url) {
-    try {
-      String[] slashUrls = url.split("//");
-      String slashUrl = slashUrls[0];
-      if(slashUrls.length > 1) slashUrl = slashUrls[1];
-
-      String[] splitUrl = slashUrl
-              .replace("www.youtube.com/watch?v=", "www.youtube.com/v/")
-              .split("www.youtube.com/v/");
-
-
-      if (splitUrl.length > 1) {
-        String code = splitUrl[1].split("\\?")[0];
-        return "https://www.youtube.com/embed/" + code;
-      } else
-        return "https://" + slashUrl;
-
-
-    }catch(Exception e) { return ""; }
-  }
 }
