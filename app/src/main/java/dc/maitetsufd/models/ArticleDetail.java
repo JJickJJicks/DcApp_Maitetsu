@@ -79,6 +79,8 @@ public class ArticleDetail implements Serializable{
     private String cpage;
     private String con_key;
     private String csrfToken;
+    private String honeyKey;
+    private String honeyValue;
   }
 
   /**

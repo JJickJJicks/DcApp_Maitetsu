@@ -535,12 +535,19 @@ public class ArticleDetailViewModel {
             if (comment.getVoiceUrl() != null && comment.getVoiceUrl().length() > 0) {
               content.setVisibility(View.GONE);
 
-              final String url = VOICE_IFRAME_URL + comment.getVoiceUrl();
+              // URL 설정
+              String url = comment.getVoiceUrl();
+              if (!url.contains("http")) {
+                url = VOICE_IFRAME_URL + url;
+              }
+
+              // 웹뷰 삽입
               final WebView webView = ContentWebView.get(activity, url);
               final LinearLayout dcconLayout = (LinearLayout) view.findViewById(R.id.comment_item_dccon_layout);
               final LinearLayout.LayoutParams webViewParams = new LinearLayout.LayoutParams(
                       LinearLayout.LayoutParams.MATCH_PARENT, DipUtils.getDp(activity.getResources(), 70));
               webView.setLayoutParams(webViewParams);
+              dcconLayout.setGravity(Gravity.CENTER_VERTICAL);
               dcconLayout.addView(webView);
             }
 

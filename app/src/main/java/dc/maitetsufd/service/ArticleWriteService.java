@@ -209,6 +209,13 @@ public enum ArticleWriteService {
   static Map<String, String> getArticleWriteFormData(Document doc, String csrfToken, String userAgent, Map<String, String> loginCookie) {
     Map<String, String> result = new HashMap<>();
 
+    for (Element e : doc.select("input")) {
+      String name = e.attr("name");
+      if (name.contains("honey") || e.hasClass("hide-robot")) {
+        result.put(name, e.attr("value"));
+      }
+    }
+
     result.put("id", doc.select("#id").attr("value"));
     result.put("Block_key", AccessTokenService.getInstance.getAccessToken("dc_check2", "", csrfToken, userAgent, loginCookie));
     result.put("bgm", doc.select("#bgm").attr("value"));

@@ -268,6 +268,14 @@ public enum ArticleDetailService {
     cwd.setCpage(doc.select("#cpage").attr("value"));
     cwd.setSubject(doc.select("div.gallview-tit-box span.tit").first().text());
     cwd.setCsrfToken(doc.select("meta[name=csrf-token]").attr("content"));
+
+    cwd.setHoneyKey(doc.select("#firstname").attr("name"));
+
+    String value = doc.select("#firstname").val();
+    cwd.setHoneyValue(value);
+    if (value.isEmpty()) {
+      cwd.setHoneyValue("1");
+    }
     return cwd;
   }
 
@@ -314,8 +322,11 @@ public enum ArticleDetailService {
           deleteCode = "";
         }
 
-        // 보이스 댓글 URL
+        // 보이스 댓글 / iframe URL
         String voiceUrl = e.select(".voice-box").attr("vr_copy");
+        if (voiceUrl == null || voiceUrl.isEmpty()) {
+          voiceUrl = e.select("p.txt iframe").attr("abs:src");
+        }
 
         Comment comment = new Comment(
                 e.hasClass("comment-add"),

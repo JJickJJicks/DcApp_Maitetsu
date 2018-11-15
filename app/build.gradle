@@ -8,14 +8,14 @@ android {
             debuggable true
         }
     }
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '25.0.1'
     defaultConfig {
         applicationId "dcmys.maitetsufd"
         minSdkVersion 18
-        targetSdkVersion 21
-        versionCode 1728
-        versionName "1.7.28"
+        targetSdkVersion 26
+        versionCode 1732
+        versionName "1.7.32"
         multiDexEnabled true
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

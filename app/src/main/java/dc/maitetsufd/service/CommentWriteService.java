@@ -37,7 +37,7 @@ public enum CommentWriteService {
                       .timeout(10000)
                       .ignoreContentType(true)
                       .post();
-					  
+
 	String responseText = result.body().text();
 	
 	if (responseText.trim().isEmpty()) // 비정상 응답인 경우 재시도
@@ -108,7 +108,10 @@ public enum CommentWriteService {
     if (!detailIdx.isEmpty()) {
       data.put("detail_idx", detailIdx);
     }
+    data.put("reple_id", "");
     data.put("con_key", AccessTokenService.getInstance.getAccessToken("com_submit", "", cwd.getCsrfToken(), userAgent, cookies));
+
+    data.put(cwd.getHoneyKey(), cwd.getHoneyValue());
     return data;
   }
 
