@@ -112,8 +112,8 @@ public class TabEventListener {
                                   searchClose, searchBtn, searchEditText));
       MainUIThread.refreshArticleListView(pagerAdapter.getSimpleArticleListFragment(), true);
 
-    }else if((int) tab.getTag() == R.string.maru_viewer_title) { // 실험실
-      MainUIThread.refreshMaruListView(pagerAdapter.getMangaViewerFragment(), true);
+//    }else if((int) tab.getTag() == R.string.maru_viewer_title) { // 실험실
+//      MainUIThread.refreshMaruListView(pagerAdapter.getMangaViewerFragment(), true);
 
     } else if ((int) tab.getTag() == R.string.title_recommend_article_title_bar) { // 개념글
       searchLayout.setVisibility(View.VISIBLE);

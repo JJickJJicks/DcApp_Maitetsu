@@ -22,7 +22,8 @@ public class ContentWebView {
     webview.setPadding(2, 2, 2, 2);
     String frame = "<html><body><iframe width=\"100%\" height=\"100%\" src=\""
                     + url
-                    + "\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
+                    + "\" frameborder=\"0\" allowfullscreen>"
+                    + "</iframe></body></html>";
 
     webview.setWebViewClient(new WebViewClient() {
       @Override

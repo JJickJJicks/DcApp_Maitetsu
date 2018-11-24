@@ -20,7 +20,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     fragmentList.add(GalleryListFragment.instance());
     fragmentList.add(SimpleArticleListFragment.instance());
     fragmentList.add(RecommendArticleListFragment.instance());
-    fragmentList.add(MangaViewerFragment.instance());
+//    fragmentList.add(MangaViewerFragment.instance());
     fragmentList.add(SettingFragment.instance());
   }
 

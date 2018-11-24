@@ -88,9 +88,9 @@
                             android:defaultValue="true"
                             android:key="dark_theme"/>
 
-        <CheckBoxPreference android:title="@string/use_maru_viewer"
+       <!-- <CheckBoxPreference android:title="@string/use_maru_viewer"
                             android:defaultValue="false"
-                            android:key="maru_viewer"/>
+                            android:key="maru_viewer"/>-->
 
         <Preference android:title="@string/use_opensource"
                     android:key="@string/use_opensource"/>

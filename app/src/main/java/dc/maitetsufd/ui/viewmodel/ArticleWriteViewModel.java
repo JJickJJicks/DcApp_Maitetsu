@@ -110,19 +110,6 @@ public class ArticleWriteViewModel {
       for(final ArticleModify.AttachFile file : articleModify.getAttachFileList()) {
         if(articleModify.getDeleteFileList().contains(file.getFno())) continue;
 
-//        final TextView textView = new TextView(activity);
-//        textView.setText(file.getName());
-//        textView.setTextAppearance(activity, R.style.List_subText);
-//        textView.setGravity(Gravity.CENTER);
-//        textView.setOnClickListener(new View.OnClickListener() {
-//          @Override
-//          public void onClick(View view) {
-//            attachFileLayout.removeView(textView);
-//            articleModify.getDeleteFileList().add(file.getFno());
-//          }
-//        });
-//        attachFileLayout.addView(textView, dp80, dp80);
-
         final ImageButton attachImg = new ImageButton(activity);
         ContentUtils.loadBitmapFromUrlWithLocalCheck(activity, IMAGE_PREFIX + file.getSrc(), attachImg, currentData);
         attachImg.setAdjustViewBounds(true);

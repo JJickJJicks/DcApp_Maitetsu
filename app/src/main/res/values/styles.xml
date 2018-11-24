@@ -25,6 +25,8 @@
         <item name="colorButtonNormal">@color/colorPrimaryLight</item>
         <item name="actionBarSize">40dp</item>
         <item name="preferenceTheme">@style/BasicPreferenceTheme</item>
+        <item name="alertDialogTheme">@style/BasicTheme.DialogCustom</item>
+        <item name="dialogTheme">@style/BasicTheme.DialogCustom</item>
         <item name="android:buttonStyle">@style/BasicButton</item>
         <item name="android:spinnerDropDownItemStyle">@style/WhiteSpinner</item>
     </style>
@@ -127,6 +129,16 @@
         <item name="android:textColorPrimary">@color/colorWhite</item>
         <item name="android:textColorSecondary">@color/colorGray</item>
         <item name="android:windowBackground">@color/darkThemeLightBackground</item>
+        <item name="android:windowMinWidthMajor">80%</item>
+        <item name="android:windowMinWidthMinor">80%</item>
+    </style>
+	
+
+	<style name="BasicTheme.DialogCustom" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textColorPrimary">@color/colorPrimary</item>
+        <item name="android:textColorSecondary">@color/colorDarkGray</item>
+        <item name="android:windowBackground">@color/colorWhite</item>
         <item name="android:windowMinWidthMajor">80%</item>
         <item name="android:windowMinWidthMinor">80%</item>
     </style>

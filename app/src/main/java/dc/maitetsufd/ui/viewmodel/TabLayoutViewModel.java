@@ -71,8 +71,8 @@ public class TabLayoutViewModel {
     tabLayout.getTabAt(i++).setIcon(R.drawable.gallery_list).setTag(R.string.title_gallery_list);
     tabLayout.getTabAt(i++).setIcon(R.drawable.article_list_icon).setTag(R.string.title_article_list);
     tabLayout.getTabAt(i++).setIcon(R.drawable.recommand_article_icon).setTag(R.string.title_recommend_article_title_bar);
-    if(myPagerAdapter.getCount() > 4)
-      tabLayout.getTabAt(i++).setIcon(R.drawable.maru_viewer_icon).setTag(R.string.maru_viewer_title);
+//    if(myPagerAdapter.getCount() > 4)
+//      tabLayout.getTabAt(i++).setIcon(R.drawable.maru_viewer_icon).setTag(R.string.maru_viewer_title);
     tabLayout.getTabAt(i).setIcon(R.drawable.setting).setTag(R.string.setting);
   }
 

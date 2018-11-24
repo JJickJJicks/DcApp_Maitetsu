@@ -52,6 +52,8 @@ public enum ArticleModifyService {
 
     for(int i=0; i<mData.length; i++) {
       String[] data = mData[i].split("\\^%\\^");
+      if (data.length < 2) continue;
+
       ArticleModify.AttachFile attachFile = new ArticleModify.AttachFile();
       attachFile.setFno(data[0].replace("img", ""));
       attachFile.setName(data[0]);

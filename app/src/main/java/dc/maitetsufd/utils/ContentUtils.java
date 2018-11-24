@@ -57,7 +57,7 @@ public class ContentUtils {
         try {
           MainUIThread.setImageView(activity, imageView, IOUtils.toByteArray(new FileInputStream(file)));
         } catch (Exception e) {
-          MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure));
+          MainUIThread.showToast(activity, activity.getString(R.string.image_load_failure_check));
         }
       }
     });

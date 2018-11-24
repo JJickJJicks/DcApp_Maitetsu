@@ -80,11 +80,6 @@ public class MainActivity extends AppCompatActivity {
     tabLayout.setTabMode(TabLayout.MODE_FIXED);
     tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-    // 만화 뷰어 기능 비활성화 처리
-    if (!currentData.isMaruViewer()) {
-      removeTab(myPagerAdapter, 3);
-    }
-
     // 탭 모델뷰 설정
     TabLayoutViewModel.invoke(this, myPagerAdapter);
 

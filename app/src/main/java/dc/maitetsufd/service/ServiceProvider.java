@@ -469,6 +469,7 @@ public class ServiceProvider {
           intent.putExtra("articleModify", articleModify);
           activity.startActivityForResult(intent, RequestCodes.ARTICLE.ordinal());
         }catch(Exception e) {
+          e.printStackTrace();
           MainUIThread.showToast(activity, activity.getString(R.string.article_modify_try_failure));
         }
       }
